@@ -1,0 +1,15 @@
+image: node:alpine
+variables:
+  WEBPACK_MODE: production
+pages:
+  script:
+    - npm install
+    - npm run webpack
+    - mv dist public
+    - find .
+
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
