@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "jquery": "^3.4.0",
+    "leaflet": "^1.4.0",
     "materialize-css": "^1.0.0-rc.2"
   }
 }

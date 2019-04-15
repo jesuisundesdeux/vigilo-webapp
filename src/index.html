@@ -13,29 +13,66 @@
 </head>
 
 <body>
-
-  <div class="container issues">
-    <div class="row">
-      <div class="col s12">
-        <ul class="tabs">
-          <li class="tab col s6"><a href="#issues-list">Liste</a></li>
+  <div class="navbar-fixed">
+    <nav class="nav-extended">
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo center">Vǐgǐlo</a>
+        <!-- <a href="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a> -->
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <!--li><a href="sass.html">Sass</a></li-->
+        </ul>
+      </div>
+      <div class="nav-content">
+        <ul class="tabs row">
+          <li class="tab col s6 active"><a href="#issues-list">Liste</a></li>
           <li class="tab col s6"><a href="#issues-map">Carte</a></li>
         </ul>
       </div>
-    </div>
+    </nav>
+  </div>
+  <!--   <ul class="sidenav" id="mobile-menu">
+    <li><a href="sass.html">Sass</a></li>
+  </ul> -->
+
+  <div class="issues">
     <div id="issues-list" class="row">
       <div class="col s12">
-          <div class="cards-container">
+        <div class="cards-container">
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
           </div>
-          <div class="row more-issues">
-            <a class="col s8 offset-s2 m6 offset-m3 l4 offset-l4 xl2 offset-xl5 waves-effect waves-light btn">Voir plus</a>
-          </div>
+        </div>
+        <div class="row more-issues">
+          <a class="col s8 offset-s2 m6 offset-m3 l4 offset-l4 xl2 offset-xl5 waves-effect waves-light btn">Voir
+            plus</a>
+        </div>
       </div>
     </div>
-    <div id="issues-map">La carte ici</div>
+    <div id="issues-map">
+      <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+      </div>
+    </div>
+  </div>
+  <div id="modal-issue" class="modal">
+    <div class="modal-content">
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
   </div>
 
-  <div class="fixed-action-btn">
+  <!--   <div class="fixed-action-btn">
     <a class="btn-floating btn-large red">
       <i class="large material-icons">mode_edit</i>
     </a>
@@ -45,7 +82,7 @@
       <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
       <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
     </ul>
-  </div>
+  </div> -->
 
   <script src="js/main.js"></script>
 </body>

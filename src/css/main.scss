@@ -9,10 +9,34 @@ body {
 }
 
 @import "~materialize-css/sass/materialize.scss";
+@import '~leaflet/dist/leaflet.css';
+@import "spinner.scss";
 
-.container.issues{
+.issues{
+	margin-top: 49px;
 	.cards-container {
 		display: flex;
-		flex-wrap: wrap; 
-	  }
+		flex-wrap: wrap;
+		.card {
+			height: calc( 100% - 1rem );
+			.card-image {
+				display: flex;
+				align-items: center;
+			}
+		}
+	}
+
+	.spinner {
+		display: none;
+		&:only-child {
+			display: unset;
+		}
+	}
+
+	#issues-map {
+		height: calc( 100vh - 113px );
+		.spinner {
+			display: block;
+		}
+	}
 }
