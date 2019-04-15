@@ -8,11 +8,11 @@ body {
 	height: 100%;
 }
 
-.hidden {
-	display: none !important;
-}
+@import "~materialize-css/sass/materialize.scss";
 
-h1 {
-	color: cornflowerblue;
-	text-decoration: underline;
+.container.issues{
+	.cards-container {
+		display: flex;
+		flex-wrap: wrap; 
+	  }
 }
