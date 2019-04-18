@@ -25,12 +25,20 @@ export function issueCard(issue){
 export function issueDetail(issue){
     return `
     <div class="row">
-        <div class="col s12 m6 l4">
+        <div class="col s12 m6 l4 xl3">
             <div class="center-align">
                 <img class="center-align" src="${issue.img}">
             </div>
+            <div class="center-align hide-on-med-and-down">
+                <img class="center-align" src="${issue.map}">
+            </div>
         </div>
-        <div class="col s12 m6 l8">
+        <div class="col m6 hide-on-small-only hide-on-large-only">
+            <div class="center-align">
+                <img class="center-align" src="${issue.map}">
+            </div>
+        </div>
+        <div class="col s12 m12 l8 xl9">
             <p><strong>Référence de suivi :</strong></p>
             <h4 class="center-align">${issue.token}</h4>
             <p>
@@ -50,6 +58,11 @@ export function issueDetail(issue){
                 <strong>Localisation :</strong><br>
                 ${issue.address}
             </p>
+        </div>
+        <div class="col s12 hide-on-med-and-up">
+            <div class="center-align">
+                <img class="center-align" src="${issue.map}">
+            </div>
         </div>
     </div>
     
