@@ -3,6 +3,9 @@
         width: 90%;
         max-height: 90%;
         top: 5% !important;
+        &.modal-fixed-footer {
+            height: 90%;
+        }
     }
 }
 

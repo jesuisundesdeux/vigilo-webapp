@@ -40,7 +40,7 @@ async function viewIssue(token){
 	var modal = M.Modal.getInstance($("#modal-issue")[0]);
 	var issues = await vigilo.getIssues();
 	var issue = issues.filter(item => item.token == token)[0];
-	$("#modal-issue").empty().append(vigiloui.issueDetail(issue));
+	$("#modal-issue .modal-content").empty().append(vigiloui.issueDetail(issue));
 	modal.open()
 }
 window.viewIssue = viewIssue
