@@ -3,7 +3,7 @@ export function issueCard(issue){
     <div class="col s12 m12 l6 xl4">
         <div class="card horizontal">
             <div class="card-image">
-                <img src="${issue.img}">
+                <img src="${issue.img_thumb}">
             </div>
             <div class="card-stacked">
                 <div class="card-content">
@@ -24,6 +24,35 @@ export function issueCard(issue){
 
 export function issueDetail(issue){
     return `
-    <h2>${issue.token}</h2>
+    <div class="row">
+        <div class="col s12 m6 l4">
+            <div class="center-align">
+                <img class="center-align" src="${issue.img}">
+            </div>
+        </div>
+        <div class="col s12 m6 l8">
+            <p><strong>Référence de suivi :</strong></p>
+            <h4 class="center-align">${issue.token}</h4>
+            <p>
+                <strong>Catégorie :</strong><br>
+                ${issue.categorie_str}
+            </p>
+            <p>
+                <strong>Date :</strong><br>
+                ${issue.date_obj.toLocaleString()}
+            </p>
+            <p>
+                <strong>Remarque :</strong><br>
+                ${issue.comment}
+                <br><blockquote>${issue.explanation}</blockquote>
+            </p>
+            <p>
+                <strong>Localisation :</strong><br>
+                ${issue.address}
+            </p>
+        </div>
+    </div>
+    
+
   `
 }

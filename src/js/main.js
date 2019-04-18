@@ -66,8 +66,12 @@ async function initMap(){
 		ext: 'png'
 	}).addTo(issuesmap);
 
+	function onIssueClick(e){
+		viewIssue(e.target.properties.issue.token)
+	}
+
 	for (var i in issues){
-		L.marker([issues[i].lat_float, issues[i].lon_float]).addTo(issuesmap);
+		L.circleMarker([issues[i].lat_float, issues[i].lon_float]).addTo(issuesmap).on('click',onIssueClick).properties = {issue : issues[i]};
 	}
 }
 M.Tabs.getInstance($("nav .tabs")[0]).options.onShow = function(){initMap()}

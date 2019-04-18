@@ -1,0 +1,13 @@
+.modal {
+    &.big {
+        width: 90%;
+        max-height: 90%;
+        top: 5% !important;
+    }
+}
+
+.col {
+    img {
+        max-width: 100%;
+    }
+}

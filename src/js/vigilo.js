@@ -10,7 +10,7 @@ function request(options, nocache){
     }
     options.method = options.method || "GET";
     options.url = "https://cors-anywhere.herokuapp.com/"+options.url;
-    
+
     if (!nocache && options.method == "GET" && requests_cache[options.url] !== undefined){
         return Promise.resolve(requests_cache[options.url]);
     } else {
@@ -54,7 +54,8 @@ export function getIssues(options){
                             item.approved_bool = item.approved=="1";
                             item.categorie_str = cats[item.categorie]
                             item.date_obj = new Date(parseInt(item.time)*1000);
-                            item.img = baseUrl()+"/generate_panel.php?s=150&token="+item.token
+                            item.img_thumb = baseUrl()+"/generate_panel.php?s=150&token="+item.token
+                            item.img = baseUrl()+"/generate_panel.php?s=400&token="+item.token
                             return item
                         }))
                     })
