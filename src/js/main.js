@@ -4,6 +4,7 @@ import '../index.html';
 import '../css/main.scss';
 
 import $ from 'jquery';
+window.$ = $
 import M from 'materialize-css';
 import L from 'leaflet';
 // Fix import leaflet with webpack https://github.com/PaulLeCam/react-leaflet/issues/255
@@ -31,16 +32,21 @@ async function displayIssues(count){
 	offset+=issues.length;
 	issues.forEach((issue)=>{
 		$(".issues .cards-container").append(vigiloui.issueCard(issue))
-	})	
+	})
 }
+$(window).scroll(()=>{
+	if (($(window.document.body).height()-$(window).height()-$(window).scrollTop()) < 10){
+		displayIssues(10)
+	}
+})
 displayIssues(10)
-$('.more-issues a').click(()=>{displayIssues(10)})
 
 async function viewIssue(token){
 	var modal = M.Modal.getInstance($("#modal-issue")[0]);
 	var issues = await vigilo.getIssues();
 	var issue = issues.filter(item => item.token == token)[0];
-	$("#modal-issue .modal-content").empty().append(vigiloui.issueDetail(issue));
+	$("#modal-issue").empty().append(vigiloui.issueDetail(issue));
+	M.Materialbox.init($("#modal-issue .materialboxed"));
 	modal.open()
 }
 window.viewIssue = viewIssue
@@ -48,7 +54,7 @@ window.viewIssue = viewIssue
 /**
  * Functions for issues map
  */
-var issuesmap;
+var issuesmap, issueslayer;
 async function initMap(){
 	if (issuesmap !== undefined){
 		issuesmap.invalidateSize()
@@ -59,7 +65,7 @@ async function initMap(){
 	issuesmap = L.map('issues-map').setView([43.605413, 3.879568], 11);
 
 	L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
-		attribution: 'copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
 		subdomains: 'abcd',
 		minZoom: 0,
 		maxZoom: 20,
@@ -67,11 +73,14 @@ async function initMap(){
 	}).addTo(issuesmap);
 
 	function onIssueClick(e){
-		viewIssue(e.target.properties.issue.token)
+		console.log(e)
+		viewIssue(e.layer.options.issue.token)
 	}
 
+	// Create layer and fill
+	issueslayer = L.featureGroup([]).addTo(issuesmap).on('click', onIssueClick);
 	for (var i in issues){
-		L.circleMarker([issues[i].lat_float, issues[i].lon_float]).addTo(issuesmap).on('click',onIssueClick).properties = {issue : issues[i]};
+		issueslayer.addLayer(L.circleMarker([issues[i].lat_float, issues[i].lon_float], {issue: issues[i]}));
 	}
 }
 M.Tabs.getInstance($("nav .tabs")[0]).options.onShow = function(){initMap()}
@@ -80,7 +89,8 @@ async function centerOnIssue(token){
 	await initMap()
 	var issues = await vigilo.getIssues();
 	var issue = issues.filter(item => item.token == token)[0];
-	issuesmap.setView([issue.lat_float, issue.lon_float],19)
+	issuesmap.setView([issue.lat_float, issue.lon_float],18)
 	M.Tabs.getInstance($("nav .tabs")[0]).select('issues-map')
+	M.Modal.getInstance($("#modal-issue")[0]).close();
 }
 window.centerOnIssue = centerOnIssue

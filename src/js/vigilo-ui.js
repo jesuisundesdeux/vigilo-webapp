@@ -24,18 +24,19 @@ export function issueCard(issue){
 
 export function issueDetail(issue){
     return `
+<div class="modal-content">
     <div class="row">
         <div class="col s12 m6 l4 xl3">
             <div class="center-align">
-                <img class="center-align" src="${issue.img}">
+                <img class="materialboxed center-align" src="${issue.img}">
             </div>
             <div class="center-align hide-on-med-and-down">
-                <img class="center-align" src="${issue.map}">
+                <img class="materialboxed center-align" src="${issue.map}">
             </div>
         </div>
         <div class="col m6 hide-on-small-only hide-on-large-only">
             <div class="center-align">
-                <img class="center-align" src="${issue.map}">
+                <img class="materialboxed center-align" src="${issue.map}">
             </div>
         </div>
         <div class="col s12 m12 l8 xl9">
@@ -61,11 +62,15 @@ export function issueDetail(issue){
         </div>
         <div class="col s12 hide-on-med-and-up">
             <div class="center-align">
-                <img class="center-align" src="${issue.map}">
+                <img class="materialboxed center-align" src="${issue.map}">
             </div>
         </div>
     </div>
-    
+</div>
+<div class="modal-footer">
+<a class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
+    <a href="#!" class="modal-close waves-effect waves-light btn-floating"><i class="material-icons">close</i></a>
+</div>
 
   `
 }
