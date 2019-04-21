@@ -15,18 +15,7 @@ body {
 
 .issues{
 	margin-top: 49px;
-	.cards-container {
-		display: flex;
-		flex-wrap: wrap;
-		.card {
-			height: calc( 100% - 1rem );
-			.card-image {
-				display: flex;
-				align-items: center;
-			}
-		}
-	}
-
+	
 	.spinner {
 		display: none;
 		&:only-child {
@@ -39,5 +28,28 @@ body {
 		.spinner {
 			display: block;
 		}
+	}
+}
+
+.cards-container {
+	display: flex;
+	flex-wrap: wrap;
+	.card {
+		height: calc( 100% - 1rem );
+		.card-image {
+			display: flex;
+			align-items: center;
+		}
+	}
+}
+
+#modal-form {
+	.card-panel {
+		height: calc( 100% - 1rem );
+		margin-left: unset;
+		margin-right: unset;
+	}
+	#form-map {
+		min-height: 150px;
 	}
 }

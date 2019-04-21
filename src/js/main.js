@@ -15,11 +15,66 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-
 import * as vigilo from './vigilo';
 import * as vigiloui from './vigilo-ui';
 
-M.AutoInit();
+// Init UI fonction
+(async function initUI(){
+	M.Tabs.init($("nav .tabs"));
+	M.Modal.init($("#modal-issue"));
+	M.Modal.init($("#modal-form"));
+	M.Datepicker.init($("#modal-form .datepicker"),{
+		container: 'body',
+		firstDay : 1,
+		format: 'dd mmm yyyy',
+		i18n: {
+			months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+			monthsShort: ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+			weekdays: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+			weekdaysShort: ['Dim.','Lun.','Mar.','Mer.','Jeu.','Ven.','Sam.'],
+			weekdaysAbbrev: ['D','L','Ma','Me','J','V','S'],
+			cancel: "Annuler",
+
+		},
+		autoClose: true,
+		onSelect: ()=>{
+			M.Timepicker.getInstance($("#modal-form .timepicker")).open()
+		}
+	});
+	M.Timepicker.init($("#modal-form .timepicker"),{
+		container: 'body',
+		autoClose: true,
+		twelveHour: false,
+		i18n: {
+			'cancel': 'Annuler',
+			'done': 'ok'
+		},
+		onCloseEnd: ()=>{
+			$("#modal-form select").focus()
+		}
+	});
+	// Fill category select
+	var cats = await vigilo.getCategories();
+	for (var i in cats){
+		$("#modal-form select").append(`<option value="${i}">${cats[i]}</option>`)
+	}
+	M.FormSelect.init($("#modal-form select"))
+
+	// Preview picture
+	$("#modal-form input[type=file]").change(function(){
+		var input = this;
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+		
+			reader.onload = function(e) {
+			  $('#picture-preview').attr('src', e.target.result);
+			}
+		
+			reader.readAsDataURL(input.files[0]);
+		  }
+	})
+})()
+
 
 /**
  * Functions for issues list
@@ -28,7 +83,6 @@ let offset=0;
 async function displayIssues(count){
 	var issues = await vigilo.getIssues()
 	issues = issues.slice(offset, offset+count);
-	console.log(issues)
 	offset+=issues.length;
 	issues.forEach((issue)=>{
 		$(".issues .cards-container").append(vigiloui.issueCard(issue))
@@ -50,6 +104,9 @@ async function viewIssue(token){
 	modal.open()
 }
 window.viewIssue = viewIssue
+/* ******************************************************* */
+
+
 
 /**
  * Functions for issues map
@@ -72,17 +129,19 @@ async function initMap(){
 		ext: 'png'
 	}).addTo(issuesmap);
 
-	function onIssueClick(e){
-		console.log(e)
-		viewIssue(e.layer.options.issue.token)
-	}
 
 	// Create layer and fill
-	issueslayer = L.featureGroup([]).addTo(issuesmap).on('click', onIssueClick);
+	issueslayer = L.featureGroup([])
+		.addTo(issuesmap)
+		.on('click', (e)=>{viewIssue(e.layer.options.issue.token)});
+
+
 	for (var i in issues){
 		issueslayer.addLayer(L.circleMarker([issues[i].lat_float, issues[i].lon_float], {issue: issues[i]}));
 	}
+
 }
+
 M.Tabs.getInstance($("nav .tabs")[0]).options.onShow = function(){initMap()}
 
 async function centerOnIssue(token){
@@ -94,3 +153,34 @@ async function centerOnIssue(token){
 	M.Modal.getInstance($("#modal-issue")[0]).close();
 }
 window.centerOnIssue = centerOnIssue
+/* ************************************************************* */
+
+
+/**
+ * Form functions
+ */
+
+window.startForm = function(){
+	var modal = M.Modal.getInstance($("#modal-form")[0]);
+	modal.open();
+	initFormMap();
+}
+var formmap;
+function initFormMap(){
+	if (formmap !== undefined){
+		formmap.invalidateSize()
+		return;
+	}
+	formmap = L.map('form-map').setView([43.605413, 3.879568], 11);
+
+	L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+		subdomains: 'abcd',
+		minZoom: 0,
+		maxZoom: 20,
+		ext: 'png'
+	}).addTo(formmap);
+}
+window.step1 = function(){
+
+}

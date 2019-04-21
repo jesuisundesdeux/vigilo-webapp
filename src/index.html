@@ -58,21 +58,107 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal for issue -->
   <div id="modal-issue" class="modal modal-fixed-footer big">
-   
   </div>
 
-  <!--   <div class="fixed-action-btn">
-    <a class="btn-floating btn-large red">
-      <i class="large material-icons">mode_edit</i>
+  <!-- Modal for form -->
+  <div id="modal-form" class="modal modal-fixed-footer fullscreen">
+    <div class="modal-content">
+      <h3>Nouvelle observation</h3>
+      <form action="#">
+        <div class="row">
+
+          <!-- Picture -->
+          <div class="col s12 m12 l6 xl4">
+            <div class="card-panel row">
+              <div class="col s9 m10 l9 ">
+                <div class="file-field input-field">
+                  <div class="btn">
+                    <span><i class="material-icons">camera_alt</i></span>
+                    <input type="file" accept="image/*;capture=camera">
+                  </div>
+                  <div class="file-path-wrapper">
+                    <label>Photo</label>
+                    <input class="file-path validate" type="text">
+                  </div>
+                </div>
+              </div>
+              <div class="col s3 m2 l3">
+                <img id="picture-preview" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="col s12 m12 l6 xl4">
+            <div class="card-panel row">
+              <div class="col s12 m12 l6 xl4">
+                <div id="form-map">
+
+                </div>
+              </div>
+              <div class="col s12 m12 l6 xl4">
+                  <div class="input-field">
+                      <input type="text" class="validate" id="issue-address">
+                      <label for="issue-address">Adresse</label>
+                    </div>
+              </div>              
+            </div>
+          </div>
+
+          <!-- Date time -->
+          <div class="col s12 m12 l6 xl4">
+            <div class="card-panel row">
+              <div class="input-field col s12 m6">
+                <input type="text" class="datepicker" id="issue-date">
+                <label for="issue-date">Date</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <input type="text" class="timepicker" id="issue-time">
+                <label for="issue-time">Heure</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type -->
+          <div class="col s12 m12 l6 xl12">
+            <div class="card-panel row">
+              <div class="col s12">
+                <label for="issue-cat">Catégorie</label>
+                <select class="browser-default" id="issue-cat">
+                  <option value="" disabled selected>Choisir une catégorie</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment -->
+          <div class="col s12 m12 l6 xl12">
+              <div class="card-panel row">
+                  <div class="input-field col s12">
+                      <input id="issue-comment" type="text" class="validate">
+                      <label for="issue-comment">Remarque</label>
+                    </div>
+              </div>
+            </div>
+
+        </div>
+
+        
+      </form>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
+    </div>
+  </div>
+
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large red" onclick="startForm()">
+      <i class="large material-icons">add</i>
     </a>
-    <ul>
-      <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
-      <li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
-      <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
-      <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
-    </ul>
-  </div> -->
+  </div>
 
   <script src="js/main.js"></script>
 </body>
