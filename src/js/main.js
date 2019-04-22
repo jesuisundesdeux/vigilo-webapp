@@ -263,6 +263,13 @@ function initFormMap() {
 
 	// We use materialcss iconw instead of fontawesome
 	$("i.location_searching").append('location_searching')
+
+	$("#issue-address").change(()=>{
+		if (mapmarker.getLatLng().lat == 0 && mapmarker.getLatLng().lng == 0){
+			formmap.geocoderCtrl._input.value = $("#issue-address").val()
+			formmap.geocoderCtrl._geocode()
+		}
+	});
 }
 function setFormMapPoint(latlng, address) {
 	if (formmap === undefined) {
@@ -282,15 +289,13 @@ function setFormMapPoint(latlng, address) {
 			}
 		})
 	}
-
 }
 
 function addressFormat(address) {
 	return `${address.properties.address.road || ''}, ${address.properties.address.city}`
 }
 
-window.step1 = function () {
-
-}
-
+$("#modal-form form").submit((e)=>{
+	e.preventDefault()
+})
 
