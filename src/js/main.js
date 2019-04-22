@@ -9,6 +9,7 @@ import M from 'materialize-css';
 import L from 'leaflet';
 import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
+import 'leaflet.locatecontrol';
 // Fix import leaflet with webpack https://github.com/PaulLeCam/react-leaflet/issues/255
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -17,7 +18,7 @@ L.Icon.Default.mergeOptions({
 	shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-import * as vigilo from './vigilo';
+import * as vigilo from './vigilo-api';
 import * as vigiloui from './vigilo-ui';
 
 // Init UI fonction
@@ -241,15 +242,27 @@ function initFormMap() {
 
 	formmap.on('click', (e) => { setFormMapPoint(e.latlng) })
 
-
 	formmap.geocoderCtrl = L.Control.geocoder({
 		position: 'topright',
 		defaultMarkGeocode: false
 	})
-		.on('markgeocode', function (e) {
-			setFormMapPoint(e.geocode.center, e.geocode)
-		}).addTo(formmap)
+	.on('markgeocode', function (e) {
+		setFormMapPoint(e.geocode.center, e.geocode)
+	}).addTo(formmap)
 
+	L.control.locate({
+		locateOptions: {
+			enableHighAccuracy: true
+		},
+		iconElementTag: 'i',
+		icon: 'material-icons tiny location_searching',
+		iconLoading: 'material-icons tiny',
+		drawCircle: false
+
+	}).addTo(formmap)
+
+	// We use materialcss iconw instead of fontawesome
+	$("i.location_searching").append('location_searching')
 }
 function setFormMapPoint(latlng, address) {
 	if (formmap === undefined) {
@@ -279,3 +292,5 @@ function addressFormat(address) {
 window.step1 = function () {
 
 }
+
+

@@ -13,6 +13,7 @@ body {
 @import '~leaflet/dist/leaflet.css';
 @import '~leaflet-control-geocoder/dist/Control.Geocoder.css';
 @import '~leaflet.fullscreen/Control.FullScreen.css';
+@import '~leaflet.locatecontrol/src/L.Control.Locate.scss';
 
 .leaflet-touch .leaflet-control-layers-toggle {
 	height: 30px;
@@ -59,5 +60,8 @@ body {
 	}
 	#form-map {
 		min-height: 200px;
+	}
+	#picture-preview {
+		max-height: 200px;
 	}
 }

@@ -31,6 +31,7 @@
     "leaflet": "^1.4.0",
     "leaflet-control-geocoder": "^1.7.0",
     "leaflet.fullscreen": "^1.4.5",
+    "leaflet.locatecontrol": "^0.66.2",
     "materialize-css": "^1.0.0-rc.2"
   }
 }
