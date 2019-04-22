@@ -11,6 +11,14 @@ body {
 @import "~materialize-css/sass/materialize.scss";
 @import "materialize-custom.scss";
 @import '~leaflet/dist/leaflet.css';
+@import '~leaflet-control-geocoder/dist/Control.Geocoder.css';
+@import '~leaflet.fullscreen/Control.FullScreen.css';
+
+.leaflet-touch .leaflet-control-layers-toggle {
+	height: 30px;
+	width: 30px;
+}
+
 @import "spinner.scss";
 
 .issues{
@@ -50,6 +58,6 @@ body {
 		margin-right: unset;
 	}
 	#form-map {
-		min-height: 150px;
+		min-height: 200px;
 	}
 }

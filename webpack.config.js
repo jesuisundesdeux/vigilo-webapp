@@ -32,7 +32,9 @@ module.exports = {
 			use: [{
 				loader: 'file-loader',
 				options: {
-					name: "img/[hash]-[name].[ext]"
+					name: "[hash]-[name].[ext]",
+					publicPath: "/img/",
+					outputPath: "img/",
 				}
 			}]
 		}]
