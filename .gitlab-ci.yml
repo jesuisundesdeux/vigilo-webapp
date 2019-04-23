@@ -1,6 +1,7 @@
 image: node:alpine
 variables:
   WEBPACK_MODE: production
+  PATH_PREFIX: "/vigilo-ui"
 pages:
   script:
     - npm install

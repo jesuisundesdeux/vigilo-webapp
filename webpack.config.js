@@ -33,7 +33,7 @@ module.exports = {
 				loader: 'file-loader',
 				options: {
 					name: "[hash]-[name].[ext]",
-					publicPath: "/img/",
+					publicPath: (process.env.PATH_PREFIX||'')+"/img/",
 					outputPath: "img/",
 				}
 			}]
