@@ -1,7 +1,8 @@
 function baseUrl(){
-    //return "https://vigilo.jesuisundesdeux.org";
-    return "https://dev-vigilo.alwaysdata.net"
+    return "https://vigilo.jesuisundesdeux.org";
+    //return "https://dev-vigilo.alwaysdata.net"
 };
+
 
 let requests_cache={};
 function request(options, nocache){

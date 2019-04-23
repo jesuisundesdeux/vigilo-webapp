@@ -23,45 +23,59 @@ import * as vigiloui from './vigilo-ui';
 
 // Init UI fonction
 (async function initUI() {
-	M.Tabs.init($("nav .tabs"));
-	M.Modal.init($("#modal-issue"));
-	M.Modal.init($("#modal-form"));
-	M.Datepicker.init($("#modal-form .datepicker"), {
-		container: 'body',
-		firstDay: 1,
-		format: 'dd mmm yyyy',
-		i18n: {
-			months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
-			monthsShort: ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
-			weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-			weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
-			weekdaysAbbrev: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S'],
-			cancel: "Annuler",
-
-		},
-		autoClose: true,
-		onSelect: () => {
-			M.Timepicker.getInstance($("#modal-form .timepicker")).open()
-		}
-	});
-	M.Timepicker.init($("#modal-form .timepicker"), {
-		container: 'body',
-		autoClose: true,
-		twelveHour: false,
-		i18n: {
-			'cancel': 'Annuler',
-			'done': 'ok'
-		},
-		onCloseEnd: () => {
-			$("#modal-form select").focus()
-		}
-	});
 	// Fill category select
 	var cats = await vigilo.getCategories();
 	for (var i in cats) {
-		$("#modal-form select").append(`<option value="${i}">${cats[i]}</option>`)
+		$("#issue-cat").append(`<option value="${i}">${cats[i]}</option>`)
 	}
-	M.FormSelect.init($("#modal-form select"))
+	
+	M.Tabs.init($("nav .tabs"));
+	M.Tabs.getInstance($("nav .tabs")[0]).options.onShow = function () { initMap() }
+	M.Modal.init($("#modal-issue"));
+	M.Modal.init($("#modal-form"));
+
+
+	const WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
+	
+	if (!WE_ARE_ON_A_MOBILE){
+		M.Datepicker.init($("#issue-date"), {
+			container: 'body',
+			firstDay: 1,
+			format: 'dd mmm yyyy',
+			i18n: {
+				months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+				monthsShort: ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+				weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+				weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
+				weekdaysAbbrev: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S'],
+				cancel: "Annuler",
+
+			},
+			autoClose: true,
+			onSelect: () => {
+				M.Timepicker.getInstance($("#issue-time")).open()
+			}
+		});
+		M.Timepicker.init($("#issue-time"), {
+			container: 'body',
+			autoClose: true,
+			twelveHour: false,
+			i18n: {
+				'cancel': 'Annuler',
+				'done': 'ok'
+			},
+			onCloseEnd: () => {
+				$("#issue-cat").focus()
+			}
+		});
+		M.FormSelect.init($("#issue-cat"))
+	} else {
+		$("#issue-cat").addClass('browser-default')
+		$("#issue-date").attr('type','date');
+		$("#issue-time").attr('type','time');
+	}
+	
+
 
 	// Preview picture
 	$("#modal-form input[type=file]").change(function () {
@@ -166,8 +180,6 @@ async function initMap() {
 	}
 
 }
-
-M.Tabs.getInstance($("nav .tabs")[0]).options.onShow = function () { initMap() }
 
 async function centerOnIssue(token) {
 	await initMap()
@@ -298,4 +310,5 @@ function addressFormat(address) {
 $("#modal-form form").submit((e)=>{
 	e.preventDefault()
 })
+
 
