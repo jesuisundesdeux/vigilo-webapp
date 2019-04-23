@@ -21,9 +21,13 @@
 .row {
     display: flex;
     flex-wrap: wrap;
-.col {
-    img {
-        max-width: 100%;
+    .col {
+        img {
+            max-width: 100%;
+        }
     }
 }
+
+.sidenav {
+    z-index: 1001;
 }

@@ -17,10 +17,8 @@
     <nav class="nav-extended">
       <div class="nav-wrapper">
         <a href="#" class="brand-logo center">Vǐgǐlo</a>
-        <!-- <a href="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a> -->
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <!--li><a href="sass.html">Sass</a></li-->
-        </ul>
+        <a href="#" data-target="mobile-menu" class="sidenav-trigger show-on-medium-and-up"><i
+            class="material-icons">menu</i></a>
       </div>
       <div class="nav-content">
         <ul class="tabs row">
@@ -30,9 +28,36 @@
       </div>
     </nav>
   </div>
-  <!--   <ul class="sidenav" id="mobile-menu">
-    <li><a href="sass.html">Sass</a></li>
-  </ul> -->
+  <ul class="sidenav" id="mobile-menu">
+    <li>
+      <div class="user-view">
+        <div class="background">
+          <img src="img/pistes-cyclables.jpeg">
+        </div>
+        <a href="#user"><img class="circle" src="img/vigilo.png"></a>
+        <a href="#email"><span class="white-text email">by Velocité Montpellier</span></a>
+      </div>
+    </li>
+    <li><a class="modal-trigger" href="#modal-zone"><i class="material-icons">settings</i>Zone géographique</a></li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <li><a class="waves-effect" target="_blank" href="http://www.jesuisundesdeux.org">#JeSuisUnDesDeux</a></li>
+  </ul>
+  </ul>
+
+  <!-- Modal for zone -->
+  <div id="modal-zone" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h5>Zone géographique</h5>
+      <div class="collection">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
+    </div>
+  </div>
+
 
   <div class="issues">
     <div id="issues-list" class="row">
@@ -101,7 +126,7 @@
               </div>
               <div class="col s12">
                 <div class="input-field">
-                  <input type="text" class="validate" id="issue-address"  required>
+                  <input type="text" class="validate" id="issue-address" required>
                   <label for="issue-address">Adresse</label>
                 </div>
               </div>
@@ -144,8 +169,8 @@
             </div>
           </div>
 
-          <div class="col s12">
-            <button class="btn waves-effect waves-light" type="submit" name="action">Soumettre
+          <div class="col s12 right-align">
+            <button class="btn-large waves-effect waves-light" type="submit" name="action">Soumettre
               <i class="material-icons right">send</i>
             </button>
           </div>

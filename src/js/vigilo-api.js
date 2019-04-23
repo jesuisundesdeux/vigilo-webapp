@@ -1,6 +1,7 @@
+import * as vigiloconfig from './vigilo-config';
+
 function baseUrl(){
-    return "https://vigilo.jesuisundesdeux.org";
-    //return "https://dev-vigilo.alwaysdata.net"
+    return vigiloconfig.getInstance().url
 };
 
 
