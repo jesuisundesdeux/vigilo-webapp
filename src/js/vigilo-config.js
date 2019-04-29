@@ -16,6 +16,9 @@ export const INSTANCES = [
     },
 ]
 
+var pkg= require('../../package.json');
+export const VERSION = pkg.name+"-"+pkg.version
+
 export function getInstance(){
     var instance = localStorage.getItem('vigilo-instance');
     if (instance == null){
@@ -24,7 +27,7 @@ export function getInstance(){
         return JSON.parse(instance)
     }
 }
-export function setInstance(name){
+function setInstance(name){
     for (var i in INSTANCES){
         if (INSTANCES[i].name == name){
             localStorage.setItem('vigilo-instance', JSON.stringify(INSTANCES[i]))
@@ -33,3 +36,5 @@ export function setInstance(name){
     }
     window.location.reload()
 }
+
+window.setInstance = setInstance;

@@ -8,35 +8,39 @@ window.$ = $;
 import M from 'materialize-css';
 
 // Fix import leaflet with webpack https://github.com/PaulLeCam/react-leaflet/issues/255
-/*delete L.Icon.Default.prototype._getIconUrl;
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
 	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
 	iconUrl: require('leaflet/dist/images/marker-icon.png'),
 	shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});*/
+});
 
 
 import * as vigilo from './vigilo-api';
-import * as vigiloui from './vigilo-ui';
 import * as vigiloconfig from './vigilo-config';
 import * as issuemap from './issue-map';
+import './issue-list';
 import './form';
+
+const WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
 
 // Init UI fonction
 (async function initUI() {
 	// Zone modal
-	var current_instance = vigiloconfig.getInstance()==null?'':vigiloconfig.getInstance().name;
+	var current_instance = vigiloconfig.getInstance() == null ? '' : vigiloconfig.getInstance().name;
 	for (var i in vigiloconfig.INSTANCES) {
 		$("#modal-zone .modal-content .collection").append(`<a href="#!" onclick="setInstance('${vigiloconfig.INSTANCES[i].name}')" class="collection-item${(vigiloconfig.INSTANCES[i].name == current_instance ? ' active' : '')}">${vigiloconfig.INSTANCES[i].name}</a>`)
 	}
+
 	M.Modal.init($("#modal-zone"));
 	if (vigiloconfig.getInstance() == null) {
 		M.Modal.getInstance($("#modal-zone")).open();
 		return
-	} else {
-
 	}
 
+	M.Tabs.init($("nav .tabs"));
+	M.Tabs.getInstance($("nav .tabs")).options.onShow = function () { issuemap.initMap() }
+	M.Sidenav.init($("#mobile-menu"));
 
 	// Fill category select
 	var cats = await vigilo.getCategories();
@@ -44,17 +48,10 @@ import './form';
 		$("#issue-cat").append(`<option value="${i}">${cats[i]}</option>`)
 	}
 
-	M.Tabs.init($("nav .tabs"));
-	M.Tabs.getInstance($("nav .tabs")).options.onShow = function () { issuemap.initMap() }
-	M.Sidenav.init($("#mobile-menu"));
-
 	M.Modal.init($("#modal-issue"));
 	M.Modal.init($("#modal-form"));
+	M.Modal.init($("#modal-form-loader"))
 
-
-
-
-	const WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
 
 	if (!WE_ARE_ON_A_MOBILE) {
 		M.Datepicker.init($("#issue-date"), {
@@ -71,7 +68,7 @@ import './form';
 
 			},
 			autoClose: true,
-			onSelect: () => {
+			onSelect: (date) => {
 				M.Timepicker.getInstance($("#issue-time")).open()
 			}
 		});
@@ -115,31 +112,9 @@ import './form';
 			displayIssues(10)
 		}
 	})
+
+
 	displayIssues(10)
 })()
 
 
-/**
- * Functions for issues list
- */
-let offset = 0;
-async function displayIssues(count) {
-	var issues = await vigilo.getIssues()
-	issues = issues.slice(offset, offset + count);
-	offset += issues.length;
-	issues.forEach((issue) => {
-		$(".issues .cards-container").append(vigiloui.issueCard(issue))
-	})
-}
-
-async function viewIssue(token) {
-	var modal = M.Modal.getInstance($("#modal-issue")[0]);
-	var issues = await vigilo.getIssues();
-	var issue = issues.filter(item => item.token == token)[0];
-	$("#modal-issue").empty().append(vigiloui.issueDetail(issue));
-	M.Materialbox.init($("#modal-issue .materialboxed"));
-	modal.open()
-}
-window.viewIssue = viewIssue
-
-window.setInstance = vigiloconfig.setInstance;

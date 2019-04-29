@@ -4,11 +4,24 @@ import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
 
+import * as vigilo from './vigilo-api';
+import * as vigiloconfig from './vigilo-config';
+
 window.startForm = function () {
+	clearForm()
 	var modal = M.Modal.getInstance($("#modal-form")[0]);
 	modal.open();
 	initFormMap();
 }
+
+function clearForm(){
+	$('#modal-form form').trigger("reset");
+	if (mapmarker !== undefined){
+		mapmarker.remove()
+	}
+	$("#modal-form-loader .determinate").css("width","10%");
+}
+
 var formmap, mapmarker;
 function initFormMap() {
 	if (formmap !== undefined) {
@@ -111,9 +124,71 @@ function setFormMapPoint(latlng, address) {
 }
 
 function addressFormat(address) {
-	return `${address.properties.address.road || ''}, ${address.properties.address.city}`
+	return `${address.properties.address.road || address.properties.address.pedestrian || address.properties.address.footway || ''}, ${address.properties.address.village || address.properties.address.town || address.properties.address.city}`
 }
 
 $("#modal-form form").submit((e)=>{
-	e.preventDefault()
+	if (vigiloconfig.getInstance().scope !=="develop"){
+		alert("La création n'est autorisée que sur l'environmment de développement.");
+		e.preventDefault()	
+		return;
+	}
+
+	var data={};
+	data.version = 1;//vigiloconfig.VERSION;
+	data.scope = vigiloconfig.getInstance().scope;
+	data.token = "abc";
+	data.coordinates_lat = mapmarker.getLatLng().lat;
+	data.coordinates_lon = mapmarker.getLatLng().lng;
+	data.comment = $("#issue-comment").val();
+	data.explanation = "";
+	data.categorie = parseInt($("#issue-cat").val());
+	data.address = $("#issue-address").val();
+	
+	if ($("#issue-date").prop("type") == "date"){
+		// Browser default (mobile devices)
+		data.time = new Date($("#issue-date").val());
+	} else {
+		// Materializecss picker
+		data.time = M.Datepicker.getInstance($("#issue-date")).date
+	}
+	
+	if ($("#issue-time").prop("type") == "time"){
+		// Browser default (mobile devices)
+		data.time.setHours($("#issue-time").val().split(":")[0])
+		data.time.setMinutes($("#issue-time").val().split(":")[1])
+	} else {
+		// Materializecss picker
+		data.time.setHours(M.Timepicker.getInstance($("#issue-time")).hours)
+		data.time.setMinutes(M.Timepicker.getInstance($("#issue-time")).minutes)
+	}
+
+	data.time = data.time.getTime()
+
+	var modalLoader = M.Modal.getInstance($("#modal-form-loader"))
+	modalLoader.open()
+
+	vigilo.createIssue(data)
+		.then((createResponse)=>{
+			if (createResponse.status != 0){
+				throw "error"
+			}
+
+			$("#modal-form-loader .determinate").css("width","50%");
+			
+			return vigilo.addImage(createResponse.token, createResponse.secretid, $("#modal-form input[type=file]").prop('files')[0])
+		})
+		.then(()=>{
+			$("#modal-form-loader .determinate").css("width","100%");
+			setTimeout(function(){
+				window.location.reload()
+			},1000)
+		})
+		.catch((e)=>{
+			$("#modal-form-loader")
+				.empty()
+				.append('<div class="card-panel teal red">Oups... erreur.<br>'+e+'</div>')
+		})
+
+	e.preventDefault();
 })
