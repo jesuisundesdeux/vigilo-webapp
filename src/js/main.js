@@ -7,6 +7,7 @@ import $ from 'jquery';
 window.$ = $;
 import M from 'materialize-css';
 
+
 // Fix import leaflet with webpack https://github.com/PaulLeCam/react-leaflet/issues/255
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -22,7 +23,7 @@ import * as issuemap from './issue-map';
 import './issue-list';
 import './form';
 
-const WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
+const WE_ARE_ON_A_MOBILE = true;//typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
 
 // Init UI fonction
 (async function initUI() {
@@ -91,21 +92,6 @@ const WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userA
 		$("#issue-time").attr('type', 'time');
 	}
 
-
-
-	// Preview picture
-	$("#modal-form input[type=file]").change(function () {
-		var input = this;
-		if (input.files && input.files[0]) {
-			var reader = new FileReader();
-
-			reader.onload = function (e) {
-				$('#picture-preview').attr('src', e.target.result);
-			}
-
-			reader.readAsDataURL(input.files[0]);
-		}
-	})
 
 	$(window).scroll(() => {
 		if (($(window.document.body).height() - $(window).height() - $(window).scrollTop()) < 10) {

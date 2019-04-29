@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
+import EXIF from 'exif-js';
 
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
@@ -14,13 +15,57 @@ window.startForm = function () {
 	initFormMap();
 }
 
-function clearForm(){
+function clearForm() {
 	$('#modal-form form').trigger("reset");
-	if (mapmarker !== undefined){
+	if (mapmarker !== undefined) {
 		mapmarker.remove()
 	}
-	$("#modal-form-loader .determinate").css("width","10%");
+	$("#modal-form-loader .determinate").css("width", "10%");
 }
+
+// Preview picture
+$("#modal-form input[type=file]").change(function () {
+	var input = this;
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+			// Preview
+			$('#picture-preview').attr('src', e.target.result);
+			// Read Exif
+			EXIF.getData(document.getElementById('picture-preview'),function(){
+				var tags = EXIF.getAllTags(this);
+				console.log(tags)
+				// GPS 
+				if (tags.GPSLatitude !== undefined && tags.GPSLongitude !== undefined){
+					var lon = (tags.GPSLongitude[0]+tags.GPSLongitude[1]/60+tags.GPSLongitude[2]/3600)*(tags.GPSLongitudeRef=="E"?1:-1);
+					var lat = (tags.GPSLatitude[0]+tags.GPSLatitude[1]/60+tags.GPSLatitude[2]/3600)*(tags.GPSLatitudeRef=="N"?1:-1);
+					setFormMapPoint([lat,lon])
+				}
+				
+				
+				if (tags.GPSDateStamp !== undefined && tags.GPSTimeStamp !== undefined){
+					// GPS DateTime
+					var date = new Date(tags.GPSDateStamp.split(':').join('-'))
+					date.setUTCHours(tags.GPSTimeStamp[0])
+					date.setUTCMinutes(tags.GPSTimeStamp[1])
+					setDate(date)
+					setTime(date.getHours(), date.getMinutes())
+				} else if (tags.DateTime !== undefined){
+					// Finaly datetime
+					var date = new Date(tags.DateTime.split(" ")[0].split(":").join("-"))
+					date.setHours(tags.DateTime.split(" ")[1].split(":")[0])
+					date.setMinutes(tags.DateTime.split(" ")[1].split(":")[1])
+					setDate(date)
+					setTime(date.getHours(), date.getMinutes())
+				}
+				
+				// Rotation
+				
+			})
+		}
+		reader.readAsDataURL(input.files[0]);
+	}
+})
 
 var formmap, mapmarker;
 function initFormMap() {
@@ -35,7 +80,7 @@ function initFormMap() {
 		}
 	}).setView([43.605413, 3.879568], 11);
 
-	
+
 
 	var baseLayers = {
 		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
@@ -79,9 +124,9 @@ function initFormMap() {
 		position: 'topright',
 		defaultMarkGeocode: false
 	})
-	.on('markgeocode', function (e) {
-		setFormMapPoint(e.geocode.center, e.geocode)
-	}).addTo(formmap)
+		.on('markgeocode', function (e) {
+			setFormMapPoint(e.geocode.center, e.geocode)
+		}).addTo(formmap)
 
 	L.control.locate({
 		locateOptions: {
@@ -97,8 +142,8 @@ function initFormMap() {
 	// We use materialcss iconw instead of fontawesome
 	$("i.location_searching").append('location_searching')
 
-	$("#issue-address").change(()=>{
-		if (mapmarker.getLatLng().lat == 0 && mapmarker.getLatLng().lng == 0){
+	$("#issue-address").change(() => {
+		if (mapmarker.getLatLng().lat == 0 && mapmarker.getLatLng().lng == 0) {
 			formmap.geocoderCtrl._input.value = $("#issue-address").val()
 			formmap.geocoderCtrl._geocode()
 		}
@@ -115,7 +160,7 @@ function setFormMapPoint(latlng, address) {
 		M.updateTextFields();
 	} else {
 		//Reversegeocoding
-		formmap.geocoderCtrl.options.geocoder.reverse(latlng, 1, function (result) {
+		formmap.geocoderCtrl.options.geocoder.reverse(mapmarker.getLatLng(), 1, function (result) {
 			if (result.length > 0) {
 				$("#issue-address").val(addressFormat(result[0]))
 				M.updateTextFields();
@@ -128,14 +173,57 @@ function addressFormat(address) {
 	return `${address.properties.address.road || address.properties.address.pedestrian || address.properties.address.footway || ''}, ${address.properties.address.village || address.properties.address.town || address.properties.address.city}`
 }
 
-$("#modal-form form").submit((e)=>{
-	if (vigiloconfig.getInstance().scope !=="develop"){
+function getDate(){
+	if ($("#issue-date").prop("type") == "date") {
+		// Browser default (mobile devices)
+		return new Date($("#issue-date").val());
+	} else {
+		// Materializecss picker
+		return data.time = M.Datepicker.getInstance($("#issue-date")).date;
+	}
+}
+function getTime(){
+	if ($("#issue-time").prop("type") == "time") {
+		// Browser default (mobile devices)
+		return $("#issue-time").val().split(":");
+	} else {
+		// Materializecss picker
+		return [M.Timepicker.getInstance($("#issue-time")).hours,
+			M.Timepicker.getInstance($("#issue-time")).minutes]
+	}
+
+}
+function setDate(date){
+	if ($("#issue-date").prop("type") == "date") {
+		// Browser default (mobile devices)
+		$("#issue-date").val(date.getFullYear()+"-"+String("0"+(date.getMonth()+1)).slice(-2)+"-"+date.getDate());
+	} else {
+		// Materializecss picker
+		M.Datepicker.getInstance($("#issue-date")).setDate(date, true);
+		M.Datepicker.getInstance($("#issue-date")).setInputValue();
+	}
+	
+}
+function setTime(hours, minutes){
+	if ($("#issue-time").prop("type") == "time") {
+		// Browser default (mobile devices)
+		$("#issue-time").val(hours+":"+minutes);
+	} else {
+		// Materializecss picker
+		M.Timepicker.getInstance($("#issue-time")).hours = hours;
+		M.Timepicker.getInstance($("#issue-time")).minutes = minutes;
+		M.Timepicker.getInstance($("#issue-time")).done()
+	}
+}
+
+$("#modal-form form").submit((e) => {
+	if (vigiloconfig.getInstance().scope !== "develop") {
 		alert("La création n'est autorisée que sur l'environmment de développement.");
-		e.preventDefault()	
+		e.preventDefault()
 		return;
 	}
 
-	var data={};
+	var data = {};
 	data.version = 1;//vigiloconfig.VERSION;
 	data.scope = vigiloconfig.getInstance().scope;
 	data.token = "abc";
@@ -145,50 +233,36 @@ $("#modal-form form").submit((e)=>{
 	data.explanation = "";
 	data.categorie = parseInt($("#issue-cat").val());
 	data.address = $("#issue-address").val();
-	
-	if ($("#issue-date").prop("type") == "date"){
-		// Browser default (mobile devices)
-		data.time = new Date($("#issue-date").val());
-	} else {
-		// Materializecss picker
-		data.time = M.Datepicker.getInstance($("#issue-date")).date
-	}
-	
-	if ($("#issue-time").prop("type") == "time"){
-		// Browser default (mobile devices)
-		data.time.setHours($("#issue-time").val().split(":")[0])
-		data.time.setMinutes($("#issue-time").val().split(":")[1])
-	} else {
-		// Materializecss picker
-		data.time.setHours(M.Timepicker.getInstance($("#issue-time")).hours)
-		data.time.setMinutes(M.Timepicker.getInstance($("#issue-time")).minutes)
-	}
 
+	data.time = getDate()
+	var time = getTime()
+	data.time.setHours(time[0])
+	data.time.setMinutes(time[1])
 	data.time = data.time.getTime()
 
 	var modalLoader = M.Modal.getInstance($("#modal-form-loader"))
 	modalLoader.open()
 
 	vigilo.createIssue(data)
-		.then((createResponse)=>{
-			if (createResponse.status != 0){
+		.then((createResponse) => {
+			if (createResponse.status != 0) {
 				throw "error"
 			}
 
-			$("#modal-form-loader .determinate").css("width","50%");
-			
+			$("#modal-form-loader .determinate").css("width", "50%");
+
 			return vigilo.addImage(createResponse.token, createResponse.secretid, $("#modal-form input[type=file]").prop('files')[0])
 		})
-		.then(()=>{
-			$("#modal-form-loader .determinate").css("width","100%");
-			setTimeout(function(){
+		.then(() => {
+			$("#modal-form-loader .determinate").css("width", "100%");
+			setTimeout(function () {
 				window.location.reload()
-			},1000)
+			}, 1000)
 		})
-		.catch((e)=>{
+		.catch((e) => {
 			$("#modal-form-loader")
 				.empty()
-				.append('<div class="card-panel teal red">Oups... erreur.<br>'+e+'</div>')
+				.append('<div class="card-panel teal red">Oups... erreur.<br>' + e + '</div>')
 		})
 
 	e.preventDefault();

@@ -40,23 +40,23 @@ export function issueDetail(issue){
             </div>
         </div>
         <div class="col s12 m12 l8 xl9">
-            <p><strong>Référence de suivi :</strong></p>
+            <p><b>Référence de suivi :</b></p>
             <h4 class="center-align">${issue.token}</h4>
             <p>
-                <strong>Catégorie :</strong><br>
+                <b>Catégorie :</b><br>
                 ${issue.categorie_str}
             </p>
             <p>
-                <strong>Date :</strong><br>
+                <b>Date :</b><br>
                 ${issue.date_obj.toLocaleString()}
             </p>
             <p>
-                <strong>Remarque :</strong><br>
+                <b>Remarque :</b><br>
                 ${issue.comment}
                 <br><blockquote>${issue.explanation}</blockquote>
             </p>
             <p>
-                <strong>Localisation :</strong><br>
+                <b>Localisation :</b><br>
                 ${issue.address}
             </p>
         </div>
