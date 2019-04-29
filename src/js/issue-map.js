@@ -19,6 +19,13 @@ export async function initMap() {
 
 
 	var baseLayers = {
+		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+			subdomains: 'abcd',
+			minZoom: 0,
+			maxZoom: 20,
+			ext: 'png'
+		}).addTo(issuesmap),
 		"Photos": L.tileLayer(
 			"https://wxs.ign.fr/choisirgeoportail/geoportail/wmts?" +
 			"&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
@@ -35,18 +42,11 @@ export async function initMap() {
 				attribution: '<a href="http://www.ign.fr">IGN-F/Geoportail</a>',
 				tileSize: 256
 			}
-		).addTo(issuesmap),
-		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
-			subdomains: 'abcd',
-			minZoom: 0,
-			maxZoom: 20,
-			ext: 'png'
-		}).addTo(issuesmap),
+		),
 	};
-	
+
 	L.control.layers(baseLayers, {}).addTo(issuesmap);
-	
+
 
 	// Create layer and fill
 	issueslayer = L.featureGroup([])
@@ -56,10 +56,10 @@ export async function initMap() {
 
 	for (var i in issues) {
 		issueslayer.addLayer(L.circleMarker([issues[i].lat_float, issues[i].lon_float], { issue: issues[i] }));
-    }
-    
+	}
 
-    issuesmap.fitBounds(issueslayer.getBounds())
+
+	issuesmap.fitBounds(issueslayer.getBounds())
 
 }
 

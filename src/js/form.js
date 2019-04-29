@@ -35,8 +35,16 @@ function initFormMap() {
 		}
 	}).setView([43.605413, 3.879568], 11);
 
+	
 
 	var baseLayers = {
+		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+			subdomains: 'abcd',
+			minZoom: 0,
+			maxZoom: 20,
+			ext: 'png'
+		}).addTo(formmap),
 		"Photos": L.tileLayer(
 			"https://wxs.ign.fr/choisirgeoportail/geoportail/wmts?" +
 			"&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
@@ -53,14 +61,7 @@ function initFormMap() {
 				attribution: '<a href="http://www.ign.fr">IGN-F/Geoportail</a>',
 				tileSize: 256
 			}
-		).addTo(formmap),
-		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
-			subdomains: 'abcd',
-			minZoom: 0,
-			maxZoom: 20,
-			ext: 'png'
-		}).addTo(formmap),
+		),
 	};
 
 	L.control.layers(baseLayers, {}).addTo(formmap);
