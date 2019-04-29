@@ -23,7 +23,7 @@ import * as issuemap from './issue-map';
 import './issue-list';
 import './form';
 
-const WE_ARE_ON_A_MOBILE = true;//typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
+const WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
 
 // Init UI fonction
 (async function initUI() {
