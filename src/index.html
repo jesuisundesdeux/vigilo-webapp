@@ -90,9 +90,10 @@
 
   <!-- Modal for form -->
   <div id="modal-form" class="modal modal-fixed-footer fullscreen">
+      <form action="#" method="POST">
     <div class="modal-content">
       <h3>Nouvelle observation</h3>
-      <form action="#" method="POST">
+      
         <div class="row">
 
           <!-- Picture -->
@@ -169,20 +170,18 @@
             </div>
           </div>
 
-          <div class="col s12 right-align">
-            <button class="btn-large waves-effect waves-light" type="submit" name="action">Soumettre
-              <i class="material-icons right">send</i>
-            </button>
-          </div>
-
         </div>
 
 
-      </form>
+      
     </div>
     <div class="modal-footer">
+        <button class="btn waves-effect waves-light" type="submit" name="action">Soumettre
+            <i class="material-icons right">send</i>
+          </button>
       <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
     </div>
+  </form>
   </div>
 
   <!-- Modal for issue upload -->
