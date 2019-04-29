@@ -79,7 +79,7 @@ export function getIssues(options) {
                             item.categorie_str = cats[item.categorie]
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token
-                            item.img = baseUrl() + "/generate_panel.php?s=400&token=" + item.token
+                            item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token
                             item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
                             return item
                         }))

@@ -2,11 +2,11 @@ export function issueCard(issue){
     return `
     <div class="col s12 m12 l6 xl4">
         <div class="card horizontal">
-            <div class="card-image">
+            <div class="card-image" onclick="viewIssue('${issue.token}')">
                 <img src="${issue.img_thumb}">
             </div>
             <div class="card-stacked">
-                <div class="card-content">
+                <div class="card-content" onclick="viewIssue('${issue.token}')">
                     <span class="card-title"></span>
                     <h5>${issue.categorie_str}</h5>
                     <p class="grey-text">${issue.address}</p>
