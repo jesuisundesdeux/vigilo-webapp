@@ -3,7 +3,7 @@ import L from 'leaflet';
 import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
-import EXIF from 'exif-js';
+import piexif from 'piexifjs';
 
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
@@ -32,36 +32,49 @@ $("#modal-form input[type=file]").change(function () {
 			// Preview
 			$('#picture-preview').attr('src', e.target.result);
 			// Read Exif
-			EXIF.getData(document.getElementById('picture-preview'),function(){
-				var tags = EXIF.getAllTags(this);
-				console.log(tags)
-				// GPS 
-				if (tags.GPSLatitude !== undefined && tags.GPSLongitude !== undefined){
-					var lon = (tags.GPSLongitude[0]+tags.GPSLongitude[1]/60+tags.GPSLongitude[2]/3600)*(tags.GPSLongitudeRef=="E"?1:-1);
-					var lat = (tags.GPSLatitude[0]+tags.GPSLatitude[1]/60+tags.GPSLatitude[2]/3600)*(tags.GPSLatitudeRef=="N"?1:-1);
-					setFormMapPoint([lat,lon])
-				}
-				
-				
-				if (tags.GPSDateStamp !== undefined && tags.GPSTimeStamp !== undefined){
-					// GPS DateTime
-					var date = new Date(tags.GPSDateStamp.split(':').join('-'))
-					date.setUTCHours(tags.GPSTimeStamp[0])
-					date.setUTCMinutes(tags.GPSTimeStamp[1])
-					setDate(date)
-					setTime(date.getHours(), date.getMinutes())
-				} else if (tags.DateTime !== undefined){
-					// Finaly datetime
-					var date = new Date(tags.DateTime.split(" ")[0].split(":").join("-"))
-					date.setHours(tags.DateTime.split(" ")[1].split(":")[0])
-					date.setMinutes(tags.DateTime.split(" ")[1].split(":")[1])
-					setDate(date)
-					setTime(date.getHours(), date.getMinutes())
-				}
-				
-				// Rotation
-				
-			})
+			var located = false
+			var timestamp = false;
+			var exifObj = piexif.load(e.target.result);
+			if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined){
+				// Position
+				var lat = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLatitude], exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef])
+				var lon = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLongitude], exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef])
+				setFormMapPoint([lat,lon])
+				// Date
+				var date = new Date(exifObj.GPS[piexif.GPSIFD.GPSDateStamp].split(':').join('-'));
+				// Time
+				var hours = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][0]/exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][1];
+				var minutes = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][0]/exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][1];
+				date.setUTCHours(hours)
+				date.setUTCMinutes(minutes)
+				setDate(date)
+				setTime(date.getHours(), date.getMinutes())
+				located = true;
+				timestamp = true;
+			} else if (exifObj['0th'] !== undefined && exifObj['0th'][piexif.ImageIFD.DateTime] !== undefined) {
+				var datetime = exifObj['0th'][piexif.ImageIFD.DateTime]
+				var date = new Date(datetime.split(" ")[0].split(":").join("-"))
+				date.setHours(datetime.split(" ")[1].split(":")[0])
+				date.setMinutes(datetime.split(" ")[1].split(":")[1])
+				setDate(date)
+				setTime(date.getHours(), date.getMinutes())
+				timestamp = true;
+			}
+
+			if (!located){
+				// geolocate and add point
+				formmap.locate();
+			}
+
+			if (!timestamp){
+				// Use current time
+				var now = new Date();
+				setDate(now)
+				setTime(now.getHours(), now.getMinutes())
+			}
+
+			// Rotation
+
 		}
 		reader.readAsDataURL(input.files[0]);
 	}
@@ -118,7 +131,7 @@ function initFormMap() {
 		setFormMapPoint(mapmarker.getLatLng())
 	})
 
-	formmap.on('click', (e) => { setFormMapPoint(e.latlng) })
+	formmap.on('click locationfound', (e) => { setFormMapPoint(e.latlng) })
 
 	formmap.geocoderCtrl = L.Control.geocoder({
 		position: 'topright',
@@ -173,7 +186,7 @@ function addressFormat(address) {
 	return `${address.properties.address.road || address.properties.address.pedestrian || address.properties.address.footway || ''}, ${address.properties.address.village || address.properties.address.town || address.properties.address.city}`
 }
 
-function getDate(){
+function getDate() {
 	if ($("#issue-date").prop("type") == "date") {
 		// Browser default (mobile devices)
 		return new Date($("#issue-date").val());
@@ -182,32 +195,32 @@ function getDate(){
 		return data.time = M.Datepicker.getInstance($("#issue-date")).date;
 	}
 }
-function getTime(){
+function getTime() {
 	if ($("#issue-time").prop("type") == "time") {
 		// Browser default (mobile devices)
 		return $("#issue-time").val().split(":");
 	} else {
 		// Materializecss picker
 		return [M.Timepicker.getInstance($("#issue-time")).hours,
-			M.Timepicker.getInstance($("#issue-time")).minutes]
+		M.Timepicker.getInstance($("#issue-time")).minutes]
 	}
 
 }
-function setDate(date){
+function setDate(date) {
 	if ($("#issue-date").prop("type") == "date") {
 		// Browser default (mobile devices)
-		$("#issue-date").val(date.getFullYear()+"-"+String("0"+(date.getMonth()+1)).slice(-2)+"-"+date.getDate());
+		$("#issue-date").val(date.getFullYear() + "-" + String("0" + (date.getMonth() + 1)).slice(-2) + "-" + date.getDate());
 	} else {
 		// Materializecss picker
 		M.Datepicker.getInstance($("#issue-date")).setDate(date, true);
 		M.Datepicker.getInstance($("#issue-date")).setInputValue();
 	}
-	
+
 }
-function setTime(hours, minutes){
+function setTime(hours, minutes) {
 	if ($("#issue-time").prop("type") == "time") {
 		// Browser default (mobile devices)
-		$("#issue-time").val(hours+":"+minutes);
+		$("#issue-time").val(hours + ":" + minutes);
 	} else {
 		// Materializecss picker
 		M.Timepicker.getInstance($("#issue-time")).hours = hours;

@@ -27,12 +27,12 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
-    "exif-js": "^2.3.0",
     "jquery": "^3.4.0",
     "leaflet": "^1.4.0",
     "leaflet-control-geocoder": "^1.7.0",
     "leaflet.fullscreen": "^1.4.5",
     "leaflet.locatecontrol": "^0.66.2",
-    "materialize-css": "^1.0.0-rc.2"
+    "materialize-css": "^1.0.0-rc.2",
+    "piexifjs": "^1.0.4"
   }
 }
