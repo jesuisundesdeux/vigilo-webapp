@@ -38,6 +38,8 @@ const WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userA
 		M.Modal.getInstance($("#modal-zone")).open();
 		return
 	}
+	$("title").append(" "+ vigiloconfig.getInstance().name)
+	$("nav .brand-logo").append(" "+ vigiloconfig.getInstance().name)
 
 	M.Tabs.init($("nav .tabs"));
 	M.Tabs.getInstance($("nav .tabs")).options.onShow = function () { issuemap.initMap() }
