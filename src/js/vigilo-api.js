@@ -15,7 +15,7 @@ function request(options, nocache) {
     }
     options.method = options.method || "GET";
     options.headers = options.headers || {};
-    options.url = "https://cors-anywhere.herokuapp.com/" + options.url;
+    //options.url = "https://cors-anywhere.herokuapp.com/" + options.url;
 
     if (options.headers["Content-Type"] == CONTENT_TYPE_X_WWW_FORM_URLENCODED && typeof (options.body) != typeof ("")) {
         options.body = Object.entries(options.body).map(x => x[0] + "=" + encodeURIComponent(x[1])).join("&")
@@ -130,18 +130,14 @@ export function createIssue(data) {
 }
 
 export function addImage(token, secretId, data) {
+    var options = {
+        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId,
+        method: "POST",
+        headers: {
+            "Content-Type": CONTENT_TYPE_JPEG
+        },
+        body: data
 
-
-        var options = {
-            url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId,
-            method: "POST",
-            headers: {
-                "Content-Type": CONTENT_TYPE_JPEG
-            },
-            body: data
-    
-        }
-    
-        return request(options)
-
+    }
+    return request(options)
 }

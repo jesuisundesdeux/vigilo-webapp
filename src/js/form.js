@@ -23,7 +23,9 @@ function clearForm() {
 	$("#modal-form-loader .determinate").css("width", "10%");
 }
 
-// Preview picture
+/**
+ * On file change, load image, read date, time and position and generate a rotated image
+ */
 $("#modal-form input[type=file]").change(function () {
 	var input = this;
 	if (input.files && input.files[0]) {
@@ -35,6 +37,7 @@ $("#modal-form input[type=file]").change(function () {
 			var timestamp = false;
 			var exifObj = piexif.load(e.target.result);
 			if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined) {
+				// GPS available : position, date & time
 				// Position
 				var lat = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLatitude], exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef])
 				var lon = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLongitude], exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef])
@@ -51,6 +54,7 @@ $("#modal-form input[type=file]").change(function () {
 				located = true;
 				timestamp = true;
 			} else if (exifObj['0th'] !== undefined && exifObj['0th'][piexif.ImageIFD.DateTime] !== undefined) {
+				// No GPS : date & time ?
 				var datetime = exifObj['0th'][piexif.ImageIFD.DateTime]
 				var date = new Date(datetime.split(" ")[0].split(":").join("-"))
 				date.setHours(datetime.split(" ")[1].split(":")[0])
@@ -226,6 +230,9 @@ function initFormMap() {
 		}
 	});
 }
+
+
+
 function setFormMapPoint(latlng, address) {
 	if (formmap === undefined) {
 		return
@@ -293,6 +300,10 @@ function setTime(hours, minutes) {
 	}
 }
 
+
+/**
+ * On submit, prepare data and send
+ */
 $("#modal-form form").submit((e) => {
 	if (vigiloconfig.getInstance().scope !== "develop") {
 		alert("La création n'est autorisée que sur l'environmment de développement.");
