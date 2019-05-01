@@ -29,22 +29,21 @@ $("#modal-form input[type=file]").change(function () {
 	if (input.files && input.files[0]) {
 		var reader = new FileReader();
 		reader.onload = function (e) {
-			// Preview
-			$('#picture-preview').attr('src', e.target.result);
+
 			// Read Exif
 			var located = false
 			var timestamp = false;
 			var exifObj = piexif.load(e.target.result);
-			if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined){
+			if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined) {
 				// Position
 				var lat = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLatitude], exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef])
 				var lon = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLongitude], exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef])
-				setFormMapPoint([lat,lon])
+				setFormMapPoint([lat, lon])
 				// Date
 				var date = new Date(exifObj.GPS[piexif.GPSIFD.GPSDateStamp].split(':').join('-'));
 				// Time
-				var hours = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][0]/exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][1];
-				var minutes = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][0]/exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][1];
+				var hours = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][1];
+				var minutes = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][1];
 				date.setUTCHours(hours)
 				date.setUTCMinutes(minutes)
 				setDate(date)
@@ -61,12 +60,12 @@ $("#modal-form input[type=file]").change(function () {
 				timestamp = true;
 			}
 
-			if (!located){
+			if (!located) {
 				// geolocate and add point
 				formmap.locate();
 			}
 
-			if (!timestamp){
+			if (!timestamp) {
 				// Use current time
 				var now = new Date();
 				setDate(now)
@@ -74,6 +73,71 @@ $("#modal-form input[type=file]").change(function () {
 			}
 
 			// Rotation
+			var image = new Image();
+			image.onload = function () {
+				var orientation = 0;
+				if (exifObj["0th"] !== undefined && exifObj["0th"][piexif.ImageIFD.Orientation] !== undefined) {
+					orientation = exifObj["0th"][piexif.ImageIFD.Orientation];
+				}
+
+				var canvas = document.createElement("canvas");
+				canvas.width = image.width;
+				canvas.height = image.height;
+				var ctx = canvas.getContext("2d");
+				var x = 0;
+				var y = 0;
+				ctx.save();
+				if (orientation == 2) {
+					x = -canvas.width;
+					ctx.scale(-1, 1);
+				} else if (orientation == 3) {
+					x = -canvas.width;
+					y = -canvas.height;
+					ctx.scale(-1, -1);
+				} else if (orientation == 3) {
+					x = -canvas.width;
+					y = -canvas.height;
+					ctx.scale(-1, -1);
+				} else if (orientation == 4) {
+					y = -canvas.height;
+					ctx.scale(1, -1);
+				} else if (orientation == 5) {
+					canvas.width = image.height;
+					canvas.height = image.width;
+					ctx.translate(canvas.width, canvas.height / canvas.width);
+					ctx.rotate(Math.PI / 2);
+					y = -canvas.width;
+					ctx.scale(1, -1);
+				} else if (orientation == 6) {
+					canvas.width = image.height;
+					canvas.height = image.width;
+					ctx.translate(canvas.width, canvas.height / canvas.width);
+					ctx.rotate(Math.PI / 2);
+				} else if (orientation == 7) {
+					canvas.width = image.height;
+					canvas.height = image.width;
+					ctx.translate(canvas.width, canvas.height / canvas.width);
+					ctx.rotate(Math.PI / 2);
+					x = -canvas.height;
+					ctx.scale(-1, 1);
+				} else if (orientation == 8) {
+					canvas.width = image.height;
+					canvas.height = image.width;
+					ctx.translate(canvas.width, canvas.height / canvas.width);
+					ctx.rotate(Math.PI / 2);
+					x = -canvas.height;
+					y = -canvas.width;
+					ctx.scale(-1, -1);
+				}
+				ctx.drawImage(image, x, y);
+				ctx.restore();
+
+
+				$("#picture-preview").empty().append(canvas);
+
+
+			}
+			image.src = e.target.result;
 
 		}
 		reader.readAsDataURL(input.files[0]);
@@ -192,7 +256,7 @@ function getDate() {
 		return new Date($("#issue-date").val());
 	} else {
 		// Materializecss picker
-		return data.time = M.Datepicker.getInstance($("#issue-date")).date;
+		return M.Datepicker.getInstance($("#issue-date")).date;
 	}
 }
 function getTime() {
@@ -263,8 +327,14 @@ $("#modal-form form").submit((e) => {
 			}
 
 			$("#modal-form-loader .determinate").css("width", "50%");
-
-			return vigilo.addImage(createResponse.token, createResponse.secretid, $("#modal-form input[type=file]").prop('files')[0])
+			var dataURL = $("#picture-preview canvas")[0].toDataURL("image/jpeg", 1.0);
+			var jpegBinary = atob(dataURL.split(",")[1]);
+			var array = [];
+    		for (var p=0; p<jpegBinary.length; p++) {
+        		array[p] = jpegBinary.charCodeAt(p);
+    		}
+    		var u8array = new Uint8Array(array);
+			return vigilo.addImage(createResponse.token, createResponse.secretid, u8array.buffer)
 		})
 		.then(() => {
 			$("#modal-form-loader .determinate").css("width", "100%");

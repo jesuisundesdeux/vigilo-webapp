@@ -129,25 +129,8 @@ export function createIssue(data) {
     return request(options)
 }
 
-function readImage(file){
-    return new Promise(function(resolve, reject){
-        var reader = new FileReader();
-        reader.onload = function(e){
-            resolve(e.target.result);
-        };
-        reader.onabort = function(e){
-            reject(e)
-        };
-        reader.onerror = function(e){
-            reject(e)
-        };
-        reader.readAsArrayBuffer(file);
-    });
-}
+export function addImage(token, secretId, data) {
 
-export function addImage(token, secretId, imagefile) {
-    return readImage(imagefile)
-    .then((data)=>{
 
         var options = {
             url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId,
@@ -160,5 +143,5 @@ export function addImage(token, secretId, imagefile) {
         }
     
         return request(options)
-    })
+
 }
