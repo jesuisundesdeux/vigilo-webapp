@@ -281,7 +281,7 @@ function getTime() {
 function setDate(date) {
 	if ($("#issue-date").prop("type") == "date") {
 		// Browser default (mobile devices)
-		$("#issue-date").val(date.getFullYear() + "-" + String("0" + (date.getMonth() + 1)).slice(-2) + "-" + date.getDate());
+		$("#issue-date").val(date.getFullYear() + "-" + String("0" + (date.getMonth() + 1)).slice(-2) + "-" + String("0" + (date.getDate())).slice(-2));
 	} else {
 		// Materializecss picker
 		M.Datepicker.getInstance($("#issue-date")).setDate(date, true);
