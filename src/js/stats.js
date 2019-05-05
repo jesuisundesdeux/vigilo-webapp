@@ -16,11 +16,11 @@ export async function init() {
 const CATAGORIES = {
     "Véhicule ou objet gênant": { stack: "Cohabitation", color: "crimson" },
     "Incivilité récurrente sur la route": { stack: "Cohabitation", color: "lightcoral" },
-    "Aménagement mal conçu": { stack: "Infrastructures", color: "seagreen" },
     "Défaut d'entretien": { stack: "Infrastructures", color: "darkgreen" },
+    "Aménagement mal conçu": { stack: "Infrastructures", color: "seagreen" },
+    "Signalisation, marquage": { stack: "Infrastructures", color: "yellowgreen" },
     "Absence d'arceaux de stationnement": { stack: "Infrastructures", color: "turquoise" },
-    "Signalisation, marquage": { stack: "Infrastructures", color: "olive" },
-    "Absence d'aménagement": { stack: "Infrastructures", color: "cyan" },
+    "Absence d'aménagement": { stack: "Infrastructures", color: "paleturquoise" },
     "Accident, chute, incident": { stack: "Autre", color: "black" },
     "Autre": { stack: "Autre", color: "grey" },
 }
