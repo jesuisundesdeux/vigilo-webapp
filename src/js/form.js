@@ -319,7 +319,7 @@ $("#modal-form form").submit((e) => {
 	data.coordinates_lat = mapmarker.getLatLng().lat;
 	data.coordinates_lon = mapmarker.getLatLng().lng;
 	data.comment = $("#issue-comment").val();
-	data.explanation = "";
+	data.explanation = $("#issue-explanation").val();
 	data.categorie = parseInt($("#issue-cat").val());
 	data.address = $("#issue-address").val();
 

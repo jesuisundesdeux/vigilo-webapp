@@ -96,12 +96,18 @@
       </div>
       <hr>
       <div class="row" id="stats-last30days">
-        <div class="col s12 l4 white center-align"><h2>...</h2><h6>signalements ces 30 derniers jours</h6></div>
+        <div class="col s12 l4 white center-align">
+          <h2>...</h2>
+          <h6>signalements ces 30 derniers jours</h6>
+        </div>
         <div class="col s12 l8 white"><canvas></canvas></div>
       </div>
       <hr>
       <div class="row" id="stats-bycats">
-        <div class="col s12 l4 white center-align"><h2>...</h2><h6>signalements reçus</h6></div>
+        <div class="col s12 l4 white center-align">
+          <h2>...</h2>
+          <h6>signalements reçus</h6>
+        </div>
         <div class="col s12 l8 white"><canvas></canvas></div>
       </div>
       <hr>
@@ -188,7 +194,11 @@
             <div class="card-panel row">
               <div class="input-field col s12">
                 <input id="issue-comment" type="text" class="validate">
-                <label for="issue-comment">Remarque</label>
+                <label for="issue-comment">Description courte</label>
+              </div>
+              <div class="input-field col s12">
+                <textarea id="issue-explanation" class="materialize-textarea"></textarea>
+                <label for="issue-explanation">Commentaires</label>
               </div>
             </div>
           </div>
