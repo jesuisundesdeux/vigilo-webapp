@@ -7,10 +7,6 @@ Chart.defaults.global.maintainAspectRatio = false;
 export async function init() {
     var data = await vigilo.getIssues();
     makeStats(data);
-
-    $("#stats canvas").on('click touch', (e) => {
-        $(e.target).parent()[0].requestFullscreen()
-    })
 }
 
 const CATAGORIES = {
