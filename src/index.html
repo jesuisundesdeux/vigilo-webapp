@@ -38,7 +38,7 @@
     <li>
       <ul class="tabs row">
         <li class="tab col s12"><a class="active" href="#issues"><i class="material-icons">directions_bike</i>Les
-            remontées</a></li>
+            signalements</a></li>
         <li class="tab col s12"><a class="" href="#stats"><i class="material-icons">pie_chart</i>Statistiques</a></li>
         <li class="tab col s12"><a class="modal-trigger" href="#modal-zone"><i class="material-icons">settings</i>Zone
             géographique</a></li>
@@ -88,9 +88,14 @@
           <div class="rect5"></div>
         </div>
       </div>
+      <div class="fixed-action-btn">
+        <a class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
+          <i class="large material-icons">add</i>
+        </a>
+      </div>
     </div>
     <div id="stats" class="container">
-     
+
       <div class="row" id="stats-last30days">
         <div class="col s12 l4 white center-align">
           <h2>...</h2>
@@ -223,11 +228,7 @@
     </div>
   </div>
 
-  <div class="fixed-action-btn">
-    <a class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
-      <i class="large material-icons">add</i>
-    </a>
-  </div>
+
 
   <script src="js/main.js"></script>
 </body>
