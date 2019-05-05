@@ -415,6 +415,6 @@ export async function init() {
 		}
 
 	} catch (e) {
-		$(".issues .cards-container").empty().append(vigiloui.errorCard(e));
+		$("#issues .cards-container").empty().append(vigiloui.errorCard(e));
 	}
 }

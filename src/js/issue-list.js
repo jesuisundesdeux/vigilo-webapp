@@ -10,10 +10,10 @@ async function displayIssues(count) {
 		issues = issues.slice(offset, offset + count);
 		offset += issues.length;
 		issues.forEach((issue) => {
-			$(".issues .cards-container").append(vigiloui.issueCard(issue))
+			$("#issues .cards-container").append(vigiloui.issueCard(issue))
 		})
 	} catch (e) {
-		$(".issues").empty().append(vigiloui.errorCard(e));
+		$("#issues").empty().append(vigiloui.errorCard(e));
 	}
 
 }

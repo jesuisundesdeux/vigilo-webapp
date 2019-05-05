@@ -37,9 +37,11 @@
     </li>
     <li>
       <ul class="tabs row">
-        <li class="tab col s12"><a class="active" href="#issues"><i class="material-icons">directions_bike</i>Les remontées</a></li>
+        <li class="tab col s12"><a class="active" href="#issues"><i class="material-icons">directions_bike</i>Les
+            remontées</a></li>
         <li class="tab col s12"><a class="" href="#stats"><i class="material-icons">pie_chart</i>Statistiques</a></li>
-        <li class="tab col s12"><a class="modal-trigger" href="#modal-zone"><i class="material-icons">settings</i>Zone géographique</a></li>
+        <li class="tab col s12"><a class="modal-trigger" href="#modal-zone"><i class="material-icons">settings</i>Zone
+            géographique</a></li>
       </ul>
     </li>
     <li><a class="waves-effect" target="_blank" href="http://www.jesuisundesdeux.org">#JeSuisUnDesDeux</a></li>
@@ -59,7 +61,7 @@
   </div>
 
   <div id="content">
-    <div id="issues" class="issues">
+    <div id="issues">
       <ul class="tabs row">
         <li class="tab col s6"><a class="yellow-text text-darken-3 active" href="#issues-list">Liste</a></li>
         <li class="tab col s6"><a class="yellow-text text-darken-3" href="#issues-map">Carte</a></li>
@@ -87,10 +89,22 @@
         </div>
       </div>
     </div>
-    <div id="stats" class="row">
-      <div class="col s12 valign-wrapper grey-text"><i class="material-icons">info</i>Cliquer sur les graphiques pour passer en plein écran</div>
-      <div class="col s12 l6 white"><canvas id="stats-last30days"></canvas></div>
-      <div class="col s12 l6 white"><canvas id="stats-bycats"></canvas></div>
+    <div id="stats" class="container">
+      <div class="row">
+        <div class="col s12 valign-wrapper grey-text"><i class="material-icons">info</i>Cliquer sur les graphiques pour
+          passer en plein écran</div>
+      </div>
+      <hr>
+      <div class="row" id="stats-last30days">
+        <div class="col s12 l4 white center-align"><h2>...</h2><h6>signalements ces 30 derniers jours</h6></div>
+        <div class="col s12 l8 white"><canvas></canvas></div>
+      </div>
+      <hr>
+      <div class="row" id="stats-bycats">
+        <div class="col s12 l4 white center-align"><h2>...</h2><h6>signalements reçus</h6></div>
+        <div class="col s12 l8 white"><canvas></canvas></div>
+      </div>
+      <hr>
     </div>
   </div>
 

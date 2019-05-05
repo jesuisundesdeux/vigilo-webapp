@@ -1,11 +1,14 @@
 import * as vigilo from './vigilo-api';
 import Chart from 'chart.js';
 
+Chart.defaults.global.legend.position = "bottom";
+Chart.defaults.global.maintainAspectRatio = false;
+
 export async function init() {
     var data = await vigilo.getIssues();
-    last30days(data);
+    makeStats(data);
 
-    $("#stats canvas").click((e)=>{
+    $("#stats canvas").on('click touch', (e) => {
         $(e.target).parent()[0].requestFullscreen()
     })
 }
@@ -22,25 +25,31 @@ const CATAGORIES = {
     "Autre": { stack: "Autre", color: "grey" },
 }
 
-function truncDateToDay(date){
+function truncDateToDay(date) {
     truncDateToHour(date)
     date.setHours(0)
 }
-function truncDateToHour(date){
+function truncDateToHour(date) {
     date.setMinutes(0)
     date.setSeconds(0)
     date.setMilliseconds(0)
 }
 
-async function last30days(issues) {
-    // Prepare data
-    var data = {};
+function onChartResize(chart, size) {
+    if (size.height < 250) {
+        chart.canvas.parentNode.style.height = '350px';
+    }
+}
+async function makeStats(issues) {
+    // Prepare data structures
+    var dataLast30Days = {};
+    var dataByCat = {}
 
     var today = new Date()
     truncDateToDay(today)
 
     for (var cat in CATAGORIES) {
-        data[cat] = {
+        dataLast30Days[cat] = {
             label: cat,
             data: {},
             borderWidth: 2,
@@ -49,37 +58,42 @@ async function last30days(issues) {
         }
         for (var i = 0; i < 31; i++) {
             var time = today.getTime() - i * 24 * 60 * 60 * 1000;
-            data[cat].data[time] = 0
+            dataLast30Days[cat].data[time] = 0
         }
+
+        dataByCat[cat] = 0;
     }
 
+    // Compute data
+    var totalDataLast30Days = 0;
+    var total = issues.length;
+
     for (var i in issues) {
-        
+
         var truncated_date = new Date(issues[i].date_obj.getTime())
         truncDateToDay(truncated_date);
 
-        if (data[issues[i].categorie_str].data[truncated_date.getTime()] !== undefined){
-            data[issues[i].categorie_str].data[truncated_date.getTime()]++;
+        if (dataLast30Days[issues[i].categorie_str].data[truncated_date.getTime()] !== undefined) {
+            dataLast30Days[issues[i].categorie_str].data[truncated_date.getTime()]++;
+            totalDataLast30Days++;
         }
+
+        dataByCat[issues[i].categorie_str]++;
     }
 
-    for (var cat in data) {
-        data[cat].data = Object.entries(data[cat].data).map((item) => { return { t: new Date(parseInt(item[0])), y: item[1] } })
+    // Refactor data
+    for (var cat in dataLast30Days) {
+        dataLast30Days[cat].data = Object.entries(dataLast30Days[cat].data).map((item) => { return { t: new Date(parseInt(item[0])), y: item[1] } })
     }
-
-    data = Object.values(data)
-    console.log(data)
+    dataLast30Days = Object.values(dataLast30Days)
 
     // Display data
-    var ctx = document.getElementById('stats-last30days').getContext('2d');
-    new Chart(ctx, {
+    $("#stats-last30days h2").empty().append(totalDataLast30Days)
+    new Chart($("#stats-last30days canvas")[0].getContext('2d'), {
         type: 'bar',
-        data: { datasets: data },
+        data: { datasets: dataLast30Days },
         options: {
-            title: {
-                display: true,
-                text: 'Signalements des 30 derniers jours'
-            },
+            onResize: onChartResize,
             tooltips: {
                 mode: 'index',
                 intersect: false
@@ -102,6 +116,24 @@ async function last30days(issues) {
                     stacked: true
                 }]
             }
+        }
+    });
+
+    $("#stats-bycats h2").empty().append(total)
+    new Chart($("#stats-bycats canvas")[0].getContext('2d'), {
+        type: 'pie',
+        data: {
+            datasets: [
+                {
+                    data: Object.values(dataByCat),
+                    backgroundColor: Object.values(CATAGORIES).map((x)=>x.color)
+                }
+            ],
+            labels: Object.keys(dataByCat)
+        },
+        options: {
+            onResize: onChartResize,
+            responsive: true,
         }
     });
 }

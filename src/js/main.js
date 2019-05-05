@@ -49,7 +49,12 @@ window.WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.user
 	 * SIDENAV
 	 */
 	M.Sidenav.init($("#mobile-menu"));
-	M.Tabs.init($("#mobile-menu .tabs"));
+	M.Tabs.init($("#mobile-menu .tabs"),{
+		onShow: function(){
+			M.Sidenav.getInstance($("#mobile-menu")).close()
+		}
+	});
+
 
 
 	/**
