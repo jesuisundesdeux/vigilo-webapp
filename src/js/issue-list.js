@@ -5,12 +5,17 @@ import * as vigiloui from './ui-template';
  */
 let offset = 0;
 async function displayIssues(count) {
-	var issues = await vigilo.getIssues()
-	issues = issues.slice(offset, offset + count);
-	offset += issues.length;
-	issues.forEach((issue) => {
-		$(".issues .cards-container").append(vigiloui.issueCard(issue))
-	})
+	try {
+		var issues = await vigilo.getIssues()
+		issues = issues.slice(offset, offset + count);
+		offset += issues.length;
+		issues.forEach((issue) => {
+			$(".issues .cards-container").append(vigiloui.issueCard(issue))
+		})
+	} catch (e) {
+		$(".issues").empty().append(vigiloui.errorCard(e));
+	}
+
 }
 
 async function viewIssue(token) {

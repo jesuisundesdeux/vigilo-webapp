@@ -22,8 +22,30 @@ body {
 
 @import "spinner.scss";
 
-.issues{
-	margin-top: 49px;
+.sidenav {
+	ul.tabs {
+		height: 100%;
+	}
+}
+
+nav.nav-extended {
+	.nav-wrapper {
+		overflow-y: hidden;
+	}
+}
+
+#content {
+	ul.tabs {
+		position: fixed;
+		top: 64px;
+		z-index: 997;
+	}
+	& > div {
+		margin-top: 48px;
+	}
+}
+
+.issues {
 	
 	.spinner {
 		display: none;
@@ -31,7 +53,7 @@ body {
 			display: unset;
 		}
 	}
-
+	
 	#issues-map {
 		height: calc( 100vh - 113px );
 		.spinner {

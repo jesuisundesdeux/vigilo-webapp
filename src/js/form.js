@@ -7,6 +7,7 @@ import piexif from 'piexifjs';
 
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
+import * as vigiloui from './ui-template';
 
 window.startForm = function () {
 	clearForm()
@@ -341,10 +342,10 @@ $("#modal-form form").submit((e) => {
 			var dataURL = $("#picture-preview canvas")[0].toDataURL("image/jpeg", 1.0);
 			var jpegBinary = atob(dataURL.split(",")[1]);
 			var array = [];
-    		for (var p=0; p<jpegBinary.length; p++) {
-        		array[p] = jpegBinary.charCodeAt(p);
-    		}
-    		var u8array = new Uint8Array(array);
+			for (var p = 0; p < jpegBinary.length; p++) {
+				array[p] = jpegBinary.charCodeAt(p);
+			}
+			var u8array = new Uint8Array(array);
 			return vigilo.addImage(createResponse.token, createResponse.secretid, u8array.buffer)
 		})
 		.then(() => {
@@ -356,8 +357,64 @@ $("#modal-form form").submit((e) => {
 		.catch((e) => {
 			$("#modal-form-loader")
 				.empty()
-				.append('<div class="card-panel teal red">Oups... erreur.<br>' + e + '</div>')
+				.append(vigiloui.errorCard(e))
 		})
 
 	e.preventDefault();
 })
+
+
+export async function init() {
+	try {
+		// Fill category select
+		var cats = await vigilo.getCategories();
+		for (var i in cats) {
+			$("#issue-cat").append(`<option value="${i}">${cats[i]}</option>`)
+		}
+
+		M.Modal.init($("#modal-form"));
+		M.Modal.init($("#modal-form-loader"))
+
+		if (!WE_ARE_ON_A_MOBILE) {
+			M.Datepicker.init($("#issue-date"), {
+				container: 'body',
+				firstDay: 1,
+				format: 'dd mmm yyyy',
+				i18n: {
+					months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+					monthsShort: ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+					weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+					weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
+					weekdaysAbbrev: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S'],
+					cancel: "Annuler",
+
+				},
+				autoClose: true,
+				onSelect: (date) => {
+					M.Timepicker.getInstance($("#issue-time")).open()
+				}
+			});
+			M.Timepicker.init($("#issue-time"), {
+				container: 'body',
+				autoClose: true,
+				twelveHour: false,
+				i18n: {
+					'cancel': 'Annuler',
+					'done': 'ok'
+				},
+				onCloseEnd: () => {
+					$("#issue-cat").focus()
+				}
+			});
+			M.FormSelect.init($("#issue-cat"))
+		} else {
+			// Use browser default inputs on mobile
+			$("#issue-cat").addClass('browser-default')
+			$("#issue-date").attr('type', 'date');
+			$("#issue-time").attr('type', 'time');
+		}
+
+	} catch (e) {
+		$(".issues .cards-container").empty().append(vigiloui.errorCard(e));
+	}
+}

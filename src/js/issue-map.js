@@ -68,6 +68,6 @@ window.centerOnIssue = async function (token) {
 	var issues = await vigilo.getIssues();
 	var issue = issues.filter(item => item.token == token)[0];
 	issuesmap.setView([issue.lat_float, issue.lon_float], 18)
-	M.Tabs.getInstance($("nav .tabs")[0]).select('issues-map')
+	M.Tabs.getInstance($("#issues .tabs")[0]).select('issues-map')
 	M.Modal.getInstance($("#modal-issue")[0]).close();
 }

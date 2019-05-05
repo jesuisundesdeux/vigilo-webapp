@@ -8,7 +8,7 @@
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css" />
-  
+
   <title>Vǐgǐlo</title>
 
 </head>
@@ -22,10 +22,6 @@
             class="material-icons">menu</i></a>
       </div>
       <div class="nav-content">
-        <ul class="tabs row">
-          <li class="tab col s6"><a class="yellow-text text-darken-3 active" href="#issues-list">Liste</a></li>
-          <li class="tab col s6"><a class="yellow-text text-darken-3" href="#issues-map">Carte</a></li>
-        </ul>
       </div>
     </nav>
   </div>
@@ -39,9 +35,12 @@
         <a href="#email"><span class="white-text email">by Velocité Montpellier</span></a>
       </div>
     </li>
-    <li><a class="modal-trigger" href="#modal-zone"><i class="material-icons">settings</i>Zone géographique</a></li>
     <li>
-      <div class="divider"></div>
+      <ul class="tabs row">
+        <li class="tab col s12"><a class="active" href="#issues"><i class="material-icons">directions_bike</i>Les remontées</a></li>
+        <li class="tab col s12"><a class="" href="#stats"><i class="material-icons">pie_chart</i>Statistiques</a></li>
+        <li class="tab col s12"><a class="modal-trigger" href="#modal-zone"><i class="material-icons">settings</i>Zone géographique</a></li>
+      </ul>
     </li>
     <li><a class="waves-effect" target="_blank" href="http://www.jesuisundesdeux.org">#JeSuisUnDesDeux</a></li>
   </ul>
@@ -59,29 +58,39 @@
     </div>
   </div>
 
-
-  <div class="issues">
-    <div id="issues-list" class="row">
-      <div class="col s12">
-        <div class="cards-container">
-          <div class="spinner">
-            <div class="rect1"></div>
-            <div class="rect2"></div>
-            <div class="rect3"></div>
-            <div class="rect4"></div>
-            <div class="rect5"></div>
+  <div id="content">
+    <div id="issues" class="issues">
+      <ul class="tabs row">
+        <li class="tab col s6"><a class="yellow-text text-darken-3 active" href="#issues-list">Liste</a></li>
+        <li class="tab col s6"><a class="yellow-text text-darken-3" href="#issues-map">Carte</a></li>
+      </ul>
+      <div id="issues-list" class="row">
+        <div class="col s12">
+          <div class="cards-container">
+            <div class="spinner">
+              <div class="rect1"></div>
+              <div class="rect2"></div>
+              <div class="rect3"></div>
+              <div class="rect4"></div>
+              <div class="rect5"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div id="issues-map">
-      <div class="spinner">
-        <div class="rect1"></div>
-        <div class="rect2"></div>
-        <div class="rect3"></div>
-        <div class="rect4"></div>
-        <div class="rect5"></div>
+      <div id="issues-map">
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
+        </div>
       </div>
+    </div>
+    <div id="stats" class="row">
+      <div class="col s12 valign-wrapper grey-text"><i class="material-icons">info</i>Cliquer sur les graphiques pour passer en plein écran</div>
+      <div class="col s12 l6 white"><canvas id="stats-last30days"></canvas></div>
+      <div class="col s12 l6 white"><canvas id="stats-bycats"></canvas></div>
     </div>
   </div>
 
@@ -91,10 +100,10 @@
 
   <!-- Modal for form -->
   <div id="modal-form" class="modal modal-fixed-footer fullscreen">
-      <form action="#" method="POST">
-    <div class="modal-content">
-      <h3>Nouvelle observation</h3>
-      
+    <form action="#" method="POST">
+      <div class="modal-content">
+        <h3>Nouvelle observation</h3>
+
         <div class="row">
 
           <!-- Picture -->
@@ -173,15 +182,15 @@
         </div>
 
 
-      
-    </div>
-    <div class="modal-footer">
+
+      </div>
+      <div class="modal-footer">
         <button class="btn waves-effect waves-light" type="submit" name="action">Soumettre
-            <i class="material-icons right">send</i>
-          </button>
-      <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
-    </div>
-  </form>
+          <i class="material-icons right">send</i>
+        </button>
+        <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
+      </div>
+    </form>
   </div>
 
   <!-- Modal for issue upload -->
