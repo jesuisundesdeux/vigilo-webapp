@@ -1,4 +1,4 @@
-# vigilo-ui
+# vigilo-webapp
 
 ## Let's go!
 
