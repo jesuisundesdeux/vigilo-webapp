@@ -40,6 +40,11 @@ nav.nav-extended {
 		top: 64px;
 		z-index: 997;
 	}
+        @media #{$small-and-down} {
+          ul.tabs {
+            top: 56px;
+          }
+        }
 	& > div {
 		margin-top: 48px;
 	}

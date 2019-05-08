@@ -1,5 +1,8 @@
 # vigilo-webapp
 
+[![Build Status](https://travis-ci.org/jesuisundesdeux/vigilo-webapp.svg?branch=master)](https://travis-ci.org/jesuisundesdeux/vigilo-webapp)
+
+
 ## Let's go!
 
 ```
