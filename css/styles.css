@@ -7411,6 +7411,11 @@ input[type=range]::-ms-thumb {
 .sidenav ul.tabs {
   height: 100%; }
 
+.sidenav #version {
+  position: absolute;
+  bottom: 56px;
+  width: 100%; }
+
 nav.nav-extended .nav-wrapper {
   overflow-y: hidden; }
 
@@ -7418,6 +7423,10 @@ nav.nav-extended .nav-wrapper {
   position: fixed;
   top: 64px;
   z-index: 997; }
+
+@media only screen and (max-width: 600px) {
+  #content ul.tabs {
+    top: 56px; } }
 
 #content > div {
   margin-top: 48px; }
