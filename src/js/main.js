@@ -26,6 +26,7 @@ import * as stats from './stats';
 
 window.WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
 
+$("#version a").append(vigiloconfig.VERSION_NUMBER);
 // Init UI fonction
 (async function initUI() {
 	/**

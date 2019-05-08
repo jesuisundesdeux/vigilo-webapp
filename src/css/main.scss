@@ -26,6 +26,11 @@ body {
 	ul.tabs {
 		height: 100%;
 	}
+        #version {
+          position: absolute;
+          bottom: 56px;
+          width: 100%;
+        }
 }
 
 nav.nav-extended {
