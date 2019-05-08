@@ -1,0 +1,16 @@
+language: bash
+
+services:
+  - docker
+
+script:
+  - docker run -it --rm -v $PWD:/app -e WEBPACK_MODE=production -w /app node:alpine sh -c 'npm install && npm run webpack && (echo "app.vigilo.city" > /app/dist/CNAME)'
+  - find dist
+
+deploy:
+  local_dir: dist
+  provider: pages
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  on:
+    branch: master
