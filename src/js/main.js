@@ -24,7 +24,7 @@ import './issue-list';
 import * as form from './form';
 import * as stats from './stats';
 
-window.WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0;
+window.WE_ARE_ON_A_MOBILE = typeof orientation !== 'undefined' || navigator.userAgent.toLowerCase().indexOf('mobile') >= 0 || window.location.search.indexOf('mobile') >=0;
 
 $("#version a").append(vigiloconfig.VERSION_NUMBER);
 // Init UI fonction
@@ -33,8 +33,9 @@ $("#version a").append(vigiloconfig.VERSION_NUMBER);
 	 * SELECT ZONE MODAL
 	 */
 	var current_instance = vigiloconfig.getInstance() == null ? '' : vigiloconfig.getInstance().name;
-	for (var i in vigiloconfig.INSTANCES) {
-		$("#modal-zone .modal-content .collection").append(`<a href="#!" onclick="setInstance('${vigiloconfig.INSTANCES[i].name}')" class="collection-item${(vigiloconfig.INSTANCES[i].name == current_instance ? ' active' : '')}">${vigiloconfig.INSTANCES[i].name}</a>`)
+	var instances = await vigiloconfig.getInstances();
+	for (var i in instances) {
+		$("#modal-zone .modal-content .collection").append(`<a href="#!" onclick="setInstance('${instances[i].name}')" class="collection-item${(instances[i].name == current_instance ? ' active' : '')}">${instances[i].name}</a>`)
 	}
 
 	M.Modal.init($("#modal-zone"));

@@ -306,11 +306,11 @@ function setTime(hours, minutes) {
  * On submit, prepare data and send
  */
 $("#modal-form form").submit((e) => {
-	if (vigiloconfig.getInstance().scope !== "develop") {
+	/*if (vigiloconfig.getInstance().scope !== "develop") {
 		alert("La création n'est autorisée que sur l'environmment de développement.");
 		e.preventDefault()
 		return;
-	}
+	}*/
 
 	var data = {};
 	data.version = 1;//vigiloconfig.VERSION;
