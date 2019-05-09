@@ -292,7 +292,7 @@ function setDate(date) {
 function setTime(hours, minutes) {
 	if ($("#issue-time").prop("type") == "time") {
 		// Browser default (mobile devices)
-		$("#issue-time").val(hours + ":" + minutes);
+		$("#issue-time").val(String("0" + hours).slice(-2) + ":" + String("0" + minutes).slice(-2));
 	} else {
 		// Materializecss picker
 		M.Timepicker.getInstance($("#issue-time")).hours = hours;
