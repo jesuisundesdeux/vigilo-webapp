@@ -6,15 +6,11 @@ services:
 script:
   - docker run -it --rm -v $PWD:/app -e WEBPACK_MODE=production -w /app node:alpine sh -c 'npm install && npm run webpack && (echo "app.vigilo.city" > /app/dist/CNAME)'
   - find dist
-  - sudo chown -R $UID dist
-  - if [[ "$TRAVIS_BRANCH" == 'develop' ]]; then mv dist develop; mkdir dist; mv develop dist/develop; fi
 
 deploy:
   local_dir: dist
-  skip_cleanup: true
   provider: pages
   github_token: $GITHUB_TOKEN
   keep_history: true
   on:
-    all_branches: true
-    condition: $TRAVIS_BRANCH =~ ^master|develop$
+    branch: master
