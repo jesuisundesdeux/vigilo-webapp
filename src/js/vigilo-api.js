@@ -4,7 +4,7 @@ const CONTENT_TYPE_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded"
 const CONTENT_TYPE_JPEG = "image/jpeg"
 
 function baseUrl() {
-    return vigiloconfig.getInstance().api_path.replace('"','').replace('"','').replace('\\','')
+    return decodeURIComponent(vigiloconfig.getInstance().api_path)
 };
 
 import {request} from './utils';
