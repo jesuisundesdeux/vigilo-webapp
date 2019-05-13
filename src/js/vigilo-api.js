@@ -92,7 +92,7 @@ export function addImage(token, secretId, data) {
         url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId,
         method: "POST",
         headers: {
-            "Content-Type": CONTENT_TYPE_JPEG
+            //"Content-Type": CONTENT_TYPE_JPEG
         },
         body: data
 
