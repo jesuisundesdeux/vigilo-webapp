@@ -26,7 +26,7 @@ export function getIssues(options) {
     }).join("&")
 
     return new Promise((resolve, reject) => {
-        getCategories()
+        vigiloconfig.getCategories()
             .then((cats) => {
                 request(url)
                     .then((obj) => {
@@ -46,20 +46,6 @@ export function getIssues(options) {
             })
             .catch(reject);
     });
-};
-
-export function getCategories() {
-
-    var url = baseUrl() + "/get_categories_list.php";
-    return request(url)
-        .then((cat) => {
-            let toreturn = {}
-            for (var i in cat) {
-                toreturn[cat[i].catid] = cat[i].catname;
-            }
-            return toreturn;
-        });
-
 };
 
 function generateToken() {

@@ -1,6 +1,7 @@
 import {request} from './utils';
 
 const SCOPES_URL="https://vigilo-bf7f2.firebaseio.com/citylist.json";
+const CATEGORIES_URL="https://vigilo-bf7f2.firebaseio.com/categorieslist.json";
 
 export async function getInstances(){
     
@@ -19,7 +20,20 @@ export async function getInstances(){
     }
     return scopes
 
-} 
+}
+
+export function getCategories() {
+
+    return request(CATEGORIES_URL)
+        .then((cat) => {
+            let toreturn = {}
+            for (var i in cat) {
+                toreturn[cat[i].catid] = cat[i].catname;
+            }
+            return toreturn;
+        });
+
+};
 
 var pkg= require('../../package.json');
 export const VERSION = pkg.name+"-"+pkg.version

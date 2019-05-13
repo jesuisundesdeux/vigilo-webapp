@@ -367,7 +367,7 @@ $("#modal-form form").submit((e) => {
 export async function init() {
 	try {
 		// Fill category select
-		var cats = await vigilo.getCategories();
+		var cats = await vigiloconfig.getCategories();
 		for (var i in cats) {
 			$("#issue-cat").append(`<option value="${i}">${cats[i]}</option>`)
 		}
