@@ -313,7 +313,7 @@ $("#modal-form form").submit((e) => {
 	}*/
 
 	var data = {};
-	data.version = 1;//vigiloconfig.VERSION;
+	data.version = vigiloconfig.VERSION;
 	data.scope = vigiloconfig.getInstance().scope;
 	data.token = "abc";
 	data.coordinates_lat = mapmarker.getLatLng().lat;
