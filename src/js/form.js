@@ -8,6 +8,7 @@ import piexif from 'piexifjs';
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
 import * as vigiloui from './ui-template';
+import ImageDrawable from './image-drawable';
 
 window.startForm = function () {
 	clearForm()
@@ -139,6 +140,7 @@ $("#modal-form input[type=file]").change(function () {
 
 
 				$("#picture-preview").empty().append(canvas);
+				ImageDrawable($("#picture-preview"))
 
 
 			}
@@ -184,7 +186,8 @@ function initFormMap() {
 			"&TILECOL={x}",
 			{
 				minZoom: 0,
-				maxZoom: 18,
+				maxZoom: 20,
+				maxNativeZoom: 18,
 				attribution: '<a href="http://www.ign.fr">IGN-F/Geoportail</a>',
 				tileSize: 256
 			}
@@ -205,10 +208,9 @@ function initFormMap() {
 	formmap.geocoderCtrl = L.Control.geocoder({
 		position: 'topright',
 		defaultMarkGeocode: false
-	})
-		.on('markgeocode', function (e) {
-			setFormMapPoint(e.geocode.center, e.geocode)
-		}).addTo(formmap)
+	}).on('markgeocode', function (e) {
+		setFormMapPoint(e.geocode.center, e.geocode)
+	}).addTo(formmap)
 
 	L.control.locate({
 		locateOptions: {

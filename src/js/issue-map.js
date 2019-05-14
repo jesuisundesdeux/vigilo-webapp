@@ -38,7 +38,8 @@ export async function initMap() {
 			"&TILECOL={x}",
 			{
 				minZoom: 0,
-				maxZoom: 18,
+				maxZoom: 20,
+				maxNativeZoom: 18,
 				attribution: '<a href="http://www.ign.fr">IGN-F/Geoportail</a>',
 				tileSize: 256
 			}
