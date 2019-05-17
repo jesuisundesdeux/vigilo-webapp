@@ -4,6 +4,7 @@ import M from 'materialize-css';
 export class ClassImageDrawable {
     constructor(div) {
         this.div = div;
+        this.ctx = $(div).find('canvas')[0].getContext('2d');
         this.color = "";
         this.initBtn();
         this.setColor('yellow');
@@ -43,6 +44,7 @@ export class ClassImageDrawable {
 
 
     }
+
     setColor(newColor){
       $(this.div).find('#colorpicker').removeClass(this.color).addClass(newColor);
       this.color=newColor;
@@ -57,6 +59,7 @@ export class ClassImageDrawable {
         e.stopPropagation();
         e.preventDefault();
     }
+
     close(e) {
         $(this.div).removeClass('fullscreen');
         e.stopPropagation();
