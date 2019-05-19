@@ -137,6 +137,7 @@ $("#modal-form input[type=file]").change(function () {
 				}
 				ctx.drawImage(image, x, y);
 				ctx.restore();
+				ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 
 				$("#picture-preview").empty().append(canvas);
