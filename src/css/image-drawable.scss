@@ -15,20 +15,29 @@ div.drawable {
             top: 0 !important;
             bottom: 0 !important;
             right: 0 !important;
-            margin:  auto;
-            max-width: 100% !important;
-            max-height: 100% !important;
-            
+            margin:  auto !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
         }
         .fixed-action-btn {
             display: unset;
-            ul {
-                transform: translateX(30px);
+
+            &.color-picker {
+                transform: translateX(-66px);
             }
+            
+            &.undo {
+                transform: translateX(-176px);
+            }
+            &.redo {
+                transform: translateX(-127px);
+            }
+            
         }
     }
     .fixed-action-btn {
         display: none
     }
 }
+
 

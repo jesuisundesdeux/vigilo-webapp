@@ -22,14 +22,18 @@ export class ClassImageDrawable {
 
     initBtn() {
         $(this.div).append(`
-            <div class="fixed-action-btn">
-              <a class="btn-floating btn-large waves-effect waves-light grey darken-1 disbabled">
+            <div class="fixed-action-btn undo">
+              <a class="btn-floating waves-effect waves-light grey darken-1 disbabled">
                 <i class="large material-icons">undo</i>
               </a>
-              <a class="btn-floating btn-large waves-effect waves-light grey darken-1 disbabled">
+            </div>
+            <div class="fixed-action-btn redo">
+              <a class="btn-floating waves-effect waves-light grey darken-1 disbabled">
                 <i class="large material-icons">redo</i>
               </a>
-              <a id="colorpicker" class="btn-floating btn-large waves-effect waves-light">
+            </div>
+            <div class="fixed-action-btn color-picker">
+              <a class="btn-floating btn-large waves-effect waves-light">
                 <i class="large material-icons">color_lens</i>
               </a>
               <ul>
@@ -38,24 +42,26 @@ export class ClassImageDrawable {
                 <li><a class="btn-floating green" data-color="green"></a></li>
                 <li><a class="btn-floating blue" data-color="blue"></a></li>
               </ul>
+            </div>
+            <div class="fixed-action-btn close">
               <a id="close" class="btn-floating btn-large waves-effect waves-light grey darken-1">
                 <i class="large material-icons">close</i>
               </a>
             </div>
         `)
-        M.FloatingActionButton.init($(this.div).find('.fixed-action-btn')[0])
-        $(this.div).find('#close').on('click', this.close.bind(this))
+        M.FloatingActionButton.init($(this.div).find('.fixed-action-btn.color-picker')[0])
+        $(this.div).find('.fixed-action-btn.close').on('click', this.close.bind(this))
         var self = this;
-        $(this.div).find("ul li a").click(function(){
+        $(this.div).find(".fixed-action-btn.color-picker ul li a").click(function(){
           self.setColor($(this).data('color'))
         })
-        $(this.div).find("a:contains('undo')").click(this.undo.bind(this))
-        $(this.div).find("a:contains('redo')").click(this.redo.bind(this))
+        $(this.div).find(".fixed-action-btn.undo a").click(this.undo.bind(this))
+        $(this.div).find(".fixed-action-btn.redo a").click(this.redo.bind(this))
         this.updateBtnStatus()
     }
 
     setColor(newColor){
-      $(this.div).find('#colorpicker').removeClass(this.color).addClass(newColor);
+      $(this.div).find('.fixed-action-btn.color-picker a').first().removeClass(this.color).addClass(newColor);
       this.color=newColor;
       this.ctx.fillStyle = this.color;
     }
@@ -65,13 +71,15 @@ export class ClassImageDrawable {
     }
 
     open(e) {
-        $(this.div).addClass('fullscreen');
+        $(this.div).addClass('fullscreen'); 
         e.stopPropagation();
         e.preventDefault();
 
         $(this.div).find('canvas').on('mousedown touchstart', this.startDraw.bind(this))
         $(this.div).find('canvas').on('mouseup mouseleave touchend touchleave', this.stopDraw.bind(this))
         $(this.div).find('canvas').on('mousemove touchmove', this.onDraw.bind(this))
+
+        this.offset = $(this.div).find('canvas').offset();
     }
 
     close(e) {
@@ -88,14 +96,14 @@ export class ClassImageDrawable {
 
     updateBtnStatus() {
       if (this.backHistory.length == 0){
-        $(this.div).find("a:contains('undo')").addClass('disabled')
+        $(this.div).find(".fixed-action-btn.undo a").addClass('disabled')
       } else {
-        $(this.div).find("a:contains('undo')").removeClass('disabled')
+        $(this.div).find(".fixed-action-btn.undo a").removeClass('disabled')
       }
       if (this.upHistory.length == 0){
-        $(this.div).find("a:contains('redo')").addClass('disabled')
+        $(this.div).find(".fixed-action-btn.redo a").addClass('disabled')
       } else {
-        $(this.div).find("a:contains('redo')").removeClass('disabled')
+        $(this.div).find(".fixed-action-btn.redo a").removeClass('disabled')
       }
     }
 
@@ -161,13 +169,14 @@ export class ClassImageDrawable {
       }
       var x,y;
       if (e.type == 'touchmove'){
-        var rect = e.target.getBoundingClientRect();
-        x = e.changedTouches[0].pageX * this.ratioWidth - rect.left;
-        y = e.changedTouches[0].pageY * this.ratioHeight - rect.top;
+        x = e.changedTouches[0].pageX;
+        y = e.changedTouches[0].pageY;
       } else {
-        x = e.offsetX * this.ratioWidth;
-        y = e.offsetY * this.ratioHeight
+        x = e.pageX;
+        y = e.pageY;
       }
+      x = (x - this.offset.left) * this.ratioWidth;
+      y = (y - this.offset.top) * this.ratioHeight;
       this.ctx.fillRect(x,y,10*this.ratioWidth, 10*this.ratioHeight);
       e.stopPropagation();
       e.preventDefault();
