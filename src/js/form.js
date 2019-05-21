@@ -141,6 +141,7 @@ $("#modal-form input[type=file]").change(function () {
 
 
 				$("#picture-preview").empty().append(canvas);
+				$("#picture-preview").next().removeClass('hide');
 				ImageDrawable($("#picture-preview"))
 
 

@@ -1,4 +1,7 @@
 div.drawable {
+    canvas {
+        margin: auto;
+    }
     &.fullscreen{
         position: fixed;
         top: 0 !important;
