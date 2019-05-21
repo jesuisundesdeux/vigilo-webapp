@@ -54,6 +54,7 @@ export class ClassImageDrawable {
         var self = this;
         $(this.div).find(".fixed-action-btn.color-picker ul li a").click(function(){
           self.setColor($(this).data('color'))
+          M.FloatingActionButton.getInstance($(self.div).find('.fixed-action-btn.color-picker')[0]).close()
         })
         $(this.div).find(".fixed-action-btn.undo a").click(this.undo.bind(this))
         $(this.div).find(".fixed-action-btn.redo a").click(this.redo.bind(this))
