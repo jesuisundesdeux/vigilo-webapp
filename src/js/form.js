@@ -154,11 +154,14 @@ $("#modal-form input[type=file]").change(function () {
 })
 
 var formmap, mapmarker;
-function initFormMap() {
+async function initFormMap() {
 	if (formmap !== undefined) {
 		formmap.invalidateSize()
 		return;
 	}
+
+	var scope = await vigilo.getScope();
+
 	formmap = L.map('form-map', {
 		fullscreenControl: true,
 		fullscreenControlOptions: {
@@ -166,7 +169,15 @@ function initFormMap() {
 		}
 	}).setView([43.605413, 3.879568], 11);
 
-
+	formmap.fitBounds([
+		[
+			parseFloat(scope.coordinate_lat_min),
+			parseFloat(scope.coordinate_lon_min)
+		],[
+			parseFloat(scope.coordinate_lat_max),
+			parseFloat(scope.coordinate_lon_max)
+		]
+	]);
 
 	var baseLayers = {
 		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
@@ -238,10 +249,19 @@ function initFormMap() {
 
 
 
-function setFormMapPoint(latlng, address) {
+async function setFormMapPoint(latlng, address) {
 	if (formmap === undefined) {
 		return
 	}
+	var scope = await vigilo.getScope();
+	var bounds_scope = L.latLngBounds([scope.coordinate_lat_min, scope.coordinate_lon_min],[scope.coordinate_lat_max, scope.coordinate_lon_max])
+
+	if (!bounds_scope.contains(latlng)) {
+		// Outside !
+		alert("La localisation doit se trouver dans la zone géographique choisie.");
+		return
+	}
+
 	formmap.setView(latlng, 18);
 	mapmarker.setLatLng(latlng).addTo(formmap)
 	if (address !== undefined) {

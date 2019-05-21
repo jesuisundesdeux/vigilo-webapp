@@ -43,8 +43,10 @@ $("#version a").append(vigiloconfig.VERSION_NUMBER);
 		M.Modal.getInstance($("#modal-zone")).open();
 		return
 	}
+
 	$("title").append(" "+ vigiloconfig.getInstance().name)
 	$("nav .brand-logo").append(" "+ vigiloconfig.getInstance().name)
+
 
 
 	/**

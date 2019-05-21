@@ -85,3 +85,8 @@ export function addImage(token, secretId, data) {
     }
     return request(options)
 }
+
+export function getScope(){
+    var url = baseUrl() + "/get_scope.php?scope=" + vigiloconfig.getInstance().scope;
+    return request(url);
+}
