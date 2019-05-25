@@ -4,6 +4,8 @@ import L from 'leaflet';
 import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
+import './circle-marker-dynamic';
+import { CATEGORIES_COLORS } from './colors';
 
 import * as vigilo from './vigilo-api';
 
@@ -16,7 +18,7 @@ export async function initMap() {
 	var issues = await vigilo.getIssues();
 	$('#issues-map').empty();
 	issuesmap = L.map('issues-map').setView([43.605413, 3.879568], 11);
-
+	window.issuesmap = issuesmap;
 
 	var baseLayers = {
 		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
@@ -52,17 +54,26 @@ export async function initMap() {
 	// Create layer and fill
 	issueslayer = L.featureGroup([])
 		.addTo(issuesmap)
-		.on('click', (e) => { viewIssue(e.layer.options.issue.token) });
-
+		.on('click', (e) => { viewIssue(e.propagatedFrom.options.issue.token) });
 
 	for (var i in issues) {
-		issueslayer.addLayer(L.circleMarker([issues[i].lat_float, issues[i].lon_float], { issue: issues[i] }));
-	}
 
+		var marker = L.circleMarkerDynamic(
+			[issues[i].lat_float, issues[i].lon_float],
+			{
+				styles: STYLES,
+				issue: issues[i],
+				color: CATEGORIES_COLORS[issues[i].categorie_str].color
+			}
+		);
+		issueslayer.addLayer(marker);
+	}
 
 	issuesmap.fitBounds(issueslayer.getBounds())
 
 }
+
+
 
 window.centerOnIssue = async function (token) {
 	await initMap()
@@ -71,4 +82,23 @@ window.centerOnIssue = async function (token) {
 	issuesmap.setView([issue.lat_float, issue.lon_float], 18)
 	M.Tabs.getInstance($("#issues .tabs")[0]).select('issues-map')
 	M.Modal.getInstance($("#modal-issue")[0]).close();
+}
+
+const STYLES = {
+	"0-12": {
+		radius: 1,
+		weight: 1,
+	},
+	"13-14": {
+		radius: 2,
+		weight: 1,
+	},
+	"15": {
+		radius: 4,
+		weight: 1,
+	},
+	"16-20": {
+		radius: 8,
+		weight: 2,
+	}
 }
