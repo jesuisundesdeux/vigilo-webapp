@@ -19,12 +19,12 @@ const CircleMarkerDynamic = L.CircleMarker.extend({
 
     onAdd: function(map) {
         L.CircleMarker.prototype.onAdd.call(this, map);
-        map.on({zoom: this.onZoom.bind(this)})
+        map.on("zoom", this.onZoom, this)
         this.onZoom();
     },
     onRemove: function(map) {
         L.CircleMarker.prototype.onRemove.call(this, map);
-        map.off({zoom: this.onZoom.bind(this)})
+        map.off("zoom", this.onZoom, this)
     },
 
     onZoom: function(){

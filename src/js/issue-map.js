@@ -7,15 +7,16 @@ import 'leaflet.locatecontrol';
 import './circle-marker-dynamic';
 import { CATEGORIES_COLORS } from './colors';
 
-import * as vigilo from './vigilo-api';
+import dataManager from './dataManager';
 
 var issuesmap, issueslayer;
-export async function initMap() {
+
+export async function init() {
 	if (issuesmap !== undefined) {
 		issuesmap.invalidateSize()
 		return;
 	}
-	var issues = await vigilo.getIssues();
+	var issues = await dataManager.getData();
 	$('#issues-map').empty();
 	issuesmap = L.map('issues-map').setView([43.605413, 3.879568], 11);
 	window.issuesmap = issuesmap;
@@ -50,12 +51,28 @@ export async function initMap() {
 
 	L.control.layers(baseLayers, {}).addTo(issuesmap);
 
+}
+var firstFocus = true;
+export async function focus() {
+	issuesmap.invalidateSize();
+	if (firstFocus){
+		firstFocus = false;
+		issuesmap.fitBounds(issueslayer.getBounds())
+	}
+}
+export async function cleanIssues() {
+	issueslayer.clearLayers()
+	issuesmap.removeLayer(issueslayer)
+}
 
+export async function displayIssues(nozoom) {
 	// Create layer and fill
 	issueslayer = L.featureGroup([])
 		.addTo(issuesmap)
 		.on('click', (e) => { viewIssue(e.propagatedFrom.options.issue.token) });
 
+	var issues = await dataManager.getData();
+	
 	for (var i in issues) {
 
 		var marker = L.circleMarkerDynamic(
@@ -68,16 +85,16 @@ export async function initMap() {
 		);
 		issueslayer.addLayer(marker);
 	}
-
-	issuesmap.fitBounds(issueslayer.getBounds())
+	if (nozoom != true){
+		issuesmap.fitBounds(issueslayer.getBounds())
+	}
 
 }
 
 
-
 window.centerOnIssue = async function (token) {
-	await initMap()
-	var issues = await vigilo.getIssues();
+	focus();
+	var issues = await dataManager.getData();
 	var issue = issues.filter(item => item.token == token)[0];
 	issuesmap.setView([issue.lat_float, issue.lon_float], 18)
 	M.Tabs.getInstance($("#issues .tabs")[0]).select('issues-map')
@@ -85,15 +102,15 @@ window.centerOnIssue = async function (token) {
 }
 
 const STYLES = {
-	"0-12": {
+	"0-11": {
 		radius: 1,
 		weight: 1,
 	},
-	"13-14": {
+	"12-13": {
 		radius: 2,
 		weight: 1,
 	},
-	"15": {
+	"14-15": {
 		radius: 4,
 		weight: 1,
 	},
