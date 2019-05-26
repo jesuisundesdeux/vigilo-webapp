@@ -21,6 +21,7 @@ import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
 import * as issuemap from './issue-map';
 import './issue-list';
+import './issue-filter';
 import * as form from './form';
 import * as stats from './stats';
 
@@ -73,8 +74,7 @@ $("#version a").append(vigiloconfig.VERSION_NUMBER);
 		}
 	})
 	M.FloatingActionButton.init($('.fixed-action-btn'));
-
-
+	
 	/**
 	 * ISSUE FORM
 	 */
