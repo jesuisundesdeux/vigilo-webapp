@@ -83,6 +83,7 @@ nav.nav-extended {
 	display: flex;
 	flex-wrap: wrap;
 	.card {
+		cursor: pointer;
 		height: calc( 100% - 1rem );
 		.card-image {
 			display: flex;
