@@ -7481,6 +7481,7 @@ nav.nav-extended .nav-wrapper {
   display: flex;
   flex-wrap: wrap; }
   .cards-container .card {
+    cursor: pointer;
     height: calc( 100% - 1rem); }
     .cards-container .card .card-image {
       display: flex;
