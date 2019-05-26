@@ -72,6 +72,7 @@ $("#version a").append(vigiloconfig.VERSION_NUMBER);
 			displayIssues(10)
 		}
 	})
+	M.FloatingActionButton.init($('.fixed-action-btn'));
 
 
 	/**

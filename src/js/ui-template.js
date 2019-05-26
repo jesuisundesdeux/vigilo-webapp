@@ -5,18 +5,18 @@ export function issueCard(issue){
             <div class="card-image" onclick="viewIssue('${issue.token}')">
                 <img src="${issue.img_thumb}">
             </div>
-            <div class="card-stacked">
+            <!--<div class="card-stacked">-->
                 <div class="card-content" onclick="viewIssue('${issue.token}')">
                     <span class="card-title"></span>
                     <h5>${issue.categorie_str}</h5>
                     <p class="grey-text">${issue.address}</p>
                     <p class="grey-text">${issue.date_obj.toLocaleString()}</p>
                 </div>
-                <div class="card-action right-align">
+                <!--<div class="card-action right-align">
                     <a class="waves-effect waves-light btn-floating" onclick="viewIssue('${issue.token}')"><i class="material-icons center">search</i></a>
                     <a class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
-                </div>
-            </div>
+                </div>-->
+            <!--</div>-->
         </div>
     </div>
   `
