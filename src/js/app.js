@@ -1,7 +1,7 @@
 import * as vigiloconfig from './vigilo-config';
 import * as map from './issue-map';
 import * as list from './issue-list';
-import './issue-filter';
+import * as filters from './issue-filter';
 import * as form from './form';
 import * as stats from './stats';
 import M from 'materialize-css';
@@ -74,6 +74,8 @@ export default class VigiloApp {
             await map.displayIssues(true) 
         })
         
+        filters.init();
+
         await list.displayIssues(10)
         await map.displayIssues()
     }

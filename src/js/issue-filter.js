@@ -2,7 +2,7 @@ import * as vigiloconfig from './vigilo-config';
 import * as vigiloui from './ui-template';
 import dataManager from './dataManager';
 
-(async function() {
+export async function init() {
 	try {
 		// Fill category select
 		var cats = await vigiloconfig.getCategories();
@@ -49,4 +49,4 @@ import dataManager from './dataManager';
     } catch (e) {
         $("#issues .cards-container").empty().append(vigiloui.errorCard(e));
     }
-})()
+}
