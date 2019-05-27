@@ -7499,3 +7499,6 @@ nav.nav-extended .nav-wrapper {
   max-height: 200px;
   max-width: 100%; }
 
+#modal-filters h6 {
+  cursor: pointer; }
+
