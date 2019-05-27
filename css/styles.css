@@ -7481,6 +7481,7 @@ nav.nav-extended .nav-wrapper {
   display: flex;
   flex-wrap: wrap; }
   .cards-container .card {
+    cursor: pointer;
     height: calc( 100% - 1rem); }
     .cards-container .card .card-image {
       display: flex;
@@ -7497,4 +7498,7 @@ nav.nav-extended .nav-wrapper {
 #modal-form canvas {
   max-height: 200px;
   max-width: 100%; }
+
+#modal-filters h6 {
+  cursor: pointer; }
 
