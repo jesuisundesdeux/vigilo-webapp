@@ -44,8 +44,11 @@
             géographique</a></li>
       </ul>
     </li>
-    <li><a class="waves-effect grey-text" target="_blank" href="http://www.jesuisundesdeux.org"><i class="material-icons">open_in_new</i>#JeSuisUnDesDeux</a></li>
-    <li><a class="waves-effect grey-text" target="_blank" href="https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md"><i class="material-icons">bug_report</i>Signaler un bug</a></li>
+    <li><a class="waves-effect grey-text" target="_blank" href="http://www.jesuisundesdeux.org"><i
+          class="material-icons">open_in_new</i>#JeSuisUnDesDeux</a></li>
+    <li><a class="waves-effect grey-text" target="_blank"
+        href="https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md"><i
+          class="material-icons">bug_report</i>Signaler un bug</a></li>
     <li id="version" class="center-align"><a href="#" class="grey-text">Version : </a></li>
   </ul>
 
@@ -90,11 +93,76 @@
         </div>
       </div>
       <div class="fixed-action-btn">
-        <a class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
-          <i class="large material-icons">add</i>
+        <a class="btn-floating btn-large yellow darken-3 black-text">
+          <i class="large material-icons">more_vert</i>
         </a>
+        <ul>
+          <li>
+            <a class="btn-floating blue darken-1 black-text modal-trigger" href="#modal-filters">
+              <i class="material-icons">filter_list</i>
+            </a>
+          </li>
+          <li>
+            <a class="btn-floating green darken-3 black-text" onclick="startForm()">
+              <i class="material-icons">add</i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- Modal for filters -->
+      <div id="modal-filters" class="modal modal-fixed-footer">
+        <div class="modal-content">
+          <h5>Filtres</h5>
+          <div class="row">
+            <div id="categories-select" class="input-field col s12 m6">
+              <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Catégories</h6>
+            </div>
+            <div id="daytime-select" class="col s12 m6">
+              <div>
+                <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Jour</h6>
+                <p>
+                  <label>
+                    <input type="checkbox" name="dow" value="worked" checked="checked" />
+                    <span>En semaine</span>
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    <input type="checkbox" name="dow" value="weekend" checked="checked" />
+                    <span>Week-end</span>
+                  </label>
+                </p>
+              </div>
+              <div>
+                <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Heure</h6>
+                <p>
+                  <label>
+                    <input type="checkbox" name="hour" value="morning" checked="checked" />
+                    <span>Matin</span>
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    <input type="checkbox" name="hour" value="afternoon" checked="checked" />
+                    <span>Après-midi</span>
+                  </label>
+                </p>
+                <p>
+                  <label>
+                    <input type="checkbox" name="hour" value="night" checked="checked" />
+                    <span>Soirée-Nuit</span>
+                  </label>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">check</i></a>
+        </div>
       </div>
     </div>
+
     <div id="stats" class="container">
 
       <div class="row" id="stats-last30days">

@@ -4,19 +4,22 @@ import L from 'leaflet';
 import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
+import './circle-marker-dynamic';
+import { CATEGORIES_COLORS } from './colors';
 
-import * as vigilo from './vigilo-api';
+import dataManager from './dataManager';
 
 var issuesmap, issueslayer;
-export async function initMap() {
+
+export async function init() {
 	if (issuesmap !== undefined) {
 		issuesmap.invalidateSize()
 		return;
 	}
-	var issues = await vigilo.getIssues();
+	var issues = await dataManager.getData();
 	$('#issues-map').empty();
 	issuesmap = L.map('issues-map').setView([43.605413, 3.879568], 11);
-
+	window.issuesmap = issuesmap;
 
 	var baseLayers = {
 		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
@@ -48,27 +51,71 @@ export async function initMap() {
 
 	L.control.layers(baseLayers, {}).addTo(issuesmap);
 
+}
+var firstFocus = true;
+export async function focus() {
+	issuesmap.invalidateSize();
+	if (firstFocus){
+		firstFocus = false;
+		issuesmap.fitBounds(issueslayer.getBounds())
+	}
+}
+export async function cleanIssues() {
+	issueslayer.clearLayers()
+	issuesmap.removeLayer(issueslayer)
+}
 
+export async function displayIssues(nozoom) {
 	// Create layer and fill
 	issueslayer = L.featureGroup([])
 		.addTo(issuesmap)
-		.on('click', (e) => { viewIssue(e.layer.options.issue.token) });
+		.on('click', (e) => { viewIssue(e.propagatedFrom.options.issue.token) });
 
-
+	var issues = await dataManager.getData();
+	
 	for (var i in issues) {
-		issueslayer.addLayer(L.circleMarker([issues[i].lat_float, issues[i].lon_float], { issue: issues[i] }));
+
+		var marker = L.circleMarkerDynamic(
+			[issues[i].lat_float, issues[i].lon_float],
+			{
+				styles: STYLES,
+				issue: issues[i],
+				color: CATEGORIES_COLORS[issues[i].categorie_str].color
+			}
+		);
+		issueslayer.addLayer(marker);
 	}
-
-
-	issuesmap.fitBounds(issueslayer.getBounds())
+	if (nozoom != true){
+		issuesmap.fitBounds(issueslayer.getBounds())
+	}
 
 }
 
+
 window.centerOnIssue = async function (token) {
-	await initMap()
-	var issues = await vigilo.getIssues();
+	focus();
+	var issues = await dataManager.getData();
 	var issue = issues.filter(item => item.token == token)[0];
 	issuesmap.setView([issue.lat_float, issue.lon_float], 18)
 	M.Tabs.getInstance($("#issues .tabs")[0]).select('issues-map')
 	M.Modal.getInstance($("#modal-issue")[0]).close();
+}
+
+const STYLES = {
+	"0-11": {
+		radius: 1,
+		weight: 1,
+	},
+	"12-13": {
+		radius: 2,
+		weight: 1,
+	},
+	"14-15": {
+		radius: 4,
+		weight: 1,
+	},
+	"16-20": {
+		radius: 8,
+		weight: 2,
+	}
 }

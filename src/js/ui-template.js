@@ -1,21 +1,15 @@
 export function issueCard(issue){
     return `
     <div class="col s12 m12 l6 xl4">
-        <div class="card horizontal">
-            <div class="card-image" onclick="viewIssue('${issue.token}')">
+        <div class="card horizontal" onclick="viewIssue('${issue.token}')">
+            <div class="card-image">
                 <img src="${issue.img_thumb}">
             </div>
-            <div class="card-stacked">
-                <div class="card-content" onclick="viewIssue('${issue.token}')">
-                    <span class="card-title"></span>
-                    <h5>${issue.categorie_str}</h5>
-                    <p class="grey-text">${issue.address}</p>
-                    <p class="grey-text">${issue.date_obj.toLocaleString()}</p>
-                </div>
-                <div class="card-action right-align">
-                    <a class="waves-effect waves-light btn-floating" onclick="viewIssue('${issue.token}')"><i class="material-icons center">search</i></a>
-                    <a class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
-                </div>
+            <div class="card-content">
+                <span class="card-title"></span>
+                <h5>${issue.categorie_str}</h5>
+                <p class="grey-text">${issue.address}</p>
+                <p class="grey-text">${issue.date_obj.toLocaleString()}</p>
             </div>
         </div>
     </div>
