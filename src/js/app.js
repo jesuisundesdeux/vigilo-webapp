@@ -61,7 +61,7 @@ export default class VigiloApp {
         M.Modal.init($("#modal-issue"));
         $(window).scroll(() => {
             if (($(window.document.body).height() - $(window).height() - $(window).scrollTop()) < 10) {
-                list.displayIssues(10)
+                list.displayIssues(30)
             }
         })
         M.FloatingActionButton.init($('.fixed-action-btn'));
@@ -70,13 +70,13 @@ export default class VigiloApp {
         $(dataManager).on('filterchange',async ()=>{
             list.cleanIssues();
             map.cleanIssues();
-            await list.displayIssues(10)
+            await list.displayIssues(30)
             await map.displayIssues(true) 
         })
         
         filters.init();
 
-        await list.displayIssues(10)
+        await list.displayIssues(30)
         await map.displayIssues()
     }
 
