@@ -1,5 +1,5 @@
 // Import HTML
-import '../index.html';
+//import '../index.html';
 // import main CSS
 import '../css/main.scss';
 

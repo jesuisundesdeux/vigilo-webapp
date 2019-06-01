@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <meta name="robots" content="index,follow">
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <title>Vǐgǐlo</title>
+
+</head>
+
+<body>
+  ${require('./navs.html')}
+
+  <!-- Modal for zone -->
+  <div id="modal-zone" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h5>Zone géographique</h5>
+      <div class="collection">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="issues">
+      ${require('./issues.html')}
+    </div>
+    <div id="stats" class="container">
+      ${require('./stats.html')}
+    </div>
+  </div>
+
+  <!-- Modal for issue -->
+  <div id="modal-issue" class="modal modal-fixed-footer big">
+  </div>
+
+  <!-- Modal for form -->
+  <div id="modal-form" class="modal modal-fixed-footer fullscreen">
+    ${require('./form.html')}
+  </div>
+
+  <!-- Modal for issue upload -->
+  <div id="modal-form-loader" class="modal">
+    <div class="modal-content">
+      <h4>Envoi...</h4>
+      <div class="progress">
+        <div class="determinate" style="width: 10%"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
