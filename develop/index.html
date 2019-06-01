@@ -199,7 +199,7 @@
                 <input type="file" accept="image/jpeg" class="validate" required>
               </div>
               <div class="file-path-wrapper">
-                <label>Photo</label>
+                <label>Photo <span class="red-text">*</span></label>
                 <input class="file-path validate" type="text">
               </div>
             </div>
@@ -223,7 +223,7 @@
           <div class="col s12">
             <div class="input-field">
               <input type="text" class="validate" id="issue-address" required>
-              <label for="issue-address">Adresse</label>
+              <label for="issue-address">Adresse <span class="red-text">*</span></label>
             </div>
           </div>
         </div>
@@ -234,11 +234,11 @@
         <div class="card-panel row">
           <div class="input-field col s12 m6">
             <input type="text" class="datepicker validate" id="issue-date" required>
-            <label for="issue-date">Date</label>
+            <label for="issue-date">Date <span class="red-text">*</span></label>
           </div>
           <div class="input-field col s12 m6">
             <input type="text" class="timepicker validate" id="issue-time" required>
-            <label for="issue-time">Heure</label>
+            <label for="issue-time">Heure <span class="red-text">*</span></label>
           </div>
         </div>
       </div>
@@ -247,7 +247,7 @@
       <div class="col s12 m12 l6 xl6">
         <div class="card-panel row">
           <div class="col s12">
-            <label for="issue-cat">Catégorie</label>
+            <label for="issue-cat">Catégorie <span class="red-text">*</span></label>
             <select id="issue-cat" required>
               <option value="" disabled selected>Choisir une catégorie</option>
             </select>
@@ -259,8 +259,8 @@
       <div class="col s12 m12 l12 xl12">
         <div class="card-panel row">
           <div class="input-field col s12">
-            <input id="issue-comment" type="text" class="validate">
-            <label for="issue-comment">Description courte</label>
+            <input id="issue-comment" type="text" class="validate" maxlength="50">
+            <label for="issue-comment">Description courte <span class="grey-text">(max 50 car.)</span></label>
           </div>
           <div class="input-field col s12">
             <textarea id="issue-explanation" class="materialize-textarea"></textarea>
