@@ -10,8 +10,6 @@ import dataManager from './dataManager';
 
 export default class VigiloApp {
     async init() {
-        $("#version a").append(vigiloconfig.VERSION_NUMBER);
-
         
         /**
         * SELECT ZONE MODAL

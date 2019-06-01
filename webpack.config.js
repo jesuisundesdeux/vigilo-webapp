@@ -2,8 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-//const webpack = require('webpack');
+const pkg= require('./package.json');
 
 
 module.exports = {
@@ -47,7 +46,12 @@ module.exports = {
 		}),
 		new CleanWebpackPlugin(['dist']),
 		new HtmlWebpackPlugin({
-			template: "src/html/index.html",
+      template: "src/html/index.html",
+      title: "Vǐgǐlo",
+      meta: {
+        viewport: 'width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no',
+        robots: "index,follow"
+      }
 		})
 	],
 	devServer: {
