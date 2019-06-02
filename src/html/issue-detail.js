@@ -3,7 +3,7 @@ export default function(issue){
   return `
 <div class="modal-content">
   <div class="row">
-      <div class="col s12 m6 l4 xl3">
+      <div class="col s12 m6 l5 xl4">
           <div class="center-align">
               <img class="materialboxed center-align" src="${issue.img}">
           </div>
@@ -16,7 +16,11 @@ export default function(issue){
               <img class="materialboxed center-align" src="${issue.map}">
           </div>
       </div>
-      <div class="col s12 m12 l8 xl9">
+      <div class="col s12 m12 l7 xl8">
+          <h6 class="center-align valign-wrapper">
+            ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> Ce signalement sera vérifié prochainement par un modérateur' : ''}
+            ${(issue.status == 1) ? '<i class="material-icons">check_circle</i> Ce signalement a été pris en compte et le problème corrigé !' : ''}
+          </h6>
           <p><b>Référence de suivi :</b></p>
           <h4 class="center-align">${issue.token}</h4>
           <p>

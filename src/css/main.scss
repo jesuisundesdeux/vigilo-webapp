@@ -27,11 +27,11 @@ body {
 	ul.tabs {
 		height: 100%;
 	}
-        #version {
-          position: absolute;
-          bottom: 56px;
-          width: 100%;
-        }
+  #version {
+    position: absolute;
+    bottom: 56px;
+    width: 100%;
+  }
 }
 
 nav.nav-extended {
@@ -46,18 +46,17 @@ nav.nav-extended {
 		top: 64px;
 		z-index: 997;
 	}
-        @media #{$small-and-down} {
-          ul.tabs {
-            top: 56px;
-          }
-        }
+  @media #{$small-and-down} {
+    ul.tabs {
+      top: 56px;
+    }
+  }
 	& > div {
 		margin-top: 48px;
 	}
 }
 
 #issues {
-	
 	.spinner {
 		display: none;
 		&:only-child {
@@ -70,7 +69,8 @@ nav.nav-extended {
 		.spinner {
 			display: block;
 		}
-	}
+  }
+  
 }
 
 #stats {

@@ -1,11 +1,14 @@
 .modal {
     &.big {
-        width: 90%;
+        width: 70%;
         max-height: 90%;
         top: 5% !important;
         &.modal-fixed-footer {
             height: 90%;
         }
+        @media #{$medium-and-down} {
+          width: 90%;
+       }
     }
     &.fullscreen {
         width: 100%;
