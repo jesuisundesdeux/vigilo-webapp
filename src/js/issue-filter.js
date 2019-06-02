@@ -1,5 +1,5 @@
 import * as vigiloconfig from './vigilo-config';
-import * as vigiloui from './ui-template';
+import errorCard from '../html/error';
 import dataManager from './dataManager';
 
 export async function init() {
@@ -47,6 +47,6 @@ export async function init() {
 		
 		
     } catch (e) {
-        $("#issues .cards-container").empty().append(vigiloui.errorCard(e));
+        $("#issues .cards-container").empty().append(errorCard(e));
     }
 }

@@ -1,0 +1,15 @@
+export default function (issue) {
+  return `<div class="col s12 m12 l6 xl4">
+  <div class="card horizontal" onclick="viewIssue('${issue.token}')">
+      <div class="card-image">
+          <img src="${issue.img_thumb}">
+      </div>
+      <div class="card-content">
+          <span class="card-title"></span>
+          <h5>${(issue.approved == 0) ? '<i class="material-icons" title="Ce signalement sera vérifié prochainement par un modérateur">new_releases</i>' : ''}${issue.categorie_str}</h5>
+          <p class="grey-text">${issue.address}</p>
+          <p class="grey-text">${issue.date_obj.toLocaleString()}</p>
+      </div>
+  </div>
+</div>`
+}
