@@ -6,7 +6,11 @@ export default function (issue) {
       </div>
       <div class="card-content">
           <span class="card-title"></span>
-          <h5>${(issue.approved == 0) ? '<i class="material-icons" title="Ce signalement sera vérifié prochainement par un modérateur">new_releases</i>' : ''}${issue.categorie_str}</h5>
+          <h5>
+            ${(issue.approved == 0) ? '<i class="material-icons" title="Ce signalement sera vérifié prochainement par un modérateur">new_releases</i>' : ''}
+            ${(issue.status == 1) ? '<i class="material-icons" title="Ce signalement a été pris en compte et le problème corrigé !">check_circle</i>' : ''}
+            ${issue.categorie_str}
+          </h5>
           <p class="grey-text">${issue.address}</p>
           <p class="grey-text">${issue.date_obj.toLocaleString()}</p>
       </div>
