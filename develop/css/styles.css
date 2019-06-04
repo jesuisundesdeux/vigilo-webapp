@@ -7310,11 +7310,14 @@ input[type=range]::-ms-thumb {
     margin-top: 1.2rem; } }
 
 .modal.big {
-  width: 90%;
+  width: 70%;
   max-height: 90%;
   top: 5% !important; }
   .modal.big.modal-fixed-footer {
     height: 90%; }
+  @media only screen and (max-width: 992px) {
+    .modal.big {
+      width: 90%; } }
 
 .modal.fullscreen {
   width: 100%;
