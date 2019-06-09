@@ -1,10 +1,12 @@
 import * as vigilo from './vigilo-api';
+import LocalDataManager from './localDataManager';
 
 class DataManager {
     constructor(){
         this.dow = [];
         this.hour = [];
         this.categories = [];
+        this.onlyme = false;
     }
     async getData() {
         var data = await vigilo.getIssues();
@@ -24,11 +26,17 @@ class DataManager {
                     return false;
                 }
             }
+            if (this.onlyme){
+              if (LocalDataManager.getTokenSecretId(issue.token) == undefined){
+                return false;
+              }
+            }
             return true;
         });
         return data;
     }
     setFilter(filters){
+      console.log(filters)
         var change = false;
         if (filters.dow && filters.dow != this.dow){
             this.dow = filters.dow;
@@ -58,6 +66,10 @@ class DataManager {
         if (filters.categories && filters.categories != this.categories){
             this.categories = filters.categories;
             change = true;
+        }
+        if (filters.onlyme !== undefined && filters.onlyme != this.onlyme) {
+          this.onlyme = filters.onlyme;
+          change = true;
         }
         if (change){
             $(this).trigger('filterchange');

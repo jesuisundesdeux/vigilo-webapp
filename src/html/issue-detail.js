@@ -1,3 +1,4 @@
+import LocalDataManager from '../js/localDataManager';
 
 export default function(issue){
   return `
@@ -20,6 +21,7 @@ export default function(issue){
           <h6 class="center-align valign-wrapper">
             ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> Ce signalement sera vérifié prochainement par un modérateur' : ''}
             ${(issue.status == 1) ? '<i class="material-icons">check_circle</i> Ce signalement a été pris en compte et le problème corrigé !' : ''}
+            ${(LocalDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
           </h6>
           <p><b>Référence de suivi :</b></p>
           <h4 class="center-align">${issue.token}</h4>

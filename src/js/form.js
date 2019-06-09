@@ -9,6 +9,7 @@ import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
 import errorCard from '../html/error';
 import ImageDrawable from './image-drawable';
+import LocalDataManager from './localDataManager';
 
 window.startForm = function () {
 	clearForm()
@@ -360,7 +361,9 @@ $("#modal-form form").submit((e) => {
 		.then((createResponse) => {
 			if (createResponse.status != 0) {
 				throw "error"
-			}
+      }
+      // Store secretId
+      LocalDataManager.setTokenSecretId(createResponse.token, createResponse.secretid);
 
 			$("#modal-form-loader .determinate").css("width", "50%");
 			var dataURL = $("#picture-preview canvas")[0].toDataURL("image/jpeg", 1.0);

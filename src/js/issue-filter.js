@@ -20,7 +20,8 @@ export async function init() {
 			dataManager.setFilter({
 				categories: $.map($("#modal-filters input[name=categories]:checked"), (i)=>$(i).val()),
 				dow: $.map($("#modal-filters input[name=dow]:checked"), (i)=>$(i).val()),
-				hour: $.map($("#modal-filters input[name=hour]:checked"), (i)=>$(i).val())
+        hour: $.map($("#modal-filters input[name=hour]:checked"), (i)=>$(i).val()),
+        onlyme: ($.map($("#modal-filters input[name=owner]:checked"), (i)=>$(i).val()).indexOf('me') != -1),
 			})
 		}
 
