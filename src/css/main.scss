@@ -10,6 +10,7 @@ body {
 
 @import "~materialize-css/sass/materialize.scss";
 @import "materialize-custom.scss";
+@import "timedout-marker.scss";
 @import '~leaflet/dist/leaflet.css';
 @import '~leaflet-control-geocoder/dist/Control.Geocoder.css';
 @import '~leaflet.fullscreen/Control.FullScreen.css';

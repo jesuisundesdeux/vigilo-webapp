@@ -5,6 +5,7 @@ import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
 import './circle-marker-dynamic';
+import './timedout-marker';
 import { CATEGORIES_COLORS } from './colors';
 
 import dataManager from './dataManager';
@@ -96,7 +97,8 @@ window.centerOnIssue = async function (token) {
 	focus();
 	var issues = await dataManager.getData();
 	var issue = issues.filter(item => item.token == token)[0];
-	issuesmap.setView([issue.lat_float, issue.lon_float], 18)
+  issuesmap.setView([issue.lat_float, issue.lon_float], 18)
+  L.timedOutMarker([issue.lat_float, issue.lon_float]).addTo(issuesmap);
 	M.Tabs.getInstance($("#issues .tabs")[0]).select('issues-map')
 	M.Modal.getInstance($("#modal-issue")[0]).close();
 }
