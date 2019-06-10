@@ -47,7 +47,7 @@ export function getInstance(){
         return JSON.parse(instance)
     }
 }
-async function setInstance(name){
+async function setInstance(name, noreload){
     var instances = await getInstances()
     for (var i in instances){
         if (instances[i].name == name){
@@ -55,7 +55,9 @@ async function setInstance(name){
             break;
         }
     }
-    window.location.reload()
+    if (noreload !== true){
+      window.location.reload()
+    }
 }
 
 window.setInstance = setInstance;

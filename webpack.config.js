@@ -46,12 +46,18 @@ module.exports = {
 		}),
 		new CleanWebpackPlugin(['dist']),
 		new HtmlWebpackPlugin({
+      filename: "index.html",
       template: "src/html/index.html",
       title: "Vǐgǐlo",
       meta: {
         viewport: 'width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no',
         robots: "index,follow"
       }
+    }),
+    new HtmlWebpackPlugin({
+      template: "src/html/stats-iframe.html",
+      filename: "stats-iframe.html",
+      title: "Vǐgǐlo"
 		})
 	],
 	devServer: {
