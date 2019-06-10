@@ -38,7 +38,7 @@ $("#modal-form input[type=file]").change(function () {
 			// Read Exif
 			var located = false
 			var timestamp = false;
-			var exifObj = piexif.load(e.target.result);
+      var exifObj = piexif.load(e.target.result);
 			if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined) {
 				// GPS available : position, date & time
 				// Position
@@ -56,9 +56,9 @@ $("#modal-form input[type=file]").change(function () {
 				setTime(date.getHours(), date.getMinutes())
 				located = true;
 				timestamp = true;
-			} else if (exifObj['0th'] !== undefined && exifObj['0th'][piexif.ImageIFD.DateTime] !== undefined) {
+			} else if (exifObj['Exif'] !== undefined && exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal] !== undefined) {
 				// No GPS : date & time ?
-				var datetime = exifObj['0th'][piexif.ImageIFD.DateTime]
+        var datetime = exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal]
 				var date = new Date(datetime.split(" ")[0].split(":").join("-"))
 				date.setHours(datetime.split(" ")[1].split(":")[0])
 				date.setMinutes(datetime.split(" ")[1].split(":")[1])
