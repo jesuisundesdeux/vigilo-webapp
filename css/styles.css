@@ -7336,6 +7336,14 @@ input[type=range]::-ms-thumb {
 .sidenav {
   z-index: 1001; }
 
+.timedout-marker {
+  opacity: 1;
+  -webkit-transition: opacity 2s ease-in-out;
+  -moz-transition: opacity 2s ease-in-out;
+  -ms-transition: opacity 2s ease-in-out;
+  -o-transition: opacity 2s ease-in-out;
+  transition: opacity 2s ease-in-out; }
+
 /* Compatible with Leaflet 0.7 */
 .leaflet-control-locate a {
   font-size: 1.4em;
