@@ -2,6 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 const pkg= require('./package.json');
 
 
@@ -58,7 +59,27 @@ module.exports = {
       template: "src/html/stats-iframe.html",
       filename: "stats-iframe.html",
       title: "Vǐgǐlo"
-		})
+    }),
+    new WebpackPwaManifest({
+      name: 'Vǐgǐlo',
+      short_name: 'Vǐgǐlo',
+      description: 'Vigilo est une application qui permet aux citoyens qui se déplacent avec des moyens de locomotion non motorisés (piétons, cyclistes, ...) de remonter des observations sur les problèmes de déplacements auxquels ils font face au quotidien.',
+      lang: "fr",
+      background_color: '#fdd835',
+      theme_color: '#fdd835',
+      crossorigin: 'use-credentials', //can be null, use-credentials or anonymous
+      ios: true,
+      icons: [
+        {
+          src: path.resolve('src/img/favicon.png'),
+          sizes: [48, 72, 96]
+        },
+        {
+          src: path.resolve('src/img/vigilo.png'),
+          sizes: [128, 192, 256, 384, 512, 1024]
+        }
+      ]
+    })
 	],
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
