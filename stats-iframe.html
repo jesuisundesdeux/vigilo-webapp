@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <style type="text/css">
+    html,
+    body {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+    canvas {
+      min-height: 350px;
+    }
+  </style>
+<link href="css/styles.css" rel="stylesheet"></head>
+
+<body>
+  <div class="row" id="stats-last30days">
+  <div class="col s12 l4 white center-align">
+    <h2>...</h2>
+    <h6>signalements ces 30 derniers jours</h6>
+  </div>
+  <div class="col s12 l8 white"><canvas></canvas></div>
+</div>
+<hr>
+<div class="row" id="stats-bycats">
+  <div class="col s12 l4 white center-align">
+    <h2>...</h2>
+    <h6>signalements reçus</h6>
+  </div>
+  <div class="col s12 l8 white"><canvas></canvas></div>
+</div>
+<hr>
+<script type="text/javascript" src="js/main.js"></script></body>
+
+</html>
