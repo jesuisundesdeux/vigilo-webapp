@@ -31,7 +31,7 @@ export default function(issue){
           </p>
           <p>
               <b>Date :</b><br>
-              ${issue.date_obj.toLocaleString()}
+              ${issue.date_obj.toLocaleString('fr')}
           </p>
           <p>
               <b>Remarque :</b><br>

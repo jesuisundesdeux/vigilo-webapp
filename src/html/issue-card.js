@@ -15,7 +15,7 @@ export default function (issue) {
             ${issue.categorie_str}
           </h5>
           <p class="grey-text">${issue.address}</p>
-          <p class="grey-text">${issue.date_obj.toLocaleString()}</p>
+          <p class="grey-text">${issue.date_obj.toLocaleString('fr')}</p>
       </div>
   </div>
 </div>`
