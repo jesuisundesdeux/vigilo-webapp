@@ -1,0 +1,58 @@
+{
+  "icons": [
+    {
+      "src": "icon_1024x1024.1b84eefa9828ccb0fc29caa77a841f23.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_512x512.efbf41609533670002ccb3d6a961de34.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_384x384.2757b0309c5c75f43c0833a8f9d8157e.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_256x256.bae744259c0ea5e1f5b321dc4254c179.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_192x192.48db02757d006043becffa60d988073e.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_128x128.33fc2c4b395fca34412f2950b914b8be.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_96x96.8dcabd4aa590f6afe365633b2c739e05.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_72x72.e2664af31b9b5f5b138d621c8039211a.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icon_48x48.3ef99a6a2d3ceb0fcb102b9c70214809.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ],
+  "name": "Vǐgǐlo",
+  "short_name": "Vǐgǐlo",
+  "orientation": "portrait",
+  "display": "standalone",
+  "start_url": ".",
+  "description": "Vigilo est une application qui permet aux citoyens qui se déplacent avec des moyens de locomotion non motorisés (piétons, cyclistes, ...) de remonter des observations sur les problèmes de déplacements auxquels ils font face au quotidien.",
+  "lang": "fr",
+  "background_color": "#fdd835",
+  "theme_color": "#fdd835"
+}
