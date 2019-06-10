@@ -17,9 +17,21 @@ class LocalDataManager {
 
     }
   }
+
   save(){
     localStorage.setItem("vigilo-localdata", JSON.stringify(this._data));
   }
+
+  /**
+   * Store current version in local storage. If new, return true.
+   * @param {string} version 
+   */
+  setVersion(version){
+    var loaded = localStorage.getItem("vigilo-version");
+    localStorage.setItem("vigilo-version", version);
+    return version != loaded;
+  }
+
   getTokenSecretId(token){
     return this._data.tokens[token];
   }

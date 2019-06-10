@@ -7,6 +7,7 @@ import * as stats from './stats';
 import M from 'materialize-css';
 
 import dataManager from './dataManager';
+import localDataManager from './localDataManager';
 
 export default class VigiloApp {
     async init() {
@@ -74,8 +75,14 @@ export default class VigiloApp {
         
         filters.init();
 
-        await list.displayIssues(30)
-        await map.displayIssues()
+        await list.displayIssues(30);
+        await map.displayIssues();
+
+        // Display "new version" if new...
+        if (localDataManager.setVersion(vigiloconfig.VERSION_NUMBER)){
+          var toastHTML = `<span>Nouvelle version ${vigiloconfig.VERSION_NUMBER} !</span><a href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v${vigiloconfig.VERSION_NUMBER}" class="btn-flat toast-action" target="_blank">Détails</a>`;
+          M.toast({html: toastHTML});
+        }
     }
 
 

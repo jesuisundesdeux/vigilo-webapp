@@ -36,7 +36,8 @@ export function getCategories() {
 };
 
 var pkg= require('../../package.json');
-export const VERSION = pkg.name+"-"+pkg.version
+export const VERSION = pkg.name+"-"+pkg.version;
+export const VERSION_NUMBER = pkg.version;
 
 export function getInstance(){
     var instance = localStorage.getItem('vigilo-instance');
