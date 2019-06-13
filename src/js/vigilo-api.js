@@ -1,4 +1,5 @@
 import * as vigiloconfig from './vigilo-config';
+import localDataManager from './localDataManager';
 
 const CONTENT_TYPE_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded"
 const CONTENT_TYPE_JPEG = "image/jpeg"
@@ -38,6 +39,9 @@ export function getIssues(options) {
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token
                             item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token
+                            if (localDataManager.isAdmin() && !item.approved_bool){
+                              item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
+                            }
                             item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
                             return item
                         }))
@@ -84,6 +88,17 @@ export function addImage(token, secretId, data) {
 
     }
     return request(options)
+}
+
+export function acl(key){
+  return request(baseUrl() + "/acl.php?key=" + key)
+}
+
+export function approve(key, token, status){
+  var options = {
+    url: baseUrl() + "/approve.php?key=" + key + "&token=" + token + "&approved=" + status,
+}
+return request(options)
 }
 
 export function getScope(){

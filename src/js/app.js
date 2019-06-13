@@ -4,6 +4,7 @@ import * as list from './issue-list';
 import * as filters from './issue-filter';
 import * as form from './form';
 import * as stats from './stats';
+import * as admin from './admin';
 import M from 'materialize-css';
 
 import dataManager from './dataManager';
@@ -41,6 +42,8 @@ export default class VigiloApp {
         $("nav .brand-logo").append(" " + vigiloconfig.getInstance().name)
 
 
+        // Admin behaviour
+        await admin.init();
 
         /**
          * SIDENAV
@@ -80,7 +83,7 @@ export default class VigiloApp {
             await map.displayIssues(true) 
         })
         
-        filters.init();
+        await filters.init();
 
         await list.displayIssues(30);
         await map.displayIssues();
@@ -90,6 +93,8 @@ export default class VigiloApp {
           var toastHTML = `<span>Nouvelle version ${vigiloconfig.VERSION_NUMBER} !</span><a href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v${vigiloconfig.VERSION_NUMBER}" class="btn-flat toast-action" target="_blank">Détails</a>`;
           M.toast({html: toastHTML});
         }
+
+        
     }
 
 

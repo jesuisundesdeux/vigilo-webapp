@@ -41,6 +41,29 @@
     ${require('./form.html')}
   </div>
 
+  <!-- Modal for admin -->
+  <div id="modal-admin" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h5>Devenir modérateur</h5>
+      Avant toute chose, vous devez prendre contact avec l'association gérant votre zone géographique dans Vigilo.
+      
+      Pour devenir modérateur, vous devez posséder une clé d'accès.
+      Insérez la clé fournie par un modérateur dans le champs ci-dessous ou cliquez sur "générer" et transmettez cette clé à un modérateur.
+
+      Votre autorisation d'accès au rôle de modérateur doit être validée par un modérateur.
+
+      <div class="input-field">
+          <input id="role_key" type="text" class="validate">
+          <label for="role_key">Votre clé d'accès</label>
+          <button id="generate-key" type="button" class="waves-effect waves-light btn">Générer une clé <i class="material-icons right">loop</i></button>
+          <button id="save-key" type="button" class="waves-effect waves-light btn">Enregistrer <i class="material-icons right">save</i></button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
+    </div>
+  </div>
+
   <!-- Modal for issue upload -->
   <div id="modal-form-loader" class="modal">
     <div class="modal-content">

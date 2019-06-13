@@ -1,6 +1,19 @@
-import LocalDataManager from '../js/localDataManager';
+import localDataManager from '../js/localDataManager';
 
-export default function(issue){
+export default function (issue) {
+  const btn_to_approve = `<a class="btn waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')">A décider<i class="material-icons">help</i></a>`;
+  const btn_approve = `<a class="btn waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')">Approuver<i class="material-icons">check_circle</i></a>`;
+  const btn_refuse = `<a class="btn waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')">Refuser<i class="material-icons">remove_circle</i></a>`;
+  var btns = "";
+  if (localDataManager.isAdmin()) {
+    if (issue.approved == "0") {
+      btns = btn_approve + btn_refuse;
+    } else if (issue.approved == "1") {
+      btns = btn_to_approve + btn_refuse;
+    } else if (issue.approved == "2") {
+      btns = btn_approve + btn_to_approve;
+    }
+  }
   return `
 <div class="modal-content">
   <div class="row">
@@ -21,7 +34,7 @@ export default function(issue){
           <h6 class="center-align valign-wrapper">
             ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> Ce signalement sera vérifié prochainement par un modérateur' : ''}
             ${(issue.status == 1) ? '<i class="material-icons">check_circle</i> Ce signalement a été pris en compte et le problème corrigé !' : ''}
-            ${(LocalDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
+            ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
           </h6>
           <p><b>Référence de suivi :</b></p>
           <h4 class="center-align">${issue.token}</h4>
@@ -51,6 +64,7 @@ export default function(issue){
   </div>
 </div>
 <div class="modal-footer">
+${btns}
 <a class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
   <a href="#!" class="modal-close waves-effect waves-light btn-floating"><i class="material-icons">close</i></a>
 </div>

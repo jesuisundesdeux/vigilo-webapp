@@ -39,5 +39,21 @@ class LocalDataManager {
     this._data.tokens[token] = secretId;
     this.save()
   }
+
+  getAdminKey(){
+    return this._data.adminKey;
+  }
+  setAdminKey(key){
+    this._data.adminKey = key;
+    this.save();
+  }
+
+  setIsAdmin(isAdmin){
+    sessionStorage.setItem("vigilo-isAdmin", isAdmin)
+  }
+
+  isAdmin(){
+    return sessionStorage.getItem("vigilo-isAdmin") === "true"
+  }
 }
 export default new LocalDataManager();
