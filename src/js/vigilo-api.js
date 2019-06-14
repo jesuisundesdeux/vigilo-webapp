@@ -62,11 +62,17 @@ function generateToken() {
     return token;
 }
 
-export function createIssue(data) {
-    data.token = generateToken();
+export function createIssue(data, key) {
+    if (data.token === undefined || data.token == ""){
+      data.token = generateToken();
+    }
+    var opts = "";
+    if (key !== undefined){
+      opts = "?key="+key;
+    }
 
     var options = {
-        url: baseUrl() + "/create_issue.php",
+        url: baseUrl() + "/create_issue.php"+opts,
         method: "POST",
         headers: {
             "Content-Type": CONTENT_TYPE_X_WWW_FORM_URLENCODED

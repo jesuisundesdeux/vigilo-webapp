@@ -1,15 +1,16 @@
 import localDataManager from '../js/localDataManager';
 
 export default function (issue) {
-  const btn_to_approve = `<a class="btn waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')">A décider<i class="material-icons">help</i></a>`;
-  const btn_approve = `<a class="btn waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')">Approuver<i class="material-icons">check_circle</i></a>`;
-  const btn_refuse = `<a class="btn waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')">Refuser<i class="material-icons">remove_circle</i></a>`;
+  const btn_to_approve = `<a class="btn-floating waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')"><i class="material-icons right">remove_circle</i></a>`;
+  const btn_approve = `<a class="btn-floating waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')"><i class="material-icons center">check_circle</i></a>`;
+  const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')"><i class="material-icons center">delete</i></a>`;
+  const btn_edit = `<a class="btn-floating waves-effect waves-light blue" onclick="startForm('${issue.token}')"><i class="material-icons center">edit</i></a>`;
   var btns = "";
   if (localDataManager.isAdmin()) {
     if (issue.approved == "0") {
-      btns = btn_approve + btn_refuse;
+      btns = btn_approve + btn_refuse + btn_edit;
     } else if (issue.approved == "1") {
-      btns = btn_to_approve + btn_refuse;
+      btns = btn_to_approve;
     } else if (issue.approved == "2") {
       btns = btn_approve + btn_to_approve;
     }
@@ -66,7 +67,7 @@ export default function (issue) {
 <div class="modal-footer">
 ${btns}
 <a class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
-  <a href="#!" class="modal-close waves-effect waves-light btn-floating"><i class="material-icons">close</i></a>
+  <a href="#!" class="modal-close waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
 </div>
 
 `

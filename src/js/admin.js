@@ -25,6 +25,7 @@ export async function init() {
       generated += alphabet[Math.floor(Math.random() * Math.floor(alphabet.length))];
     }
     $("#modal-admin input").val(generated);
+    M.updateTextFields();
   });
   $("#modal-admin #save-key").click(() => {
     localDataManager.setAdminKey($("#modal-admin input").val());
@@ -42,7 +43,10 @@ export async function init() {
 
 
   // Valid role (admin) ?
-  var acl = await vigilo.acl(key);
+  var acl={}
+  try {
+    acl = await vigilo.acl(key);
+  } catch (e) {}
   if (acl.status == 0 && acl.role == "admin"){
     // Is admin mode ?
     if (localDataManager.isAdmin()){
@@ -75,8 +79,5 @@ function initAdmin(){
   window.adminApprove = async function(token, status){
     await vigilo.approve(localDataManager.getAdminKey(), token, status);
     window.location.reload()
-  }
-  window.adminEdit = async function(token){
-    
   }
 }
