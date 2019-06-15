@@ -109,64 +109,116 @@
   </ul>
 
   <!-- Modal for filters -->
-  <div id="modal-filters" class="modal modal-fixed-footer">
+  <div id="modal-filters" class="modal bottom-sheet">
   <div class="modal-content">
     <h5>Filtres</h5>
     <div class="row">
-      <div id="categories-select" class="input-field col s12 m6">
+      <div id="categories-select" class="col s12 l8">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Catégories</h6>
       </div>
-      <div id="daytime-select" class="col s12 m6">
-        <div>
-          <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Jour</h6>
-          <p>
+      <div class="col s6 m6 l2">
+
+        <h6 class="valign-wrapper">Age</h6>
+        <p>
+          <label>
+            <input type="radio" name="age" value="1" />
+            <span>24 h</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="3" />
+            <span>3 j</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="7" />
+            <span>7 j</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="30" />
+            <span>30 j</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="inf" checked="checked" />
+            <span>Tous</span>
+          </label>
+        </p>
+
+      </div>
+      <div class="col s6 m6 l2">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="dow" value="worked" checked="checked" />
+            <span>En semaine</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="dow" value="weekend" checked="checked" />
+            <span>Week-end</span>
+          </label>
+        </p>
+      </div>
+      <div class="col s6 m6 l4">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Toutes les heures</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="hour" value="morning" checked="checked" />
+            <span>Matin</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="hour" value="afternoon" checked="checked" />
+            <span>Après-midi</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="hour" value="night" checked="checked" />
+            <span>Soirée-Nuit</span>
+          </label>
+        </p>
+
+      </div>
+      <div class="col s6 m6 l4">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="status" value="unapproved" checked="checked" />
+            <span>Non modéré</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="approved" checked="checked" />
+            <span>Approuvé</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="unresolved" checked="checked" />
+            <span>Non résolu</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="resolved" checked="checked" />
+            <span>Résolu</span>
+          </label>
+        </p>
+      </div>
+      <div class="col s6 m6 l4">
+        <h6 class="valign-wrapper">Mes signalements</h6>
+        <p>
+          <div class="switch">
             <label>
-              <input type="checkbox" name="dow" value="worked" checked="checked" />
-              <span>En semaine</span>
+              Off
+              <input type="checkbox" name="owner" value="me">
+              <span class="lever"></span>
+              On
             </label>
-          </p>
-          <p>
-            <label>
-              <input type="checkbox" name="dow" value="weekend" checked="checked" />
-              <span>Week-end</span>
-            </label>
-          </p>
-        </div>
-        <div>
-          <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Heure</h6>
-          <p>
-            <label>
-              <input type="checkbox" name="hour" value="morning" checked="checked" />
-              <span>Matin</span>
-            </label>
-          </p>
-          <p>
-            <label>
-              <input type="checkbox" name="hour" value="afternoon" checked="checked" />
-              <span>Après-midi</span>
-            </label>
-          </p>
-          <p>
-            <label>
-              <input type="checkbox" name="hour" value="night" checked="checked" />
-              <span>Soirée-Nuit</span>
-            </label>
-          </p>
-        </div>
-        <div>
-          <h6 class="valign-wrapper"><i class="material-icons">check_box_outline_blank </i> Mes signalements</h6>
-          <p>
-            <label>
-              <input type="checkbox" name="owner" value="me" checked="" />
-              <span>Seulement les miens</span>
-            </label>
-          </p>
-        </div>
+          </div>
+        </p>
       </div>
     </div>
-  </div>
-  <div class="modal-footer">
-    <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">check</i></a>
   </div>
 </div>
 </div>
