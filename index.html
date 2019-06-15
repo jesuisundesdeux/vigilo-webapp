@@ -4,7 +4,9 @@
 <head>
   <meta charset="utf-8">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"><meta name="robots" content="index,follow"><link href="css/styles.css" rel="stylesheet"></head>
+  <link rel="icon" type="image/png" href="/img/65a4e574c6a756f13a653a9323daf34d-favicon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/65a4e574c6a756f13a653a9323daf34d-favicon.png">
+<meta name="apple-mobile-web-app-title" content="Vǐgǐlo" /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-status-bar-style" content="default" /><meta name="theme-color" content="#fdd835" /><link rel="manifest" href="manifest.60295a409764c020da0037e268324861.json" crossorigin="use-credentials" /><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"><meta name="robots" content="index,follow"><link href="css/styles.css" rel="stylesheet"></head>
 
 <body>
   <div class="navbar-fixed">
@@ -43,7 +45,10 @@
   <li><a class="waves-effect grey-text" target="_blank"
       href="https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md"><i
         class="material-icons">bug_report</i>Signaler un bug</a></li>
-  <li id="version" class="center-align"><a href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.3.0" target="_blank" class="grey-text">Version : 1.3.0</a></li>
+  <li id="admin-status"></li>
+  <li id="version" class="center-align"><a
+      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.4.0"
+      target="_blank" class="grey-text">Version : 1.4.0</a></li>
 </ul>
 
   <!-- Modal for zone -->
@@ -104,64 +109,116 @@
   </ul>
 
   <!-- Modal for filters -->
-  <div id="modal-filters" class="modal modal-fixed-footer">
+  <div id="modal-filters" class="modal bottom-sheet">
   <div class="modal-content">
     <h5>Filtres</h5>
     <div class="row">
-      <div id="categories-select" class="input-field col s12 m6">
+      <div id="categories-select" class="col s12 l8">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Catégories</h6>
       </div>
-      <div id="daytime-select" class="col s12 m6">
-        <div>
-          <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Jour</h6>
-          <p>
+      <div class="col s6 m6 l2">
+
+        <h6 class="valign-wrapper">Age</h6>
+        <p>
+          <label>
+            <input type="radio" name="age" value="1" />
+            <span>24 h</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="3" />
+            <span>3 j</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="7" />
+            <span>7 j</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="30" />
+            <span>30 j</span>
+          </label>
+          <br>
+          <label>
+            <input type="radio" name="age" value="inf" checked="checked" />
+            <span>Tous</span>
+          </label>
+        </p>
+
+      </div>
+      <div class="col s6 m6 l2">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="dow" value="worked" checked="checked" />
+            <span>En semaine</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="dow" value="weekend" checked="checked" />
+            <span>Week-end</span>
+          </label>
+        </p>
+      </div>
+      <div class="col s6 m6 l4">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Toutes les heures</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="hour" value="morning" checked="checked" />
+            <span>Matin</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="hour" value="afternoon" checked="checked" />
+            <span>Après-midi</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="hour" value="night" checked="checked" />
+            <span>Soirée-Nuit</span>
+          </label>
+        </p>
+
+      </div>
+      <div class="col s6 m6 l4">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="status" value="unapproved" checked="checked" />
+            <span>Non modéré</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="approved" checked="checked" />
+            <span>Approuvé</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="unresolved" checked="checked" />
+            <span>Non résolu</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="resolved" checked="checked" />
+            <span>Résolu</span>
+          </label>
+        </p>
+      </div>
+      <div class="col s6 m6 l4">
+        <h6 class="valign-wrapper">Mes signalements</h6>
+        <p>
+          <div class="switch">
             <label>
-              <input type="checkbox" name="dow" value="worked" checked="checked" />
-              <span>En semaine</span>
+              Off
+              <input type="checkbox" name="owner" value="me">
+              <span class="lever"></span>
+              On
             </label>
-          </p>
-          <p>
-            <label>
-              <input type="checkbox" name="dow" value="weekend" checked="checked" />
-              <span>Week-end</span>
-            </label>
-          </p>
-        </div>
-        <div>
-          <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Heure</h6>
-          <p>
-            <label>
-              <input type="checkbox" name="hour" value="morning" checked="checked" />
-              <span>Matin</span>
-            </label>
-          </p>
-          <p>
-            <label>
-              <input type="checkbox" name="hour" value="afternoon" checked="checked" />
-              <span>Après-midi</span>
-            </label>
-          </p>
-          <p>
-            <label>
-              <input type="checkbox" name="hour" value="night" checked="checked" />
-              <span>Soirée-Nuit</span>
-            </label>
-          </p>
-        </div>
-        <div>
-          <h6 class="valign-wrapper"><i class="material-icons">check_box_outline_blank </i> Mes signalements</h6>
-          <p>
-            <label>
-              <input type="checkbox" name="owner" value="me" checked="" />
-              <span>Seulement les miens</span>
-            </label>
-          </p>
-        </div>
+          </div>
+        </p>
       </div>
     </div>
-  </div>
-  <div class="modal-footer">
-    <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">check</i></a>
   </div>
 </div>
 </div>
@@ -193,6 +250,7 @@
   <!-- Modal for form -->
   <div id="modal-form" class="modal modal-fixed-footer fullscreen">
     <form action="#" method="POST">
+  <input id="issue-token" type="hidden" name="token">
   <div class="modal-content">
     <h3>Nouvelle observation</h3>
 
@@ -290,6 +348,29 @@
     <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
   </div>
 </form>
+  </div>
+
+  <!-- Modal for admin -->
+  <div id="modal-admin" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h5>Devenir modérateur</h5>
+      Avant toute chose, vous devez prendre contact avec l'association gérant votre zone géographique dans Vigilo.
+      
+      Pour devenir modérateur, vous devez posséder une clé d'accès.
+      Insérez la clé fournie par un modérateur dans le champs ci-dessous ou cliquez sur "générer" et transmettez cette clé à un modérateur.
+
+      Votre autorisation d'accès au rôle de modérateur doit être validée par un modérateur.
+
+      <div class="input-field">
+          <input id="role_key" type="text" class="validate">
+          <label for="role_key">Votre clé d'accès</label>
+          <button id="generate-key" type="button" class="waves-effect waves-light btn">Générer une clé <i class="material-icons right">loop</i></button>
+          <button id="save-key" type="button" class="waves-effect waves-light btn">Enregistrer <i class="material-icons right">save</i></button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
+    </div>
   </div>
 
   <!-- Modal for issue upload -->
