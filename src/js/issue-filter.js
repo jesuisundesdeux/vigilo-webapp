@@ -8,12 +8,11 @@ export async function init() {
 		var cats = await vigiloconfig.getCategories();
 		for (var i in cats) {
 			$("#modal-filters #categories-select")
-				.append(`<p>
-                <label>
+				.append(`<div class="col s12 m6"><label>
                   <input type="checkbox" checked="checked"  name="categories" value="${i}" />
                   <span>${cats[i]}</span>
                 </label>
-              </p>`)
+              </div`)
 		}
 		M.Modal.init($("#modal-filters"));
 		M.Modal.getInstance($("#modal-filters")).options.onCloseStart = function(){
