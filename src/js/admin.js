@@ -69,6 +69,7 @@ export async function init() {
     // Pending ...
     $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">star_half</i> Presque modérateur</a></li>');
     $("#admin-status a").click(()=>{M.Modal.getInstance($("#modal-admin")).open();})
+    localDataManager.setIsAdmin(false);
   }
 
   
