@@ -6,28 +6,51 @@ class DataManager {
         this.dow = [];
         this.hour = [];
         this.categories = [];
+        this.status = [];
+        this.age = 0;
         this.onlyme = false;
     }
     async getData() {
         var data = await vigilo.getIssues();
+        var date_now = Date.now();
         data = data.filter((issue)=>{
-            if (this.dow.length >0){
+            if (this.dow.length > 0){
                 if (this.days.indexOf(issue.date_obj.getDay()) == -1){
                     return false;
                 }
             }
-            if (this.hour.length >0){
+            if (this.hour.length > 0){
                 if (this.hours.indexOf(issue.date_obj.getHours()) == -1){
                     return false;
                 }
             }
-            if (this.categories.length >0){
+            if (this.categories.length > 0){
                 if (this.categories.indexOf(issue.categorie) == -1){
                     return false;
                 }
             }
             if (this.onlyme){
               if (LocalDataManager.getTokenSecretId(issue.token) == undefined){
+                return false;
+              }
+            }
+            if (this.status.length > 0){
+              if (issue.approved == "0" && this.status.indexOf("unapproved") == -1 && this.status.indexOf("approved") != -1){
+                return false;
+              }
+              if (issue.approved == "1" && this.status.indexOf("approved") == -1 && this.status.indexOf("unapproved") != -1){
+                return false;
+              }
+              if (issue.status == "0" && this.status.indexOf("unresolved") == -1 && this.status.indexOf("resolved") != -1){
+                return false;
+              }
+              if (issue.status == "1" && this.status.indexOf("resolved") == -1 && this.status.indexOf("unresolved") != -1){
+                return false;
+              }
+            }
+            if (this.age != 0){
+              var issue_age = (date_now - issue.date_obj) / (1000 * 60 * 60 * 24);
+              if (issue_age > this.age) {
                 return false;
               }
             }
@@ -63,9 +86,17 @@ class DataManager {
             }
             change = true;
         }
-        if (filters.categories && filters.categories != this.categories){
+        if (filters.categories !==undefined && filters.categories != this.categories){
             this.categories = filters.categories;
             change = true;
+        }
+        if (filters.status !== undefined && filters.status != this.status){
+            this.status = filters.status;
+            change = true;
+        }
+        if (filters.age !== undefined && filters.age != this.age){
+          this.age = filters.age;
+          change = true;
         }
         if (filters.onlyme !== undefined && filters.onlyme != this.onlyme) {
           this.onlyme = filters.onlyme;
