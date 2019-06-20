@@ -1,0 +1,12 @@
+html, body {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	width: 100%;
+	height: 100%;
+}
+
+@import "~materialize-css/sass/materialize.scss";
+@import "materialize-custom.scss";

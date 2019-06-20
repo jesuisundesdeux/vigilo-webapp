@@ -36,6 +36,7 @@
     "leaflet.fullscreen": "^1.4.5",
     "leaflet.locatecontrol": "^0.66.2",
     "materialize-css": "^1.0.0-rc.2",
+    "mithril": "^2.0.0-rc.6",
     "piexifjs": "^1.0.4"
   }
 }
