@@ -56,6 +56,9 @@ $("#modal-form input[type=file]").change(function () {
     var reader = new FileReader();
     reader.onload = function (e) {
 
+      // Render image preview
+      renderImage(e.target.result);
+
       // Read Exif
       var located = false
       var timestamp = false;
@@ -100,9 +103,6 @@ $("#modal-form input[type=file]").change(function () {
         setTime(now.getHours(), now.getMinutes())
       }
 
-      // Render image preview
-      renderImage(e.target.result);
-
 
     }
     reader.readAsDataURL(input.files[0]);
@@ -111,15 +111,17 @@ $("#modal-form input[type=file]").change(function () {
 
 function renderImage(src) {
   var image = new Image();
-  image.crossOrigin="Anonymous";
+  image.crossOrigin = "Anonymous";
   image.onload = function () {
     var orientation = 0;
 
     if (typeof src != "string") {
-      var exifObj = piexif.load(src);
-      if (exifObj["0th"] !== undefined && exifObj["0th"][piexif.ImageIFD.Orientation] !== undefined) {
-        orientation = exifObj["0th"][piexif.ImageIFD.Orientation];
-      }
+      try {
+        var exifObj = piexif.load(src);
+        if (exifObj["0th"] !== undefined && exifObj["0th"][piexif.ImageIFD.Orientation] !== undefined) {
+          orientation = exifObj["0th"][piexif.ImageIFD.Orientation];
+        }
+      } catch {}
     }
 
     var canvas = document.createElement("canvas");
@@ -392,7 +394,7 @@ $("#modal-form form").submit((e) => {
   modalLoader.open()
 
   var key;
-  if (LocalDataManager.isAdmin()){
+  if (LocalDataManager.isAdmin()) {
     key = LocalDataManager.getAdminKey();
   }
 
@@ -403,7 +405,7 @@ $("#modal-form form").submit((e) => {
       }
 
       // Store secretId
-      if (key === undefined){
+      if (key === undefined) {
         LocalDataManager.setTokenSecretId(createResponse.token, createResponse.secretid);
       }
 
