@@ -35,7 +35,9 @@ import '../sass/main.scss';
 import $ from 'jquery';
 window.$ = $;
 import m from "mithril";
+window.m = m;
 
-import components from './components';
+import start from './start';
 
-m.render(document.body, m(components.template));
+
+m.mount(document.body, start);

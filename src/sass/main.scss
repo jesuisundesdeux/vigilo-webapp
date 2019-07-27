@@ -8,5 +8,93 @@ body {
 	height: 100%;
 }
 
+
+/**
+Materialize CSS
+*/
+// First functions for color
+@import "~materialize-css/sass/components/color-variables";
+@import "~materialize-css/sass/components/color-classes";
+// Defaults
+@import "~materialize-css/sass/components/variables";
+// My variables
+$primary-color: color("yellow", "darken-1");
+$primary-color-light: lighten($primary-color, 15%);
+$primary-color-dark: darken($primary-color, 15%);
+/*** More variables not shown here.. ***/
+// CSS
 @import "~materialize-css/sass/materialize.scss";
+// My improvments
 @import "materialize-custom.scss";
+
+
+
+
+.sidenav {
+  #version {
+    position: absolute;
+    bottom: 56px;
+    width: 100%;
+  }
+}
+
+.splash {
+  height: 100vh;
+  position: absolute;
+  width: 100vw;
+  text-align: center;
+  #loading-message {
+    bottom: 50px;
+    position: fixed;
+    width: 100vw;
+  }
+}
+
+.tabs {
+  .tab {
+    a {
+      margin: 0;
+      &.active {
+        border-bottom: $tabs-underline-color 2px solid;
+      }
+    }
+  }
+}
+
+ul.tabs {
+	position: fixed;
+	top: 64px;
+  z-index: 997;
+
+  & + div {
+    margin-top: 48px;
+  }
+}
+
+@media #{$small-and-down} {
+  ul.tabs {
+    top: 56px;
+  }
+}
+
+.cards-container {
+	display: flex;
+	flex-wrap: wrap;
+	.card {
+    color: black !important;
+		cursor: pointer;
+		height: calc( 100% - 1rem );
+		.card-image {
+			display: flex;
+			align-items: center;
+		}
+	}
+}
+
+table.header-first-column {
+  tr {
+   td:first-child {
+      font-weight: bold;
+    }
+  }
+}

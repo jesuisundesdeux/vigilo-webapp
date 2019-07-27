@@ -1,3 +1,18 @@
+.collection {
+  a.collection-item {
+    cursor: pointer;
+  }
+}
+.sidenav-trigger {
+  cursor: pointer;
+}
+
+nav.nav-extended {
+	.nav-wrapper {
+		overflow-y: hidden;
+	}
+}
+
 .modal {
     &.big {
         width: 70%;
