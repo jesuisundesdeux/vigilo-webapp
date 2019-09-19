@@ -1,10 +1,10 @@
 import localDataManager from '../js/localDataManager';
 
 export default function (issue) {
-  const btn_to_approve = `<a class="btn-floating waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')"><i class="material-icons right">remove_circle</i></a>`;
-  const btn_approve = `<a class="btn-floating waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')"><i class="material-icons center">check_circle</i></a>`;
-  const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')"><i class="material-icons center">delete</i></a>`;
-  const btn_edit = `<a class="btn-floating waves-effect waves-light blue" onclick="startForm('${issue.token}')"><i class="material-icons center">edit</i></a>`;
+  const btn_to_approve = `<a class="btn-floating waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')"><i class="material-icons right">remove_circle</i></a>\n`;
+  const btn_approve = `<a class="btn-floating waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')"><i class="material-icons center">check_circle</i></a>\n`;
+  const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')"><i class="material-icons center-alignr">delete</i></a>\n`;
+  const btn_edit = `<a class="btn-floating waves-effect waves-light blue" onclick="startForm('${issue.token}')"><i class="material-icons center">edit</i></a>\n`;
   var btns = "";
   if (localDataManager.isAdmin()) {
     if (issue.approved == "0") {
@@ -67,7 +67,7 @@ export default function (issue) {
 <div class="modal-footer">
 ${btns}
 <a class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
-  <a href="#!" class="modal-close waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
+<a href="#!" class="modal-close waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
 </div>
 
 `
