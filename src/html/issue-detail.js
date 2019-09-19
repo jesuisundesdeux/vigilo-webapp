@@ -3,7 +3,7 @@ import localDataManager from '../js/localDataManager';
 export default function (issue) {
   const btn_to_approve = `<a class="btn-floating waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')"><i class="material-icons right">remove_circle</i></a>\n`;
   const btn_approve = `<a class="btn-floating waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')"><i class="material-icons center">check_circle</i></a>\n`;
-  const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')"><i class="material-icons center-alignr">delete</i></a>\n`;
+  const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')"><i class="material-icons center-align">delete</i></a>\n`;
   const btn_edit = `<a class="btn-floating waves-effect waves-light blue" onclick="startForm('${issue.token}')"><i class="material-icons center">edit</i></a>\n`;
   var btns = "";
   if (localDataManager.isAdmin()) {
