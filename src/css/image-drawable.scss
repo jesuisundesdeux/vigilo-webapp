@@ -30,12 +30,17 @@ div.drawable {
             }
             
             &.undo {
-                transform: translateX(-176px);
+                transform: translateX(-274px);
             }
             &.redo {
+                transform: translateX(-225px);
+            }
+            &.rotate_left {
+                transform: translateX(-176px);
+            }
+            &.rotate_right {
                 transform: translateX(-127px);
             }
-            
         }
     }
     .fixed-action-btn {
