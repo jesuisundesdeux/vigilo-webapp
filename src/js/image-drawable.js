@@ -220,6 +220,9 @@ export class ClassImageDrawable {
 
       self.ctx.drawImage(image, 0, 0);
       self.ctx.restore();
+      self.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      self.setColor(self.color);
+      self.offset = $(self.div).find('canvas').offset();
     }
     image.src = dataURL;
 
