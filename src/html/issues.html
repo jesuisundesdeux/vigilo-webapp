@@ -13,21 +13,12 @@
   ${require('./spinner.html')}
 </div>
 <div class="fixed-action-btn">
-  <a class="btn-floating btn-large yellow darken-3 black-text">
-    <i class="large material-icons">more_vert</i>
+  <a class="btn-floating btn-large blue darken-3 black-text modal-trigger" href="#modal-filters">
+    <i class="material-icons">filter_list</i>
   </a>
-  <ul>
-    <li>
-      <a class="btn-floating blue darken-1 black-text modal-trigger" href="#modal-filters">
-        <i class="material-icons">filter_list</i>
-      </a>
-    </li>
-    <li>
-      <a class="btn-floating green darken-3 black-text" onclick="startForm()">
-        <i class="material-icons">add</i>
-      </a>
-    </li>
-  </ul>
+  <a class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
+    <i class="material-icons">add</i>
+  </a>
 
   <!-- Modal for filters -->
   ${require('./filters.html')}
