@@ -39,6 +39,8 @@ var pkg= require('../../package.json');
 export const VERSION = pkg.name+"-"+pkg.version;
 export const VERSION_NUMBER = pkg.version;
 
+export const IMAGE_MAX_SIZE=1500;
+
 export function getInstance(){
     var instance = localStorage.getItem('vigilo-instance');
     if (instance == null){

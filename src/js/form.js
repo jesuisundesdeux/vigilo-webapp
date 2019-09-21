@@ -125,51 +125,57 @@ function renderImage(src) {
     }
 
     var canvas = document.createElement("canvas");
-    canvas.width = image.width;
-    canvas.height = image.height;
+
+    var sx = vigiloconfig.IMAGE_MAX_SIZE / image.width;
+    var sy = vigiloconfig.IMAGE_MAX_SIZE / image.height;
+    var scale = Math.min(sx, sy);
+
+
+    canvas.width = image.width * scale;
+    canvas.height = image.height * scale;
     var ctx = canvas.getContext("2d");
     var x = 0;
     var y = 0;
     ctx.save();
     if (orientation == 2) {
       x = -canvas.width;
-      ctx.scale(-1, 1);
+      ctx.scale(-scale, scale);
     } else if (orientation == 3) {
       x = -canvas.width;
       y = -canvas.height;
-      ctx.scale(-1, -1);
+      ctx.scale(-scale, -scale);
     } else if (orientation == 4) {
       y = -canvas.height;
-      ctx.scale(1, -1);
+      ctx.scale(scale, -scale);
     } else if (orientation == 5) {
-      canvas.width = image.height;
-      canvas.height = image.width;
+      canvas.width = image.height * scale;
+      canvas.height = image.width * scale;
       ctx.translate(canvas.width, canvas.height / canvas.width);
       ctx.rotate(Math.PI / 2);
       y = -canvas.width;
-      ctx.scale(1, -1);
+      ctx.scale(scale, -scale);
     } else if (orientation == 6) {
-      canvas.width = image.height;
-      canvas.height = image.width;
+      canvas.width = image.height * scale;
+      canvas.height = image.width * scale;
       ctx.translate(canvas.width, canvas.height / canvas.width);
       ctx.rotate(Math.PI / 2);
     } else if (orientation == 7) {
-      canvas.width = image.height;
-      canvas.height = image.width;
+      canvas.width = image.height * scale;
+      canvas.height = image.width * scale;
       ctx.translate(canvas.width, canvas.height / canvas.width);
       ctx.rotate(Math.PI / 2);
       x = -canvas.height;
-      ctx.scale(-1, 1);
+      ctx.scale(-scale, scale);
     } else if (orientation == 8) {
-      canvas.width = image.height;
-      canvas.height = image.width;
+      canvas.width = image.height * scale;
+      canvas.height = image.width * scale;
       ctx.translate(canvas.width, canvas.height / canvas.width);
       ctx.rotate(Math.PI / 2);
       x = -canvas.height;
       y = -canvas.width;
-      ctx.scale(-1, -1);
+      ctx.scale(-scale, -scale);
     }
-    ctx.drawImage(image, x, y);
+    ctx.drawImage(image, 0, 0, image.width, image.height, x, y, canvas.width, canvas.height);
     ctx.restore();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
