@@ -138,10 +138,6 @@ function renderImage(src) {
       x = -canvas.width;
       y = -canvas.height;
       ctx.scale(-1, -1);
-    } else if (orientation == 3) {
-      x = -canvas.width;
-      y = -canvas.height;
-      ctx.scale(-1, -1);
     } else if (orientation == 4) {
       y = -canvas.height;
       ctx.scale(1, -1);
