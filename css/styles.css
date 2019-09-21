@@ -7445,8 +7445,12 @@ div.drawable.fullscreen {
     div.drawable.fullscreen .fixed-action-btn.color-picker {
       transform: translateX(-66px); }
     div.drawable.fullscreen .fixed-action-btn.undo {
-      transform: translateX(-176px); }
+      transform: translateX(-274px); }
     div.drawable.fullscreen .fixed-action-btn.redo {
+      transform: translateX(-225px); }
+    div.drawable.fullscreen .fixed-action-btn.rotate_left {
+      transform: translateX(-176px); }
+    div.drawable.fullscreen .fixed-action-btn.rotate_right {
       transform: translateX(-127px); }
 
 div.drawable .fixed-action-btn {
