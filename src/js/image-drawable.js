@@ -180,6 +180,8 @@ export class ClassImageDrawable {
 
   onDraw(e) {
     if (!this.drawing) {
+      this.lastDrawX = undefined;
+      this.lastDrawY = undefined;
       return;
     }
     var x, y;
@@ -192,7 +194,19 @@ export class ClassImageDrawable {
     }
     x = (x - this.offset.left) * this.ratioWidth;
     y = (y - this.offset.top) * this.ratioHeight;
-    this.ctx.fillRect(x, y, 10 * this.ratioWidth, 10 * this.ratioHeight);
+    var lX = this.lastDrawX;
+    var lY = this.lastDrawY;
+    this.lastDrawX = x;	
+    this.lastDrawY = y;	
+
+    if (lX === undefined || lY === undefined){
+      this.ctx.fillRect(x, y, 10 * this.ratioWidth, 10 * this.ratioHeight);	
+    } else {
+	var dist = Math.floor(Math.sqrt(Math.pow(x-lX,2)+Math.pow(y-lY,2)));
+        for (var i = 0; i<dist ; i++) {
+           this.ctx.fillRect((x-lX)*i/dist+x, (y-lY)*i/dist+y, 10 * this.ratioWidth, 10 * this.ratioHeight);
+        }
+    }
     e.stopPropagation();
     e.preventDefault();
   }
