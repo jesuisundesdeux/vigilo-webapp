@@ -51,6 +51,8 @@ export class ClassImageDrawable {
                 <li><a class="btn-floating yellow" data-color="yellow"></a></li>
                 <li><a class="btn-floating green" data-color="green"></a></li>
                 <li><a class="btn-floating blue" data-color="blue"></a></li>
+                <li><a class="btn-floating grey darken-4" data-color="black"></a></li>
+                <li><a class="btn-floating white" data-color="white"></a></li>
               </ul>
             </div>
             <div class="fixed-action-btn close">
