@@ -1,4 +1,5 @@
 import * as vigiloconfig from './vigilo-config';
+import localDataManager from './localDataManager';
 
 const CONTENT_TYPE_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded"
 const CONTENT_TYPE_JPEG = "image/jpeg"
@@ -26,7 +27,7 @@ export function getIssues(options) {
     }).join("&")
 
     return new Promise((resolve, reject) => {
-        getCategories()
+        vigiloconfig.getCategories()
             .then((cats) => {
                 request(url)
                     .then((obj) => {
@@ -38,6 +39,9 @@ export function getIssues(options) {
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token
                             item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token
+                            if (localDataManager.isAdmin() && !item.approved_bool){
+                              item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
+                            }
                             item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
                             return item
                         }))
@@ -46,20 +50,6 @@ export function getIssues(options) {
             })
             .catch(reject);
     });
-};
-
-export function getCategories() {
-
-    var url = baseUrl() + "/get_categories_list.php";
-    return request(url)
-        .then((cat) => {
-            let toreturn = {}
-            for (var i in cat) {
-                toreturn[cat[i].catid] = cat[i].catname;
-            }
-            return toreturn;
-        });
-
 };
 
 function generateToken() {
@@ -72,11 +62,17 @@ function generateToken() {
     return token;
 }
 
-export function createIssue(data) {
-    data.token = generateToken();
+export function createIssue(data, key) {
+    if (data.token === undefined || data.token == ""){
+      data.token = generateToken();
+    }
+    var opts = "";
+    if (key !== undefined){
+      opts = "?key="+key;
+    }
 
     var options = {
-        url: baseUrl() + "/create_issue.php",
+        url: baseUrl() + "/create_issue.php"+opts,
         method: "POST",
         headers: {
             "Content-Type": CONTENT_TYPE_X_WWW_FORM_URLENCODED
@@ -92,10 +88,26 @@ export function addImage(token, secretId, data) {
         url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId,
         method: "POST",
         headers: {
-            "Content-Type": CONTENT_TYPE_JPEG
+            //"Content-Type": CONTENT_TYPE_JPEG
         },
         body: data
 
     }
     return request(options)
+}
+
+export function acl(key){
+  return request(baseUrl() + "/acl.php?key=" + key)
+}
+
+export function approve(key, token, status){
+  var options = {
+    url: baseUrl() + "/approve.php?key=" + key + "&token=" + token + "&approved=" + status,
+}
+return request(options)
+}
+
+export function getScope(){
+    var url = baseUrl() + "/get_scope.php?scope=" + vigiloconfig.getInstance().scope;
+    return request(url);
 }

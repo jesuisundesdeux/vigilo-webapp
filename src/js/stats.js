@@ -1,24 +1,12 @@
 import * as vigilo from './vigilo-api';
 import Chart from 'chart.js';
-
+import {CATEGORIES_COLORS} from './colors';
 Chart.defaults.global.legend.position = "bottom";
 Chart.defaults.global.maintainAspectRatio = false;
 
 export async function init() {
     var data = await vigilo.getIssues();
     makeStats(data);
-}
-
-const CATAGORIES = {
-    "Véhicule ou objet gênant": { stack: "Cohabitation", color: "crimson" },
-    "Incivilité récurrente sur la route": { stack: "Cohabitation", color: "lightcoral" },
-    "Défaut d'entretien": { stack: "Infrastructures", color: "darkgreen" },
-    "Aménagement mal conçu": { stack: "Infrastructures", color: "seagreen" },
-    "Signalisation, marquage": { stack: "Infrastructures", color: "yellowgreen" },
-    "Absence d'arceaux de stationnement": { stack: "Infrastructures", color: "turquoise" },
-    "Absence d'aménagement": { stack: "Infrastructures", color: "paleturquoise" },
-    "Accident, chute, incident": { stack: "Autre", color: "black" },
-    "Autre": { stack: "Autre", color: "grey" },
 }
 
 function truncDateToDay(date) {
@@ -44,13 +32,13 @@ async function makeStats(issues) {
     var today = new Date()
     truncDateToDay(today)
 
-    for (var cat in CATAGORIES) {
+    for (var cat in CATEGORIES_COLORS) {
         dataLast30Days[cat] = {
             label: cat,
             data: {},
             borderWidth: 2,
-            //stack: CATAGORIES[cat].stack,
-            backgroundColor: CATAGORIES[cat].color,
+            //stack: CATEGORIES_COLORS[cat].stack,
+            backgroundColor: CATEGORIES_COLORS[cat].color,
         }
         for (var i = 0; i < 31; i++) {
             var time = today.getTime() - i * 24 * 60 * 60 * 1000;
@@ -122,7 +110,7 @@ async function makeStats(issues) {
             datasets: [
                 {
                     data: Object.values(dataByCat),
-                    backgroundColor: Object.values(CATAGORIES).map((x)=>x.color)
+                    backgroundColor: Object.values(CATEGORIES_COLORS).map((x)=>x.color)
                 }
             ],
             labels: Object.keys(dataByCat)

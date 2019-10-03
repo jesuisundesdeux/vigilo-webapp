@@ -10,6 +10,7 @@ body {
 
 @import "~materialize-css/sass/materialize.scss";
 @import "materialize-custom.scss";
+@import "timedout-marker.scss";
 @import '~leaflet/dist/leaflet.css';
 @import '~leaflet-control-geocoder/dist/Control.Geocoder.css';
 @import '~leaflet.fullscreen/Control.FullScreen.css';
@@ -21,16 +22,17 @@ body {
 }
 
 @import "spinner.scss";
+@import "image-drawable.scss";
 
 .sidenav {
 	ul.tabs {
 		height: 100%;
 	}
-        #version {
-          position: absolute;
-          bottom: 56px;
-          width: 100%;
-        }
+  #version {
+    position: absolute;
+    bottom: 56px;
+    width: 100%;
+  }
 }
 
 nav.nav-extended {
@@ -45,18 +47,17 @@ nav.nav-extended {
 		top: 64px;
 		z-index: 997;
 	}
-        @media #{$small-and-down} {
-          ul.tabs {
-            top: 56px;
-          }
-        }
+  @media #{$small-and-down} {
+    ul.tabs {
+      top: 56px;
+    }
+  }
 	& > div {
 		margin-top: 48px;
 	}
 }
 
 #issues {
-	
 	.spinner {
 		display: none;
 		&:only-child {
@@ -69,7 +70,8 @@ nav.nav-extended {
 		.spinner {
 			display: block;
 		}
-	}
+  }
+  
 }
 
 #stats {
@@ -82,6 +84,7 @@ nav.nav-extended {
 	display: flex;
 	flex-wrap: wrap;
 	.card {
+		cursor: pointer;
 		height: calc( 100% - 1rem );
 		.card-image {
 			display: flex;
@@ -99,9 +102,14 @@ nav.nav-extended {
 	#form-map {
 		min-height: 200px;
 	}
-	#picture-preview canvas {
+	canvas {
 		max-height: 200px;
 		max-width: 100%;
 	}
 }
 
+#modal-filters {
+	h6 {
+		cursor: pointer;
+	}
+}
