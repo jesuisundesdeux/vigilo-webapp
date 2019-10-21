@@ -47,7 +47,7 @@ export async function init() {
   try {
     acl = await vigilo.acl(key);
   } catch (e) {}
-  if (acl.role == "admin"){
+  if (acl.role == "admin" || acl.role == "moderator"){
     // Is admin mode ?
     if (localDataManager.isAdmin()){
       document.body.style.backgroundColor="red";
