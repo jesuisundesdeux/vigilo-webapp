@@ -11,7 +11,7 @@ export async function init() {
 
 function truncDateToDay(date) {
     truncDateToHour(date)
-    date.setHours(0)
+    date.setUTCHours(0)
 }
 function truncDateToHour(date) {
     date.setMinutes(0)
