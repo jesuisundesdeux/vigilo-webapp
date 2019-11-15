@@ -1,7 +1,7 @@
 version: "3.0"
 services:
   webpack:
-    image: node:alpine
+    image: node:12-alpine
     environment:
       WEBPACK_MODE: ${WEBPACK_MODE:-production}
     volumes:
