@@ -7,5 +7,6 @@ export const CATEGORIES_COLORS = {
     "Absence d'arceaux de stationnement": { stack: "Infrastructures", color: "turquoise" },
     "Absence d'aménagement": { stack: "Infrastructures", color: "paleturquoise" },
     "Accident, chute, incident": { stack: "Autre", color: "black" },
+    "Vol ou dégradation de vélo": { stack: "Cohabitation", color: "blue" },
     "Autre": { stack: "Autre", color: "grey" },
 }
