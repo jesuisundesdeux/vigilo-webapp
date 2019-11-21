@@ -1,6 +1,6 @@
 import * as vigilo from './vigilo-api';
+import * as vigiloconfig from './vigilo-config';
 import Chart from 'chart.js';
-import {CATEGORIES_COLORS} from './colors';
 Chart.defaults.global.legend.position = "bottom";
 Chart.defaults.global.maintainAspectRatio = false;
 
@@ -32,20 +32,21 @@ async function makeStats(issues) {
     var today = new Date()
     truncDateToDay(today)
 
-    for (var cat in CATEGORIES_COLORS) {
+    var cats = await vigiloconfig.getCategories();
+
+    for (var cat in cats) {
         dataLast30Days[cat] = {
-            label: cat,
+            label: cats[cat].name,
             data: {},
             borderWidth: 2,
-            //stack: CATEGORIES_COLORS[cat].stack,
-            backgroundColor: CATEGORIES_COLORS[cat].color,
+            backgroundColor: cats[cat].color,
         }
         for (var i = 0; i < 31; i++) {
             var time = today.getTime() - i * 24 * 60 * 60 * 1000;
             dataLast30Days[cat].data[time] = 0
         }
 
-        dataByCat[cat] = 0;
+        dataByCat[cats[cat].name] = 0;
     }
 
     // Compute data
@@ -57,8 +58,8 @@ async function makeStats(issues) {
         var truncated_date = new Date(issues[i].date_obj.getTime())
         truncDateToDay(truncated_date);
 
-        if (dataLast30Days[issues[i].categorie_str].data[truncated_date.getTime()] !== undefined) {
-            dataLast30Days[issues[i].categorie_str].data[truncated_date.getTime()]++;
+        if (dataLast30Days[issues[i].categorie].data[truncated_date.getTime()] !== undefined) {
+            dataLast30Days[issues[i].categorie].data[truncated_date.getTime()]++;
             totalDataLast30Days++;
         }
 
@@ -110,7 +111,7 @@ async function makeStats(issues) {
             datasets: [
                 {
                     data: Object.values(dataByCat),
-                    backgroundColor: Object.values(CATEGORIES_COLORS).map((x)=>x.color)
+                    backgroundColor: Object.values(cats).map((x)=>x.color)
                 }
             ],
             labels: Object.keys(dataByCat)

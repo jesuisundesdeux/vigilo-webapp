@@ -10,7 +10,7 @@ export async function init() {
 			$("#modal-filters #categories-select")
 				.append(`<div class="col s12 m6"><label>
                   <input type="checkbox" checked="checked"  name="categories" value="${i}" />
-                  <span>${cats[i]}</span>
+                  <span>${cats[i].name}</span>
                 </label>
               </div`)
 		}

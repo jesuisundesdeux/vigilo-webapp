@@ -28,7 +28,10 @@ export function getCategories() {
         .then((cat) => {
             let toreturn = {}
             for (var i in cat) {
-                toreturn[cat[i].catid] = cat[i].catname;
+                toreturn[cat[i].catid] = {
+                    name: cat[i].catname,
+                    color: cat[i].catcolor
+                };
             }
             return toreturn;
         });

@@ -35,7 +35,8 @@ export function getIssues(options) {
                             item.lon_float = parseFloat(item.coordinates_lon);
                             item.lat_float = parseFloat(item.coordinates_lat);
                             item.approved_bool = item.approved == "1";
-                            item.categorie_str = cats[item.categorie]
+                            item.categorie_str = cats[item.categorie].name;
+                            item.color = cats[item.categorie].color;
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token
                             item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token
