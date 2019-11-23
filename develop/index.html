@@ -48,8 +48,8 @@
         class="material-icons">bug_report</i>Signaler un bug</a></li>
   <li id="admin-status"></li>
   <li id="version" class="center-align"><a
-      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.4.0"
-      target="_blank" class="grey-text">Version : 1.4.0</a></li>
+      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.5.2"
+      target="_blank" class="grey-text">Version : 1.5.2</a></li>
 </ul>
 
 
@@ -94,21 +94,12 @@
 </div>
 </div>
 <div class="fixed-action-btn">
-  <a class="btn-floating btn-large yellow darken-3 black-text">
-    <i class="large material-icons">more_vert</i>
+  <a class="btn-floating btn-large blue darken-1 black-text modal-trigger" href="#modal-filters">
+    <i class="material-icons">filter_list</i>
   </a>
-  <ul>
-    <li>
-      <a class="btn-floating blue darken-1 black-text modal-trigger" href="#modal-filters">
-        <i class="material-icons">filter_list</i>
-      </a>
-    </li>
-    <li>
-      <a class="btn-floating green darken-3 black-text" onclick="startForm()">
-        <i class="material-icons">add</i>
-      </a>
-    </li>
-  </ul>
+  <a class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
+    <i class="material-icons">add</i>
+  </a>
 
   <!-- Modal for filters -->
   <div id="modal-filters" class="modal bottom-sheet">
@@ -163,7 +154,7 @@
           </label>
         </p>
       </div>
-      <div class="col s6 m6 l4">
+      <div class="col s6 m6 l3">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Toutes les heures</h6>
         <p>
           <label>
@@ -183,7 +174,7 @@
         </p>
 
       </div>
-      <div class="col s6 m6 l4">
+      <div class="col s6 m6 l3">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
         <p>
           <label>
@@ -207,7 +198,11 @@
           </label>
         </p>
       </div>
-      <div class="col s6 m6 l4">
+      <div id="city-select" class="col s6 m6 l4">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Communes</h6>
+        <p></p>
+      </div>
+      <div class="col s6 m6 l2">
         <h6 class="valign-wrapper">Mes signalements</h6>
         <p>
           <div class="switch">
@@ -224,6 +219,7 @@
   </div>
 </div>
 </div>
+
     </div>
     <div id="stats" class="container">
       <div class="row" id="stats-last30days">
@@ -265,7 +261,7 @@
             <div class="file-field input-field">
               <div class="btn">
                 <span><i class="material-icons">camera_alt</i></span>
-                <input type="file" accept="image/jpeg" class="validate" required>
+                <input type="file" accept="image/*" class="validate" required>
               </div>
               <div class="file-path-wrapper">
                 <label>Photo <span class="red-text">*</span></label>
