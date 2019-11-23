@@ -9,6 +9,7 @@ class DataManager {
         this.status = [];
         this.age = 0;
         this.onlyme = false;
+        this.cities = [];
     }
     async getData() {
         var data = await vigilo.getIssues();
@@ -28,6 +29,11 @@ class DataManager {
                 if (this.categories.indexOf(issue.categorie) == -1){
                     return false;
                 }
+            }
+            if (this.cities.length > 0){
+              if (this.cities.indexOf(issue.cityname) == -1){
+                  return false;
+              }
             }
             if (this.onlyme){
               if (LocalDataManager.getTokenSecretId(issue.token) == undefined){
@@ -102,6 +108,10 @@ class DataManager {
           this.onlyme = filters.onlyme;
           change = true;
         }
+        if (filters.cities !==undefined && filters.cities != this.cities){
+          this.cities = filters.cities;
+          change = true;
+      }
         if (change){
             $(this).trigger('filterchange');
         }
