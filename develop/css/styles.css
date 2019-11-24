@@ -7374,6 +7374,9 @@ input[type=range]::-ms-thumb {
   height: 30px;
   width: 30px; }
 
+.leaflet-top, .leaflet-bottom, .leaflet-left, .leaflet-right {
+  z-index: 997; }
+
 .spinner {
   margin: 100px auto;
   width: 50px;
@@ -7464,9 +7467,6 @@ div.drawable .fixed-action-btn {
   bottom: 56px;
   width: 100%; }
 
-.sidenav .user-view a {
-  color: white; }
-
 nav.nav-extended .nav-wrapper {
   overflow-y: hidden; }
 
@@ -7519,4 +7519,7 @@ nav.nav-extended .nav-wrapper {
 
 #modal-filters h6 {
   cursor: pointer; }
+
+.row .col {
+  margin-right: auto; }
 

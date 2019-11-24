@@ -7520,3 +7520,6 @@ nav.nav-extended .nav-wrapper {
 #modal-filters h6 {
   cursor: pointer; }
 
+.row .col {
+  margin-right: auto; }
+
