@@ -7374,6 +7374,9 @@ input[type=range]::-ms-thumb {
   height: 30px;
   width: 30px; }
 
+.leaflet-top, .leaflet-bottom, .leaflet-left, .leaflet-right {
+  z-index: 997; }
+
 .spinner {
   margin: 100px auto;
   width: 50px;
