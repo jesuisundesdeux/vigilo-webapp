@@ -21,6 +21,10 @@ body {
 	width: 30px;
 }
 
+.leaflet-top, .leaflet-bottom, .leaflet-left, .leaflet-right {
+	z-index: 997;
+}
+
 @import "spinner.scss";
 @import "image-drawable.scss";
 
