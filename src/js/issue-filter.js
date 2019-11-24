@@ -21,12 +21,13 @@ export async function init() {
 		var issues = await vigilo.getIssues();
 		if (cities && cities.length > 0 && issues[0].cityname !== undefined) {
 			for (var i in cities) {
-				$("#modal-filters #city-select p")
-					.append(`<label>
-								<input type="checkbox" name="city" value="${cities[i].name}" checked="checked" />
-								<span>${cities[i].name}</span>
-				  			</label>
-				  			<br>`);
+				$("#modal-filters #city-select")
+					.append(`<div class="col s12 m6 l4">
+								<label>
+									<input type="checkbox" name="city" value="${cities[i].name}" checked="checked" />
+									<span>${cities[i].name}</span>
+				  				</label>
+				  			</div>`);
 			}
 		} else {
 			$("#modal-filters #city-select").remove()

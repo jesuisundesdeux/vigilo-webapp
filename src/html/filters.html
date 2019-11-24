@@ -6,6 +6,30 @@
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Catégories</h6>
       </div>
       <div class="col s6 m6 l2">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="status" value="unapproved" checked="checked" />
+            <span>Non modéré</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="approved" checked="checked" />
+            <span>Approuvé</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="unresolved" checked="checked" />
+            <span>Non résolu</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="resolved" checked="checked" />
+            <span>Résolu</span>
+          </label>
+        </p>
+      </div>
+      <div class="col s6 m6 l2">
 
         <h6 class="valign-wrapper">Age</h6>
         <p>
@@ -36,21 +60,11 @@
         </p>
 
       </div>
-      <div class="col s6 m6 l2">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
-        <p>
-          <label>
-            <input type="checkbox" name="dow" value="worked" checked="checked" />
-            <span>En semaine</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="dow" value="weekend" checked="checked" />
-            <span>Week-end</span>
-          </label>
-        </p>
+      <div id="city-select" class="col s12 l8">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Communes</h6>
+        <p></p>
       </div>
-      <div class="col s6 m6 l3">
+      <div class="col s6 m6 l2">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Toutes les heures</h6>
         <p>
           <label>
@@ -70,35 +84,19 @@
         </p>
 
       </div>
-      <div class="col s6 m6 l3">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
+      <div class="col s6 m6 l2">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
         <p>
           <label>
-            <input type="checkbox" name="status" value="unapproved" checked="checked" />
-            <span>Non modéré</span>
+            <input type="checkbox" name="dow" value="worked" checked="checked" />
+            <span>En semaine</span>
           </label>
           <br>
           <label>
-            <input type="checkbox" name="status" value="approved" checked="checked" />
-            <span>Approuvé</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="unresolved" checked="checked" />
-            <span>Non résolu</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="resolved" checked="checked" />
-            <span>Résolu</span>
+            <input type="checkbox" name="dow" value="weekend" checked="checked" />
+            <span>Week-end</span>
           </label>
         </p>
-      </div>
-      <div id="city-select" class="col s6 m6 l4">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Communes</h6>
-        <p></p>
-      </div>
-      <div class="col s6 m6 l2">
         <h6 class="valign-wrapper">Mes signalements</h6>
         <p>
           <div class="switch">
@@ -111,9 +109,11 @@
           </div>
         </p>
       </div>
+
+
     </div>
   </div>
   <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">check</i></a>
+    <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">check</i></a>
   </div>
 </div>
