@@ -5,6 +5,7 @@ import * as filters from './issue-filter';
 import * as form from './form';
 import * as stats from './stats';
 import * as admin from './admin';
+import github_issue from '../html/github_issue';
 import M from 'materialize-css';
 
 import dataManager from './dataManager';
@@ -88,6 +89,10 @@ export default class VigiloApp {
         await list.displayIssues(30);
         await map.displayIssues();
 
+        // Link bug
+        var template = await github_issue();
+        $("a[href='https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md']")
+            .attr('href', 'https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?body='+template)
         
     }
 
