@@ -15,9 +15,10 @@ export async function init() {
                 </label>
               </div`)
 		}
+		addBadge("categories", countIssue(await vigilo.getIssues(), "categorie", Object.keys(cats)));
 		// Fill city select
 		var scope = await vigilo.getScope();
-		var cities = scope.cities.sort((a,b)=>parseInt(a.population)<=parseInt(b.population))
+		var cities = scope.cities.sort((a, b) => parseInt(a.population) <= parseInt(b.population))
 		var issues = await vigilo.getIssues();
 		if (cities && cities.length > 0 && issues[0].cityname !== undefined) {
 			for (var i in cities) {
@@ -29,6 +30,7 @@ export async function init() {
 				  				</label>
 				  			</div>`);
 			}
+			addBadge("city", countIssue(await vigilo.getIssues(), "cityname", cities.map(c=>c.name)));
 		} else {
 			$("#modal-filters #city-select").remove()
 		}
@@ -70,4 +72,20 @@ export async function init() {
 	} catch (e) {
 		$("#issues .cards-container").empty().append(errorCard(e));
 	}
+}
+function countIssue(issues, attr, keys){
+	var count = {}
+	keys.forEach(element => {
+		count[element] = 0;
+	});
+	issues.reduce(function(accumulator, currentIssue){
+		accumulator[currentIssue[attr]]++
+		return accumulator
+	}, count);
+	return count;
+}
+function addBadge(name, count) {
+	for (let [key, value] of Object.entries(count)) {
+		$("#modal-filters input[name='"+name+"'][value='"+key.replace("'","\\'")+"']").parent().find('span').append(' ('+value+')');
+	}	
 }
