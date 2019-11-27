@@ -9,7 +9,7 @@ function baseUrl() {
 };
 
 import {request} from './utils';
-
+var issue_cache = {};
 export function getIssues(options) {
     /**
      * - int GET['c'] : (Facultatif) : filtre selon catégorie
@@ -26,12 +26,16 @@ export function getIssues(options) {
         return kv[0] + "=" + encodeURIComponent(kv[1])
     }).join("&")
 
+    if (issue_cache[url] !== undefined){
+        return Promise.resolve(issue_cache[url]);
+    }
+
     return new Promise((resolve, reject) => {
         vigiloconfig.getCategories()
             .then((cats) => {
                 request(url)
                     .then((obj) => {
-                        resolve(obj.map((item) => {
+                        var data = obj.map((item) => {
                             item.lon_float = parseFloat(item.coordinates_lon);
                             item.lat_float = parseFloat(item.coordinates_lat);
                             item.approved_bool = item.approved == "1";
@@ -45,7 +49,9 @@ export function getIssues(options) {
                             }
                             item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
                             return item
-                        }))
+                        })
+                        issue_cache[url] = data;
+                        resolve(data)
                     })
                     .catch(reject)
             })

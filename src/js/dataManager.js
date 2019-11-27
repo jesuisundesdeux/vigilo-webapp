@@ -74,7 +74,6 @@ class DataManager {
         return data;
     }
     setFilter(filters){
-      console.log(filters)
         var change = false;
         if (filters.dow && filters.dow != this.dow){
             this.dow = filters.dow;
