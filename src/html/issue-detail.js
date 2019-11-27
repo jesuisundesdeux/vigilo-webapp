@@ -34,7 +34,10 @@ export default function (issue) {
       <div class="col s12 m12 l7 xl8">
           <h6 class="center-align valign-wrapper">
             ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> Ce signalement sera vérifié prochainement par un modérateur' : ''}
-            ${(issue.status == 1) ? '<i class="material-icons">check_circle</i> Ce signalement a été pris en compte et le problème corrigé !' : ''}
+            ${(issue.status == 1) ? '<i class="material-icons">done_all</i> Ce signalement a été pris en compte et le problème corrigé !' : ''}
+            ${(issue.status == 2) ? '<i class="material-icons">info</i> Ce signalement sera prochainement résolu.' : ''}
+            ${(issue.status == 3) ? '<i class="material-icons">hourglass_empty</i> Ce signalement est en cours de résolution.' : ''}
+            ${(issue.status == 4) ? '<i class="material-icons">done</i> Ce signalement semble être résolu.' : ''}
             ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
           </h6>
           <p><b>Référence de suivi :</b></p>

@@ -53,6 +53,15 @@ class DataManager {
               if (issue.status == "1" && this.status.indexOf("resolved") == -1 && this.status.indexOf("unresolved") != -1){
                 return false;
               }
+              if (issue.status == "2" && this.status.indexOf("taked") == -1 && this.status.indexOf("taked") != -1){
+                return false;
+              }
+              if (issue.status == "3" && this.status.indexOf("inprogress") == -1 && this.status.indexOf("inprogress") != -1){
+                return false;
+              }
+              if (issue.status == "4" && this.status.indexOf("done") == -1 && this.status.indexOf("done") != -1){
+                return false;
+              }
             }
             if (this.age != 0){
               var issue_age = (date_now - issue.date_obj) / (1000 * 60 * 60 * 24);
