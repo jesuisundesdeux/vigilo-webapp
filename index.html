@@ -48,8 +48,8 @@
         class="material-icons">bug_report</i>Signaler un bug</a></li>
   <li id="admin-status"></li>
   <li id="version" class="center-align"><a
-      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.6.2"
-      target="_blank" class="grey-text">Version : 1.6.2</a></li>
+      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.7.0"
+      target="_blank" class="grey-text">Version : 1.7.0</a></li>
 </ul>
 
   <!-- Modal for zone -->
@@ -114,11 +114,6 @@
           <label>
             <input type="checkbox" name="status" value="unapproved" checked="checked" />
             <span>Non modéré</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="approved" checked="checked" />
-            <span>Approuvé</span>
           </label>
           <br>
           <label>
@@ -203,29 +198,33 @@
 
       </div>
       <div class="col s6 m6 l2">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
-        <p>
-          <label>
-            <input type="checkbox" name="dow" value="worked" checked="checked" />
-            <span>En semaine</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="dow" value="weekend" checked="checked" />
-            <span>Week-end</span>
-          </label>
-        </p>
-        <h6 class="valign-wrapper">Mes signalements</h6>
-        <p>
-          <div class="switch">
+        <div>
+          <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
+          <p>
             <label>
-              Off
-              <input type="checkbox" name="owner" value="me">
-              <span class="lever"></span>
-              On
+              <input type="checkbox" name="dow" value="worked" checked="checked" />
+              <span>En semaine</span>
             </label>
-          </div>
-        </p>
+            <br>
+            <label>
+              <input type="checkbox" name="dow" value="weekend" checked="checked" />
+              <span>Week-end</span>
+            </label>
+          </p>
+        </div>
+        <div>
+          <h6 class="valign-wrapper">Mes signalements</h6>
+          <p>
+            <div class="switch">
+              <label>
+                Off
+                <input type="checkbox" name="owner" value="me">
+                <span class="lever"></span>
+                On
+              </label>
+            </div>
+          </p>
+        </div>
       </div>
 
 
