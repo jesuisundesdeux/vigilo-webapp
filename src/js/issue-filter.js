@@ -2,6 +2,7 @@ import * as vigiloconfig from './vigilo-config';
 import * as vigilo from './vigilo-api';
 import errorCard from '../html/error';
 import dataManager from './dataManager';
+import LocalDataManager from './localDataManager';
 
 export async function init() {
 	try {
@@ -41,6 +42,15 @@ export async function init() {
 
 		// Age count
 		addBadge("age", countIssueAge(issues));
+
+		// Hour count
+		addBadge("hour", countIssueHour(issues));
+
+		// Day count
+		addBadge("dow", countIssueDay(issues));
+
+		// My issue count
+		$("input[name=owner]").parent().parent().parent().find("h6").append(' ('+countIssueFromMe(issues)+')');
 
 		M.Modal.init($("#modal-filters"));
 		M.Modal.getInstance($("#modal-filters")).options.onCloseStart = function () {
@@ -123,7 +133,6 @@ function countIssueStatus(issues) {
 		accumulator[issue_status]++
 		return accumulator
 	}, count);
-	console.log(count)
 	return count;
 }
 function countIssueAge(issues){
@@ -145,6 +154,54 @@ function countIssueAge(issues){
 	}, count);
 	return count;
 }
+function countIssueHour(issues){
+	var count = {
+		"morning": 0,
+		"afternoon": 0,
+		"night": 0,
+	}
+	var morning = [6,7,8,9,10,11,12];
+	var afternoon = [13,14,15,16,17,18,19];
+	issues.reduce(function (accumulator, currentIssue) {
+		var hour = currentIssue.date_obj.getHours();
+		if (morning.indexOf(hour) != -1){
+			accumulator.morning++
+		} else if (afternoon.indexOf(hour) != -1){
+			accumulator.afternoon++
+		} else {
+			accumulator.night++
+		}
+		
+		return accumulator
+	}, count);
+	return count;
+}
+function countIssueDay(issues){
+	var count = {
+		"worked": 0,
+		"weekend": 0,
+	}
+	var worked = [1,2,3,4,5];
+	
+	issues.reduce(function (accumulator, currentIssue) {
+		var day = currentIssue.date_obj.getDay();
+		if (worked.indexOf(day) != -1){
+			accumulator.worked++
+		} else {
+			accumulator.weekend++
+		}
+		
+		return accumulator
+	}, count);
+	return count;
+}
+
+function countIssueFromMe(issues){
+	return issues.filter((item)=>{
+		return LocalDataManager.getTokenSecretId(item.token) != undefined
+	}).length
+}
+
 function addBadge(name, count) {
 	for (let [key, value] of Object.entries(count)) {
 		$("#modal-filters input[name='" + name + "'][value='" + key.replace("'", "\\'") + "']").parent().find('span').append(' (' + value + ')');

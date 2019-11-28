@@ -14,7 +14,6 @@ class DataManager {
   async getData() {
     var data = await vigilo.getIssues();
     var date_now = Date.now();
-    console.log(this)
     data = data.filter((issue) => {
       if (this.dow.length > 0) {
         if (this.days.indexOf(issue.date_obj.getDay()) == -1) {
@@ -68,7 +67,6 @@ class DataManager {
       }
       return true;
     });
-    console.log(data.length)
     return data;
   }
   setFilter(filters) {
