@@ -38,13 +38,14 @@ export function getIssues(options) {
                         var data = obj.map((item) => {
                             item.lon_float = parseFloat(item.coordinates_lon);
                             item.lat_float = parseFloat(item.coordinates_lat);
-                            item.approved_bool = item.approved == "1";
+                            item.status = parseInt(item.status);
+                            item.approved = parseInt(item.approved);
                             item.categorie_str = cats[item.categorie].name;
                             item.color = cats[item.categorie].color;
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token
                             item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token
-                            if (localDataManager.isAdmin() && !item.approved_bool){
+                            if (localDataManager.isAdmin() && item.approved == 0){
                               item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
                             }
                             item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"

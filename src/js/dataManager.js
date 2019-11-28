@@ -41,25 +41,21 @@ class DataManager {
               }
             }
             if (this.status.length > 0){
-              if (issue.approved == "0" && this.status.indexOf("unapproved") == -1 && this.status.indexOf("approved") != -1){
-                return false;
-              }
-              if (issue.approved == "1" && this.status.indexOf("approved") == -1 && this.status.indexOf("unapproved") != -1){
-                return false;
-              }
-              if (issue.status == "0" && this.status.indexOf("unresolved") == -1 && this.status.indexOf("resolved") != -1){
-                return false;
-              }
-              if (issue.status == "1" && this.status.indexOf("resolved") == -1 && this.status.indexOf("unresolved") != -1){
-                return false;
-              }
-              if (issue.status == "2" && this.status.indexOf("taked") == -1 && this.status.indexOf("taked") != -1){
-                return false;
-              }
-              if (issue.status == "3" && this.status.indexOf("inprogress") == -1 && this.status.indexOf("inprogress") != -1){
-                return false;
-              }
-              if (issue.status == "4" && this.status.indexOf("done") == -1 && this.status.indexOf("done") != -1){
+              var issue_status = "unknow";
+              if (issue.approved == 0){
+                issue_status = "unapproved"
+              } else if (issue.approved == 1 && issue.status == 0){
+                issue_status = "unresolved"
+              } else if (issue.approved == 1 && issue.status == 2){
+                issue_status = "taked"
+              } else if (issue.approved == 1 && issue.status == 3){
+                issue_status = "inprogress"
+              } else if (issue.approved == 1 && issue.status == 4){
+                issue_status = "done"
+              } else if (issue.approved == 1 && issue.status == 1){
+                issue_status = "resolved"
+              } 
+              if (this.status.indexOf(issue_status) == -1) {
                 return false;
               }
             }

@@ -5,8 +5,9 @@ import dataManager from './dataManager';
 
 export async function init() {
 	try {
-		// Fill category select
+		// Fill category select + count
 		var cats = await vigiloconfig.getCategories();
+		var issues = await vigilo.getIssues();
 		for (var i in cats) {
 			$("#modal-filters #categories-select")
 				.append(`<div class="col s12 m6"><label>
@@ -15,11 +16,11 @@ export async function init() {
                 </label>
               </div`)
 		}
-		addBadge("categories", countIssue(await vigilo.getIssues(), "categorie", Object.keys(cats)));
-		// Fill city select
+		addBadge("categories", countIssue(issues, "categorie", Object.keys(cats)));
+
+		// Fill city select + count
 		var scope = await vigilo.getScope();
 		var cities = scope.cities.sort((a, b) => parseInt(a.population) <= parseInt(b.population))
-		var issues = await vigilo.getIssues();
 		if (cities && cities.length > 0 && issues[0].cityname !== undefined) {
 			for (var i in cities) {
 				$("#modal-filters #city-select")
@@ -30,10 +31,14 @@ export async function init() {
 				  				</label>
 				  			</div>`);
 			}
-			addBadge("city", countIssue(await vigilo.getIssues(), "cityname", cities.map(c=>c.name)));
+			addBadge("city", countIssue(issues, "cityname", cities.map(c => c.name)));
 		} else {
 			$("#modal-filters #city-select").remove()
 		}
+
+		// Status count
+		addBadge("status", countIssueStatus(issues));
+
 		M.Modal.init($("#modal-filters"));
 		M.Modal.getInstance($("#modal-filters")).options.onCloseStart = function () {
 			dataManager.setFilter({
@@ -73,19 +78,52 @@ export async function init() {
 		$("#issues .cards-container").empty().append(errorCard(e));
 	}
 }
-function countIssue(issues, attr, keys){
+
+function countIssue(issues, attr, keys) {
 	var count = {}
 	keys.forEach(element => {
 		count[element] = 0;
 	});
-	issues.reduce(function(accumulator, currentIssue){
+	issues.reduce(function (accumulator, currentIssue) {
 		accumulator[currentIssue[attr]]++
 		return accumulator
 	}, count);
 	return count;
 }
+
+function countIssueStatus(issues) {
+	var count = {
+		"unknow": 0,
+		"unapproved": 0,
+		"unresolved": 0,
+		"taked": 0,
+		"inprogress": 0,
+		"done": 0,
+		"resolved": 0,
+	};
+	issues.reduce(function (accumulator, currentIssue) {
+		var issue_status = "unknow";
+		if (currentIssue.approved == 0) {
+			issue_status = "unapproved"
+		} else if (currentIssue.approved == 1 && currentIssue.status == 0) {
+			issue_status = "unresolved"
+		} else if (currentIssue.approved == 1 && currentIssue.status == 2) {
+			issue_status = "taked"
+		} else if (currentIssue.approved == 1 && currentIssue.status == 3) {
+			issue_status = "inprogress"
+		} else if (currentIssue.approved == 1 && currentIssue.status == 4) {
+			issue_status = "done"
+		} else if (currentIssue.approved == 1 && currentIssue.status == 1) {
+			issue_status = "resolved"
+		}
+		accumulator[issue_status]++
+		return accumulator
+	}, count);
+	return count;
+}
+
 function addBadge(name, count) {
 	for (let [key, value] of Object.entries(count)) {
-		$("#modal-filters input[name='"+name+"'][value='"+key.replace("'","\\'")+"']").parent().find('span').append(' ('+value+')');
-	}	
+		$("#modal-filters input[name='" + name + "'][value='" + key.replace("'", "\\'") + "']").parent().find('span').append(' (' + value + ')');
+	}
 }
