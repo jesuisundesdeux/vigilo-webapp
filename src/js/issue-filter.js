@@ -39,6 +39,9 @@ export async function init() {
 		// Status count
 		addBadge("status", countIssueStatus(issues));
 
+		// Age count
+		addBadge("age", countIssueAge(issues));
+
 		M.Modal.init($("#modal-filters"));
 		M.Modal.getInstance($("#modal-filters")).options.onCloseStart = function () {
 			dataManager.setFilter({
@@ -116,12 +119,32 @@ function countIssueStatus(issues) {
 		} else if (currentIssue.approved == 1 && currentIssue.status == 1) {
 			issue_status = "resolved"
 		}
+
 		accumulator[issue_status]++
+		return accumulator
+	}, count);
+	console.log(count)
+	return count;
+}
+function countIssueAge(issues){
+	var count = {
+		1: 0,
+		3: 0,
+		7: 0,
+		30: 0
+	}
+	var date_now = Date.now();
+	issues.reduce(function (accumulator, currentIssue) {
+		var issue_age = (date_now - currentIssue.date_obj) / (1000 * 60 * 60 * 24);
+		for (var i in accumulator){
+			if (i > issue_age){
+				accumulator[i]++
+			}
+		}
 		return accumulator
 	}, count);
 	return count;
 }
-
 function addBadge(name, count) {
 	for (let [key, value] of Object.entries(count)) {
 		$("#modal-filters input[name='" + name + "'][value='" + key.replace("'", "\\'") + "']").parent().find('span').append(' (' + value + ')');
