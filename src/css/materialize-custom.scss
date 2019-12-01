@@ -18,6 +18,18 @@
         &.modal-fixed-footer {
             height: 100%;
         }
+        @media #{$small-and-down} {
+            .modal-content {
+                padding: 0;
+            }
+            h3 {
+                margin: 12px;
+            }
+            .card-panel {
+                padding: 8px;
+                margin-bottom: 7px;
+            }
+        }
     }
 }
 
