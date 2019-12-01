@@ -7326,6 +7326,14 @@ input[type=range]::-ms-thumb {
   top: 0 !important; }
   .modal.fullscreen.modal-fixed-footer {
     height: 100%; }
+  @media only screen and (max-width: 600px) {
+    .modal.fullscreen .modal-content {
+      padding: 0; }
+    .modal.fullscreen h3 {
+      margin: 12px; }
+    .modal.fullscreen .card-panel {
+      padding: 8px;
+      margin-bottom: 7px; } }
 
 .row {
   display: flex;
@@ -7522,4 +7530,10 @@ nav.nav-extended .nav-wrapper {
 
 .row .col {
   margin-right: auto; }
+
+.file-field {
+  display: flex;
+  align-items: center;
+  margin-top: 0px;
+  margin-bottom: 0px; }
 
