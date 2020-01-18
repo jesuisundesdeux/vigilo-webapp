@@ -3,16 +3,20 @@ import LocalDataManager from './localDataManager';
 
 class DataManager {
     constructor(){
+        var parsedUrl = new URL(window.location.href);
+
         this.dow = [];
         this.hour = [];
         this.categories = [];
         this.status = [];
         this.age = 0;
         this.onlyme = false;
+        this.comment = parsedUrl.searchParams.get("comment") || ""; //HTML get parameter to share URL
     }
     async getData() {
         var data = await vigilo.getIssues();
         var date_now = Date.now();
+
         data = data.filter((issue)=>{
             if (this.dow.length > 0){
                 if (this.days.indexOf(issue.date_obj.getDay()) == -1){
@@ -34,6 +38,11 @@ class DataManager {
                 return false;
               }
             }
+
+            if (this.comment != ""){
+              return issue.comment.indexOf(this.comment) != -1;
+            }
+
             if (this.status.length > 0){
               if (issue.approved == "0" && this.status.indexOf("unapproved") == -1 && this.status.indexOf("approved") != -1){
                 return false;
@@ -59,7 +68,6 @@ class DataManager {
         return data;
     }
     setFilter(filters){
-      console.log(filters)
         var change = false;
         if (filters.dow && filters.dow != this.dow){
             this.dow = filters.dow;
@@ -100,6 +108,10 @@ class DataManager {
         }
         if (filters.onlyme !== undefined && filters.onlyme != this.onlyme) {
           this.onlyme = filters.onlyme;
+          change = true;
+        }
+        if (filters.comment !== undefined && filters.comment != this.comment) {
+          this.comment = filters.comment;
           change = true;
         }
         if (change){

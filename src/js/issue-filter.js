@@ -21,6 +21,7 @@ export async function init() {
 				dow: $.map($("#modal-filters input[name=dow]:checked"), (i)=>$(i).val()),
         hour: $.map($("#modal-filters input[name=hour]:checked"), (i)=>$(i).val()),
         onlyme: ($.map($("#modal-filters input[name=owner]:checked"), (i)=>$(i).val()).indexOf('me') != -1),
+			  comment: $("#modal-filters input[name=comment]").val(),
         status: $.map($("#modal-filters input[name=status]:checked"), (i)=>$(i).val()),
         age: parseInt($.map($("#modal-filters input[name=age]:checked"), (i)=>$(i).val())[0]),
 			})
@@ -46,8 +47,8 @@ export async function init() {
 		});
 
 		$('#modal-filters label').click(updateCheckbox);
-		
-		
+
+
     } catch (e) {
         $("#issues .cards-container").empty().append(errorCard(e));
     }
