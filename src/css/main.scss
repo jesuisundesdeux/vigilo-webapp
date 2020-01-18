@@ -21,6 +21,10 @@ body {
 	width: 30px;
 }
 
+.leaflet-top, .leaflet-bottom, .leaflet-left, .leaflet-right {
+	z-index: 997;
+}
+
 @import "spinner.scss";
 @import "image-drawable.scss";
 
@@ -112,4 +116,17 @@ nav.nav-extended {
 	h6 {
 		cursor: pointer;
 	}
+}
+
+.row {
+	.col {
+		margin-right: auto;
+	}
+}
+
+.file-field {
+	display: flex;
+	align-items: center;
+	margin-top: 0px;
+	margin-bottom: 0px;
 }

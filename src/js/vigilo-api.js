@@ -9,7 +9,7 @@ function baseUrl() {
 };
 
 import {request} from './utils';
-
+var issue_cache = {};
 export function getIssues(options) {
     /**
      * - int GET['c'] : (Facultatif) : filtre selon catégorie
@@ -26,25 +26,33 @@ export function getIssues(options) {
         return kv[0] + "=" + encodeURIComponent(kv[1])
     }).join("&")
 
+    if (issue_cache[url] !== undefined){
+        return Promise.resolve(issue_cache[url]);
+    }
+
     return new Promise((resolve, reject) => {
         vigiloconfig.getCategories()
             .then((cats) => {
                 request(url)
                     .then((obj) => {
-                        resolve(obj.map((item) => {
+                        var data = obj.map((item) => {
                             item.lon_float = parseFloat(item.coordinates_lon);
                             item.lat_float = parseFloat(item.coordinates_lat);
-                            item.approved_bool = item.approved == "1";
-                            item.categorie_str = cats[item.categorie]
+                            item.status = parseInt(item.status);
+                            item.approved = parseInt(item.approved);
+                            item.categorie_str = cats[item.categorie].name;
+                            item.color = cats[item.categorie].color;
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token
                             item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token
-                            if (localDataManager.isAdmin() && !item.approved_bool){
+                            if (localDataManager.isAdmin() && item.approved == 0){
                               item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
                             }
                             item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
                             return item
-                        }))
+                        })
+                        issue_cache[url] = data;
+                        resolve(data)
                     })
                     .catch(reject)
             })

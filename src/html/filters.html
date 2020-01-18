@@ -1,4 +1,4 @@
-<div id="modal-filters" class="modal bottom-sheet">
+<div id="modal-filters" class="modal modal-fixed-footer bottom-sheet">
   <div class="modal-content">
     <h5>Filtres</h5>
     <div class="row">
@@ -6,6 +6,40 @@
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Catégories</h6>
       </div>
 
+      <div class="col s6 m6 l2">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
+        <p>
+          <label>
+            <input type="checkbox" name="status" value="unapproved" checked="checked" />
+            <span>Non modéré</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="unresolved" checked="checked" />
+            <span>Non résolu</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="taked" checked="checked" />
+            <span>Pris en compte</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="inprogress" checked="checked" />
+            <span>En cours de résolution</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="done" checked="checked" />
+            <span>Indiqué résolu</span>
+          </label>
+          <br>
+          <label>
+            <input type="checkbox" name="status" value="resolved" checked="checked" />
+            <span>Résolu</span>
+          </label>
+        </p>
+      </div>
       <div class="col s6 m6 l2">
 
         <h6 class="valign-wrapper">Age</h6>
@@ -37,23 +71,11 @@
         </p>
 
       </div>
-
-      <div class="col s6 m6 l2">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
-        <p>
-          <label>
-            <input type="checkbox" name="dow" value="worked" checked="checked" />
-            <span>En semaine</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="dow" value="weekend" checked="checked" />
-            <span>Week-end</span>
-          </label>
-        </p>
+      <div id="city-select" class="col s12 l8">
+        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Communes</h6>
+        <p></p>
       </div>
-
-      <div class="col s6 m6 l4">
+      <div class="col s6 m6 l2">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Toutes les heures</h6>
         <p>
           <label>
@@ -73,43 +95,34 @@
         </p>
 
       </div>
-      <div class="col s6 m6 l4">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
-        <p>
-          <label>
-            <input type="checkbox" name="status" value="unapproved" checked="checked" />
-            <span>Non modéré</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="approved" checked="checked" />
-            <span>Approuvé</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="unresolved" checked="checked" />
-            <span>Non résolu</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="resolved" checked="checked" />
-            <span>Résolu</span>
-          </label>
-        </p>
-      </div>
-
       <div class="col s6 m6 l2">
-        <h6 class="valign-wrapper">Mes signalements</h6>
-        <p>
-          <div class="switch">
+        <div>
+          <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Tous les jours</h6>
+          <p>
             <label>
-              Off
-              <input type="checkbox" name="owner" value="me">
-              <span class="lever"></span>
-              On
+              <input type="checkbox" name="dow" value="worked" checked="checked" />
+              <span>En semaine</span>
             </label>
-          </div>
-        </p>
+            <br>
+            <label>
+              <input type="checkbox" name="dow" value="weekend" checked="checked" />
+              <span>Week-end</span>
+            </label>
+          </p>
+        </div>
+        <div>
+          <h6 class="valign-wrapper">Mes signalements</h6>
+          <p>
+            <div class="switch">
+              <label>
+                Off
+                <input type="checkbox" name="owner" value="me">
+                <span class="lever"></span>
+                On
+              </label>
+            </div>
+          </p>
+        </div>
       </div>
 
       <div class="col s6 m6 l2">

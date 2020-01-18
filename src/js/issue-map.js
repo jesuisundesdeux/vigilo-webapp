@@ -6,7 +6,6 @@ import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
 import './circle-marker-dynamic';
 import './timedout-marker';
-import { CATEGORIES_COLORS } from './colors';
 
 import dataManager from './dataManager';
 
@@ -81,7 +80,7 @@ export async function displayIssues(nozoom) {
 			{
 				styles: STYLES,
 				issue: issues[i],
-				color: CATEGORIES_COLORS[issues[i].categorie_str].color
+				color: issues[i].color
 			}
 		);
 		issueslayer.addLayer(marker);

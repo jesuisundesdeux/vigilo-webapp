@@ -5,6 +5,7 @@ import * as filters from './issue-filter';
 import * as form from './form';
 import * as stats from './stats';
 import * as admin from './admin';
+import github_issue from '../html/github_issue';
 import M from 'materialize-css';
 
 import dataManager from './dataManager';
@@ -88,12 +89,10 @@ export default class VigiloApp {
         await list.displayIssues(30);
         await map.displayIssues();
 
-        // Display "new version" if new...
-        if (localDataManager.setVersion(vigiloconfig.VERSION_NUMBER)){
-          var toastHTML = `<span>Nouvelle version ${vigiloconfig.VERSION_NUMBER} !</span><a href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v${vigiloconfig.VERSION_NUMBER}" class="btn-flat toast-action" target="_blank">Détails</a>`;
-          M.toast({html: toastHTML});
-        }
-
+        // Link bug
+        var template = await github_issue();
+        $("a[href='https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md']")
+            .attr('href', 'https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?body='+template)
         
     }
 
