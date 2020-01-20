@@ -44,7 +44,8 @@ export default function (issue) {
             ${(issue.status == 4) ? '<i class="material-icons">done</i> Ce signalement semble être résolu.' : ''}
             ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
           </h6>
-          <p><b>Référence de suivi :</b> <a href="/?token=${issue.token}">${issue.token}</a></p>
+          <p><b>Référence de suivi :</b> <a href="/?token=${issue.token}">${issue.token}</a> | <a title="Observations similaires" target="_blank" href="${issue.mosaic}">Obversations similaires</a></p>
+
           <p>
               <b>Catégorie :</b><br>
               ${issue.categorie_str}
@@ -74,7 +75,8 @@ export default function (issue) {
 </div>
 <div class="modal-footer">
 ${btns}
-<a title="Lien à partager" class="waves-effect blue waves-light btn-floating" href="/?token=${issue.token}"><i class="material-icons center">share</i>${issue.token}</a>
+<a title="Observations similaires" target="_blank" class="waves-effect waves-light btn-floating" href="${issue.mosaic}"><i class="material-icons center">view_list</i></a>
+<a title="Lien à partager" class="waves-effect waves-light btn-floating" href="/?token=${issue.token}"><i class="material-icons center">share</i></a>
 <a title="Voir sur la carte" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
 <a href="#!" title="Fermer" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
 </div>
