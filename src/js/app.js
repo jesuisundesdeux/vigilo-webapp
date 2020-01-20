@@ -13,7 +13,7 @@ import localDataManager from './localDataManager';
 
 export default class VigiloApp {
     async init() {
-        
+
         /**
         * SELECT ZONE MODAL
         */
@@ -24,6 +24,7 @@ export default class VigiloApp {
         }
 
         let searchParams = new URLSearchParams(window.location.search)
+
         if (searchParams.has('instance')){
           if (searchParams.get('instance') != current_instance){
             await window.setInstance(searchParams.get('instance'), true);
@@ -68,6 +69,7 @@ export default class VigiloApp {
         M.Tabs.init($("#issues .tabs"));
         M.Tabs.getInstance($("#issues .tabs")).options.onShow = function () { map.focus() }
         await map.init()
+
         M.Modal.init($("#modal-issue"));
         $(window).scroll(() => {
             if (($(window.document.body).height() - $(window).height() - $(window).scrollTop()) < 10) {
@@ -76,15 +78,18 @@ export default class VigiloApp {
         })
         M.FloatingActionButton.init($('.fixed-action-btn'));
 
-        
         $(dataManager).on('filterchange',async ()=>{
             list.cleanIssues();
             map.cleanIssues();
             await list.displayIssues(30)
-            await map.displayIssues(true) 
+            await map.displayIssues(true)
         })
-        
+
         await filters.init();
+
+        if (searchParams.has('token')){
+          await list.viewIssue(searchParams.get('token'))
+        }
 
         await list.displayIssues(30);
         await map.displayIssues();
@@ -93,7 +98,7 @@ export default class VigiloApp {
         var template = await github_issue();
         $("a[href='https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md']")
             .attr('href', 'https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?body='+template)
-        
+
     }
 
 
