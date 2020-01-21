@@ -59,6 +59,7 @@ export async function init() {
 				dow: $.map($("#modal-filters input[name=dow]:checked"), (i) => $(i).val()),
 				hour: $.map($("#modal-filters input[name=hour]:checked"), (i) => $(i).val()),
 				onlyme: ($.map($("#modal-filters input[name=owner]:checked"), (i) => $(i).val()).indexOf('me') != -1),
+				comment: $("#modal-filters input[name=comment]").val(),
 				status: $.map($("#modal-filters input[name=status]:checked"), (i) => $(i).val()),
 				age: parseInt($.map($("#modal-filters input[name=age]:checked"), (i) => $(i).val())[0]),
 				cities: $.map($("#modal-filters input[name=city]:checked"), (i) => $(i).val()),
@@ -171,7 +172,7 @@ function countIssueHour(issues){
 		} else {
 			accumulator.night++
 		}
-		
+
 		return accumulator
 	}, count);
 	return count;
@@ -182,7 +183,7 @@ function countIssueDay(issues){
 		"weekend": 0,
 	}
 	var worked = [1,2,3,4,5];
-	
+
 	issues.reduce(function (accumulator, currentIssue) {
 		var day = currentIssue.date_obj.getDay();
 		if (worked.indexOf(day) != -1){
@@ -190,7 +191,7 @@ function countIssueDay(issues){
 		} else {
 			accumulator.weekend++
 		}
-		
+
 		return accumulator
 	}, count);
 	return count;

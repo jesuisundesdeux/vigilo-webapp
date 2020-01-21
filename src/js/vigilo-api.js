@@ -17,7 +17,7 @@ export function getIssues(options) {
      * - str GET['scope'] : (Facultatif) : filtre identifiant de la ville
      * - int GET['status'] : (Facultatif) : status de l'observation
      * - int GET['token'] : (Facultatif) : token de l'observation
-     * - int GET['count'] : (Facultatif) : nombre d'observations à retourner  
+     * - int GET['count'] : (Facultatif) : nombre d'observations à retourner
      * - int GET[''offset'] : (Facultatif) : Offset de la liste de resultat (GET['count'] obligatoire)
      */
     options = options || {};
@@ -43,8 +43,9 @@ export function getIssues(options) {
                             item.categorie_str = cats[item.categorie].name;
                             item.color = cats[item.categorie].color;
                             item.date_obj = new Date(parseInt(item.time) * 1000);
-                            item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token
-                            item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token
+                            item.mosaic = baseUrl() + "/mosaic.php?t=" + item.token;
+                            item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token;
+                            item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token;
                             if (localDataManager.isAdmin() && item.approved == 0){
                               item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
                             }

@@ -25,13 +25,17 @@ export async function displayIssues(count) {
 
 }
 
-async function viewIssue(token) {
+export async function viewIssue(token) {
 	var modal = M.Modal.getInstance($("#modal-issue")[0]);
 	var issues = await dataManager.getData();
-	var issue = issues.filter(item => item.token == token)[0];
-	$("#modal-issue").empty().append(issueDetail(issue));
-	M.Materialbox.init($("#modal-issue .materialboxed"));
-	modal.open()
+	var issue = issues.filter(item => item.token == token);
+	if( issue.length > 0) {
+		$("#modal-issue").empty().append(issueDetail(issue[0]));
+		M.Materialbox.init($("#modal-issue .materialboxed"));
+		modal.open()
+	} else {
+		console.warn("This token does not exist: ", token);
+	}
 }
 
 window.viewIssue = viewIssue

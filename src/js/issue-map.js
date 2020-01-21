@@ -72,7 +72,7 @@ export async function displayIssues(nozoom) {
 		.on('click', (e) => { viewIssue(e.propagatedFrom.options.issue.token) });
 
 	var issues = await dataManager.getData();
-	
+
 	for (var i in issues) {
 
 		var marker = L.circleMarkerDynamic(
@@ -92,7 +92,7 @@ export async function displayIssues(nozoom) {
 }
 
 
-window.centerOnIssue = async function (token) {
+export async function centerOnIssue (token) {
 	focus();
 	var issues = await dataManager.getData();
 	var issue = issues.filter(item => item.token == token)[0];
@@ -101,6 +101,8 @@ window.centerOnIssue = async function (token) {
 	M.Tabs.getInstance($("#issues .tabs")[0]).select('issues-map')
 	M.Modal.getInstance($("#modal-issue")[0]).close();
 }
+
+window.centerOnIssue = centerOnIssue
 
 const STYLES = {
 	"0-11": {

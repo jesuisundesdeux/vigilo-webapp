@@ -3,6 +3,8 @@ import LocalDataManager from './localDataManager';
 
 class DataManager {
   constructor() {
+    let parsedUrl = new URL(window.location.href);
+
     this.dow = [];
     this.hour = [];
     this.categories = [];
@@ -10,6 +12,7 @@ class DataManager {
     this.age = 0;
     this.onlyme = false;
     this.cities = [];
+    this.comment = parsedUrl.searchParams.get("comment") || ""; //HTML get parameter to share URL
   }
   async getData() {
     var data = await vigilo.getIssues();
@@ -59,6 +62,10 @@ class DataManager {
           return false;
         }
       }
+      if (this.comment != ""){
+        return issue.comment.indexOf(this.comment) != -1;
+      }
+
       if (this.age != 0) {
         var issue_age = (date_now - issue.date_obj) / (1000 * 60 * 60 * 24);
         if (issue_age > this.age) {
@@ -116,6 +123,12 @@ class DataManager {
       this.cities = filters.cities.map(i => i.toLowerCase());
       change = true;
     }
+
+    if (filters.comment !== undefined && filters.comment != this.comment) {
+      this.comment = filters.comment;
+      change = true;
+    }
+
     if (change) {
       $(this).trigger('filterchange');
     }
