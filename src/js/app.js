@@ -26,9 +26,9 @@ export default class VigiloApp {
         let searchParams = new URLSearchParams(window.location.search)
 
         if (searchParams.has('instance')){
-          if (searchParams.get('instance') != current_instance){
-            await window.setInstance(searchParams.get('instance'), true);
-          }
+            if (searchParams.get('instance') != current_instance){
+                await window.setInstance(searchParams.get('instance'), true);
+            }
         }
 
         M.Modal.init($("#modal-zone"));
@@ -88,7 +88,7 @@ export default class VigiloApp {
         await filters.init();
 
         if (searchParams.has('token')){
-          await list.viewIssue(searchParams.get('token'))
+            await list.viewIssue(searchParams.get('token'))
         }
 
         await list.displayIssues(30);

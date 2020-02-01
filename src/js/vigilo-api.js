@@ -50,6 +50,7 @@ export function getIssues(options) {
                               item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
                             }
                             item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
+                            item.permLink = window.location.protocol + "//" + window.location.host + "/?token=" + item.token + "&instance=" + encodeURIComponent(vigiloconfig.getInstance().name);
                             return item
                         })
                         issue_cache[url] = data;

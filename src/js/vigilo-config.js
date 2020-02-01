@@ -61,7 +61,14 @@ async function setInstance(name, noreload){
         }
     }
     if (noreload !== true){
-      window.location.reload()
+        let searchParams = new URLSearchParams(window.location.search)
+        if (searchParams.has('instance')){
+            searchParams.delete('instance');
+            window.location.search = '?' + searchParams.toString();
+        } else {
+            window.location.reload()
+        }
+        
     }
 }
 
