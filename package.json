@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "chart.js": "^2.9.3",
-    "jquery": "^3.4.0",
+    "jquery": "^3.5.0",
     "leaflet": "^1.6.0",
     "leaflet-control-geocoder": "^1.11.0",
     "leaflet.fullscreen": "^1.6.0",
