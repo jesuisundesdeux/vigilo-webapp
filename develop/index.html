@@ -6,7 +6,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="icon" type="image/png" href="/img/65a4e574c6a756f13a653a9323daf34d-favicon.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/65a4e574c6a756f13a653a9323daf34d-favicon.png">
-<meta name="apple-mobile-web-app-title" content="Vǐgǐlo" /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-status-bar-style" content="default" /><meta name="theme-color" content="#fdd835" /><link rel="manifest" href="manifest.60295a409764c020da0037e268324861.json" crossorigin="use-credentials" /><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"><meta name="robots" content="index,follow"><link href="css/styles.css" rel="stylesheet"></head>
+<meta name="apple-mobile-web-app-title" content="Vǐgǐlo" /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-status-bar-style" content="default" /><meta name="theme-color" content="#fdd835" /><link rel="manifest" href="manifest.be4284e3ff19e18d06b03c28c1058af2.json" crossorigin="use-credentials" /><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"><meta name="robots" content="index,follow"><link href="css/styles.css" rel="stylesheet"></head>
 
 <body>
   <div class="navbar-fixed">
@@ -48,8 +48,8 @@
         class="material-icons">bug_report</i>Signaler un bug</a></li>
   <li id="admin-status"></li>
   <li id="version" class="center-align"><a
-      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.6.2"
-      target="_blank" class="grey-text">Version : 1.6.2</a></li>
+      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.7.3"
+      target="_blank" class="grey-text">Version : 1.7.3</a></li>
 </ul>
 
   <!-- Modal for zone -->
@@ -70,9 +70,22 @@
   <li class="tab col s6"><a class="yellow-text text-darken-3 active" href="#issues-list">Liste</a></li>
   <li class="tab col s6"><a class="yellow-text text-darken-3" href="#issues-map">Carte</a></li>
 </ul>
-<div id="issues-list" class="row">
-  <div class="col s12">
-    <div class="cards-container">
+<div class="flex">
+  <div class="flex-shrink">
+    <div id="issues-list" class="row">
+      <div class="col s12">
+        <div class="cards-container">
+          <div class="spinner">
+  <div class="rect1"></div>
+  <div class="rect2"></div>
+  <div class="rect3"></div>
+  <div class="rect4"></div>
+  <div class="rect5"></div>
+</div>
+        </div>
+      </div>
+    </div>
+    <div id="issues-map">
       <div class="spinner">
   <div class="rect1"></div>
   <div class="rect2"></div>
@@ -81,22 +94,26 @@
   <div class="rect5"></div>
 </div>
     </div>
+
+
   </div>
-</div>
-<div id="issues-map">
-  <div class="spinner">
+  <div id="issue-detail" class="side-collapse">
+    <div class="spinner">
   <div class="rect1"></div>
   <div class="rect2"></div>
   <div class="rect3"></div>
   <div class="rect4"></div>
   <div class="rect5"></div>
 </div>
+  </div>
 </div>
+
 <div class="fixed-action-btn">
-  <a class="btn-floating btn-large blue darken-1 black-text modal-trigger" href="#modal-filters">
+  <a title="Filtrer" class="btn-floating btn-large blue darken-1 black-text modal-trigger" href="#modal-filters">
     <i class="material-icons">filter_list</i>
   </a>
-  <a class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
+  <a title="Ajouter une obversation" class="btn-floating btn-large yellow darken-3 black-text"
+    onclick="startForm()">
     <i class="material-icons">add</i>
   </a>
 
@@ -108,6 +125,7 @@
       <div id="categories-select" class="col s12 l8">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Catégories</h6>
       </div>
+
       <div class="col s6 m6 l2">
         <h6 class="valign-wrapper"><i class="material-icons">check_box</i> Statut</h6>
         <p>
@@ -227,6 +245,14 @@
         </div>
       </div>
 
+      <div class="col s12 m12 l6">
+        <h6 class="valign-wrapper">Commentaire</h6>
+        <p>
+          <label>
+            <input type="text" name="comment" placeholder="Filtrer par mot clé : scooter" value="" minlength="1"/>
+          </label>
+        </p>
+      </div>
 
     </div>
   </div>
@@ -234,36 +260,12 @@
     <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">check</i></a>
   </div>
 </div>
+
 </div>
 
-    </div>
-    <div id="stats" class="container">
-      <div class="row" id="stats-last30days">
-  <div class="col s12 l4 white center-align">
-    <h2>...</h2>
-    <h6>signalements ces 30 derniers jours</h6>
-  </div>
-  <div class="col s12 l8 white"><canvas></canvas></div>
-</div>
-<hr>
-<div class="row" id="stats-bycats">
-  <div class="col s12 l4 white center-align">
-    <h2>...</h2>
-    <h6>signalements reçus</h6>
-  </div>
-  <div class="col s12 l8 white"><canvas></canvas></div>
-</div>
-<hr>
-    </div>
-  </div>
-
-  <!-- Modal for issue -->
-  <div id="modal-issue" class="modal modal-fixed-footer big">
-  </div>
-
-  <!-- Modal for form -->
-  <div id="modal-form" class="modal modal-fixed-footer fullscreen">
-    <form action="#" method="POST">
+<!-- Modal for form -->
+<div id="modal-form" class="modal modal-fixed-footer fullscreen">
+  <form action="#" method="POST">
   <input id="issue-token" type="hidden" name="token">
   <div class="modal-content">
     <h3>Nouvelle observation</h3>
@@ -313,11 +315,11 @@
       <!-- Date time -->
       <div class="col s12 m12 l6 xl6">
         <div class="card-panel row">
-          <div class="input-field col s12 m6">
+          <div class="input-field col s6">
             <input type="text" class="datepicker validate" id="issue-date" required>
             <label for="issue-date">Date <span class="red-text">*</span></label>
           </div>
-          <div class="input-field col s12 m6">
+          <div class="input-field col s6">
             <input type="text" class="timepicker validate" id="issue-time" required>
             <label for="issue-time">Heure <span class="red-text">*</span></label>
           </div>
@@ -362,7 +364,28 @@
     <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
   </div>
 </form>
+</div>
+    </div>
+    <div id="stats" class="container">
+      <div class="row" id="stats-last30days">
+  <div class="col s12 l4 white center-align">
+    <h2>...</h2>
+    <h6>signalements ces 30 derniers jours</h6>
   </div>
+  <div class="col s12 l8 white"><canvas></canvas></div>
+</div>
+<hr>
+<div class="row" id="stats-bycats">
+  <div class="col s12 l4 white center-align">
+    <h2>...</h2>
+    <h6>signalements reçus</h6>
+  </div>
+  <div class="col s12 l8 white"><canvas></canvas></div>
+</div>
+<hr>
+    </div>
+  </div>
+
 
   <!-- Modal for admin -->
   <div id="modal-admin" class="modal modal-fixed-footer">
