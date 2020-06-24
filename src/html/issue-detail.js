@@ -45,7 +45,7 @@ export default function (issue) {
             ${(issue.status == 4) ? '<i class="material-icons">done</i> Ce signalement semble être résolu.' : ''}
             ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
           </h6>
-          <p><b>Référence de suivi :</b> <a href="${issue.permLink}">${issue.token}</a> | <a title="Observations similaires" target="_blank" href="${issue.mosaic}">Obversations similaires</a></p>
+          <p><b>Référence de suivi :</b> <a href="${issue.permLink}">${issue.token}</a> | <a title="Observations similaires" target="_blank" href="${issue.mosaic}">Observations similaires</a></p>
 
           <p>
               <b>Catégorie :</b><br>
