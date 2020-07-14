@@ -70,22 +70,9 @@
   <li class="tab col s6"><a class="yellow-text text-darken-3 active" href="#issues-list">Liste</a></li>
   <li class="tab col s6"><a class="yellow-text text-darken-3" href="#issues-map">Carte</a></li>
 </ul>
-<div class="flex">
-  <div class="flex-shrink">
-    <div id="issues-list" class="row">
-      <div class="col s12">
-        <div class="cards-container">
-          <div class="spinner">
-  <div class="rect1"></div>
-  <div class="rect2"></div>
-  <div class="rect3"></div>
-  <div class="rect4"></div>
-  <div class="rect5"></div>
-</div>
-        </div>
-      </div>
-    </div>
-    <div id="issues-map">
+<div id="issues-list" class="row">
+  <div class="col s12">
+    <div class="cards-container">
       <div class="spinner">
   <div class="rect1"></div>
   <div class="rect2"></div>
@@ -94,26 +81,22 @@
   <div class="rect5"></div>
 </div>
     </div>
-
-
   </div>
-  <div id="issue-detail" class="side-collapse">
-    <div class="spinner">
+</div>
+<div id="issues-map">
+  <div class="spinner">
   <div class="rect1"></div>
   <div class="rect2"></div>
   <div class="rect3"></div>
   <div class="rect4"></div>
   <div class="rect5"></div>
 </div>
-  </div>
 </div>
-
 <div class="fixed-action-btn">
   <a title="Filtrer" class="btn-floating btn-large blue darken-1 black-text modal-trigger" href="#modal-filters">
     <i class="material-icons">filter_list</i>
   </a>
-  <a title="Ajouter une obversation" class="btn-floating btn-large yellow darken-3 black-text"
-    onclick="startForm()">
+  <a title="Ajouter une obversation" class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
     <i class="material-icons">add</i>
   </a>
 
@@ -263,9 +246,34 @@
 
 </div>
 
-<!-- Modal for form -->
-<div id="modal-form" class="modal modal-fixed-footer fullscreen">
-  <form action="#" method="POST">
+    </div>
+    <div id="stats" class="container">
+      <div class="row" id="stats-last30days">
+  <div class="col s12 l4 white center-align">
+    <h2>...</h2>
+    <h6>signalements ces 30 derniers jours</h6>
+  </div>
+  <div class="col s12 l8 white"><canvas></canvas></div>
+</div>
+<hr>
+<div class="row" id="stats-bycats">
+  <div class="col s12 l4 white center-align">
+    <h2>...</h2>
+    <h6>signalements reçus</h6>
+  </div>
+  <div class="col s12 l8 white"><canvas></canvas></div>
+</div>
+<hr>
+    </div>
+  </div>
+
+  <!-- Modal for issue -->
+  <div id="modal-issue" class="modal modal-fixed-footer big">
+  </div>
+
+  <!-- Modal for form -->
+  <div id="modal-form" class="modal modal-fixed-footer fullscreen">
+    <form action="#" method="POST">
   <input id="issue-token" type="hidden" name="token">
   <div class="modal-content">
     <h3>Nouvelle observation</h3>
@@ -364,28 +372,7 @@
     <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">close</i></a>
   </div>
 </form>
-</div>
-    </div>
-    <div id="stats" class="container">
-      <div class="row" id="stats-last30days">
-  <div class="col s12 l4 white center-align">
-    <h2>...</h2>
-    <h6>signalements ces 30 derniers jours</h6>
   </div>
-  <div class="col s12 l8 white"><canvas></canvas></div>
-</div>
-<hr>
-<div class="row" id="stats-bycats">
-  <div class="col s12 l4 white center-align">
-    <h2>...</h2>
-    <h6>signalements reçus</h6>
-  </div>
-  <div class="col s12 l8 white"><canvas></canvas></div>
-</div>
-<hr>
-    </div>
-  </div>
-
 
   <!-- Modal for admin -->
   <div id="modal-admin" class="modal modal-fixed-footer">
