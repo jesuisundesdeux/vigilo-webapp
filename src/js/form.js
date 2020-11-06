@@ -442,7 +442,10 @@ export async function init() {
     // Fill category select
     var cats = await vigiloconfig.getCategories();
     for (var i in cats) {
-      $("#issue-cat").append(`<option value="${i}">${cats[i].name}</option>`)
+      console.log(cats[i]);
+      if (cats[i].disable == false || LocalDataManager.isAdmin()) {
+        $("#issue-cat").append(`<option value="${i}">${cats[i].name}</option>`)
+      }
     }
 
     M.Modal.init($("#modal-form"));
