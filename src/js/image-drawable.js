@@ -6,6 +6,7 @@ export class ClassImageDrawable {
 
   constructor(div) {
     this.queue_length = 10;
+    this.rotation = 0;
     this.backHistory = [];
     this.upHistory = [];
     this.drawing = false;
@@ -128,7 +129,7 @@ export class ClassImageDrawable {
   saveImage() {
     // push image to history and clean upcomming history
     var data = this.ctx.getImageData(0, 0, this.width, this.height);
-    this.backHistory.push(data);
+    this.backHistory.push({"rotation": this.rotation, "data":data});
     this.backHistory.slice(-this.queue_length);
     this.upHistory = []
     this.updateBtnStatus()
@@ -140,10 +141,16 @@ export class ClassImageDrawable {
     }
     // push image to back history and shift up history to canvas
     var data = this.ctx.getImageData(0, 0, this.width, this.height);
-    this.backHistory.push(data);
-    data = this.upHistory.shift(this.backHistory);
-    this.ctx.putImageData(data, 0, 0, 0, 0, this.width, this.height);
-
+    this.backHistory.push({"rotation": this.rotation, "data":data});
+    var to_redo = this.upHistory.shift(this.backHistory);
+    var delta_rotation = ((to_redo.rotation - this.rotation)%4 + 4)%4;
+    for (var i = delta_rotation; i>0; i--) {
+      this.rotate(true);
+    }
+    this.ctx.putImageData(to_redo.data, 0, 0, 0, 0, this.width, this.height);
+    for (var i = delta_rotation; i>0; i--) {
+      this.rotate(false);
+    }
     this.updateBtnStatus()
   }
 
@@ -153,10 +160,16 @@ export class ClassImageDrawable {
     }
     // unshift image to upcomming history and pop back history to canvas
     var data = this.ctx.getImageData(0, 0, this.width, this.height);
-    this.upHistory.unshift(data);
-    data = this.backHistory.pop(this.backHistory);
-    this.ctx.putImageData(data, 0, 0, 0, 0, this.width, this.height);
-
+    this.upHistory.unshift({"rotation": this.rotation, "data":data});
+    var to_undo = this.backHistory.pop(this.backHistory);
+    var delta_rotation = ((this.rotation - to_undo.rotation)%4 + 4)%4;
+    for (var i = delta_rotation; i>0; i--) {
+      this.rotate( false );
+    }
+    this.ctx.putImageData(to_undo.data, 0, 0, 0, 0, this.width, this.height);
+    for (var i = delta_rotation; i>0; i--) {
+      this.rotate( true );
+    }
     this.updateBtnStatus()
   }
 
@@ -221,33 +234,35 @@ export class ClassImageDrawable {
   rotate(clockwise) {
     console.log("rotate", clockwise);
 
-    var canvas = $(this.div).find('canvas')[0];
-    var dataURL = canvas.toDataURL("image/jpeg", 1.0);
-    var image = new Image();
-    image.crossOrigin = "Anonymous";
-
-    var self=this;
-    image.onload = function () {
-      self.ctx.save();
-      self.height = image.width;
-      self.width = image.height;
-      
-      canvas.width = self.width;
-      canvas.height = self.height;
-
-      self.ctx.translate(canvas.width/2, canvas.height/2);
-      self.ctx.rotate( (clockwise?1:-1)*Math.PI / 2 );
-      self.ctx.translate(-canvas.height/2, -canvas.width/2);
-
-      
-
-      self.ctx.drawImage(image, 0, 0);
-      self.ctx.restore();
-      self.ctx.setTransform(1, 0, 0, 1, 0, 0);
-      self.setColor(self.color);
-      self.offset = $(self.div).find('canvas').offset();
+    if (clockwise) {
+      this.rotation++;
+    } else {
+      this.rotation--;
     }
-    image.src = dataURL;
+    var canvas = $(this.div).find('canvas')[0];
+
+    // Store data in temp canvas
+    var tempCanvas = document.createElement("canvas"),
+    tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    tempCtx.drawImage(canvas,0,0,canvas.width,canvas.height);
+
+    this.ctx.save();
+    this.height = canvas.width;
+    this.width = canvas.height;
+      
+    canvas.width = this.width;
+    canvas.height = this.height;
+
+    this.ctx.translate(canvas.width/2, canvas.height/2);
+    this.ctx.rotate( (clockwise?1:-1)*Math.PI / 2 );
+    this.ctx.translate(-canvas.height/2, -canvas.width/2);
+    this.ctx.drawImage(tempCanvas, 0, 0);
+    this.ctx.restore();
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.setColor(this.color);
+    this.offset = $(this.div).find('canvas').offset();
 
 
   }
