@@ -28,7 +28,7 @@ export function getCategories() {
         .then((cat) => {
             let toreturn = {}
             for (var i in cat) {
-                if (cat[i].catdisable != true) {
+                if (cat[i].catdisable !== true) {
                    cat[i].catdisable = false;
                 }
                 toreturn[cat[i].catid] = {
