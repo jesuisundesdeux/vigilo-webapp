@@ -8,10 +8,10 @@ services:
 
 script:
   - git checkout master
-  - docker run -it --rm -v $PWD:/app -e WEBPACK_MODE=production -w /app node:12-alpine sh -c 'npm install && npm run webpack && (echo "app.vigilo.city" > /app/dist/CNAME) && mv /app/dist /app/public'
+  - docker run -it --rm -v $PWD:/app -e WEBPACK_MODE=production -w /app node:15 sh -c 'npm install && npm run webpack && (echo "app.vigilo.city" > /app/dist/CNAME) && mv /app/dist /app/public'
   - git checkout -- .
   - git checkout develop
-  - docker run -it --rm -v $PWD:/app -e WEBPACK_MODE=production -w /app node:12-alpine sh -c 'npm install && npm run webpack && (echo "app.vigilo.city" > /app/dist/CNAME) && mv /app/dist /app/public/develop'
+  - docker run -it --rm -v $PWD:/app -e WEBPACK_MODE=production -w /app node:15 sh -c 'npm install && npm run webpack && (echo "app.vigilo.city" > /app/dist/CNAME) && mv /app/dist /app/public/develop'
   - find public
 
 deploy:
