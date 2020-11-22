@@ -6,11 +6,6 @@ const CATEGORIES_URL="https://vigilo-bf7f2.firebaseio.com/categorieslist.json";
 export async function getInstances(){
     
     var scopes = await request(SCOPES_URL);
-    scopes["Developpement"] = {
-        prod: false,
-        scope: "develop",
-        api_path: "https://dev-vigilo.alwaysdata.net"
-    }
     scopes = Object.entries(scopes).map((item)=>{
         item[1].name = item[0];
         return item[1]
