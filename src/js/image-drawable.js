@@ -78,7 +78,10 @@ export class ClassImageDrawable {
   setColor(newColor) {
     $(this.div).find('.fixed-action-btn.color-picker a').first().removeClass(this.color).addClass(newColor);
     this.color = newColor;
-    this.ctx.fillStyle = this.color;
+    this.ctx.lineWidth = 30;
+    this.ctx.lineCap = "round";
+    this.ctx.lineJoin = "round";
+    this.ctx.strokeStyle = this.color;
   }
 
   isFullscreen() {
@@ -166,6 +169,7 @@ export class ClassImageDrawable {
       console.log('start')
       e.stopPropagation();
       e.preventDefault();
+      this.ctx.beginPath();
     }
   }
 
@@ -184,6 +188,7 @@ export class ClassImageDrawable {
       this.lastDrawY = undefined;
       return;
     }
+    
     var x, y;
     if (e.type == 'touchmove') {
       x = e.changedTouches[0].pageX;
@@ -194,22 +199,24 @@ export class ClassImageDrawable {
     }
     x = (x - this.offset.left) * this.ratioWidth;
     y = (y - this.offset.top) * this.ratioHeight;
+
     var lX = this.lastDrawX;
     var lY = this.lastDrawY;
     this.lastDrawX = x;	
     this.lastDrawY = y;	
 
     if (lX === undefined || lY === undefined){
-      this.ctx.fillRect(x, y, 10 * this.ratioWidth, 10 * this.ratioHeight);	
+      this.ctx.moveTo(x, y);
+      return;	
     } else {
-	var dist = Math.floor(Math.sqrt(Math.pow(x-lX,2)+Math.pow(y-lY,2)));
-        for (var i = 0; i<dist ; i++) {
-           this.ctx.fillRect((x-lX)*i/dist+x, (y-lY)*i/dist+y, 10 * this.ratioWidth, 10 * this.ratioHeight);
-        }
+      this.ctx.lineTo(x, y);
+      this.ctx.stroke();
     }
+    
     e.stopPropagation();
     e.preventDefault();
   }
+
 
   rotate(clockwise) {
     console.log("rotate", clockwise);
