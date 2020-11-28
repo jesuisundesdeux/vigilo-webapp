@@ -34,6 +34,9 @@ class DataManager {
         }
       }
       if (this.cities.length > 0) {
+        if (issue.cityname == undefined){
+          return false;
+        }
         if (this.cities.indexOf(issue.cityname.toLowerCase()) == -1) {
           return false;
         }
