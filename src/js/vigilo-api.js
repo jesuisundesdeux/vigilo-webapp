@@ -1,6 +1,8 @@
 import * as vigiloconfig from './vigilo-config';
 import localDataManager from './localDataManager';
 
+import * as semver from 'semver';
+
 const CONTENT_TYPE_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded"
 const CONTENT_TYPE_JPEG = "image/jpeg"
 
@@ -94,6 +96,15 @@ export function createIssue(data, key) {
 }
 
 export function addImage(token, secretId, data) {
+    if (semver.gte( this.getScope().backend_version ,"0.0.16")) {
+        return _addImage_after_0_0_16(token, secretId, data);
+    } else {
+        return _addImage_before_0_0_16(token, secretId, data);
+    }
+}
+
+function _addImage_before_0_0_16(token, secretId, data) {
+
     var options = {
         url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId,
         method: "POST",
@@ -105,6 +116,21 @@ export function addImage(token, secretId, data) {
     }
     return request(options)
 }
+
+function _addImage_after_0_0_16(token, secretId, data) {
+    
+    var options = {
+        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId + "&method=base64",
+        method: "POST",
+        headers: {
+            //"Content-Type": CONTENT_TYPE_JPEG
+        },
+        body: data
+
+    }
+    return request(options)
+}
+
 
 export function acl(key){
   return request(baseUrl() + "/acl.php?key=" + key)
