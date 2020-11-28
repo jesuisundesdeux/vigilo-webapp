@@ -36,3 +36,9 @@ Pour inclure un CSS d'un module installé avec npm, on ajoutera un tilde : `@imp
 Pour trouver un module, on peut se rendre sur npmjs.com.
 
 Pour l'installer `docker-compose exec webpack npm install --save leaflet`
+
+## Changement de version
+
+```
+docker-compose exec webpack npm --no-git-tag-version version [major | minor | patch]
+```
