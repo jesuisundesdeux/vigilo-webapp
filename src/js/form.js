@@ -412,14 +412,8 @@ $("#modal-form form").submit((e) => {
       }
 
       $("#modal-form-loader .determinate").css("width", "50%");
-      var dataURL = $("#picture-preview canvas")[0].toDataURL("image/jpeg", 1.0);
-      var jpegBinary = atob(dataURL.split(",")[1]);
-      var array = [];
-      for (var p = 0; p < jpegBinary.length; p++) {
-        array[p] = jpegBinary.charCodeAt(p);
-      }
-      var u8array = new Uint8Array(array);
-      return vigilo.addImage(createResponse.token, createResponse.secretid, u8array.buffer)
+      var jpegb64 = $("#picture-preview canvas")[0].toDataURL("image/jpeg", 1.0).split(",")[1];
+      return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64)
     })
     .then(() => {
       $("#modal-form-loader .determinate").css("width", "100%");
