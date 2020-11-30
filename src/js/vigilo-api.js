@@ -96,7 +96,7 @@ export function createIssue(data, key) {
 }
 
 export async function addImage(token, secretId, data) {
-    var scope = await this.getScope();
+    var scope = await getScope();
     if (semver.gte( scope.backend_version ,"0.0.16")) {
         return _addImage_after_0_0_16(token, secretId, data);
     } else {
