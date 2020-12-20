@@ -1,16 +1,19 @@
 import {request} from './utils';
+import localDataManager from './localDataManager';
 
 const SCOPES_URL="https://vigilo-bf7f2.firebaseio.com/citylist.json";
 const CATEGORIES_URL="https://vigilo-bf7f2.firebaseio.com/categorieslist.json";
 
-export async function getInstances(){
+export async function getInstances(all){
     
     var scopes = await request(SCOPES_URL);
     scopes = Object.entries(scopes).map((item)=>{
         item[1].name = item[0];
         return item[1]
     })
-    if (window.location.search.indexOf('beta') == -1){
+
+    
+    if (!localDataManager.isBeta() && all == undefined){
         scopes = scopes.filter((item)=>item.prod)
     }
     return scopes
@@ -52,7 +55,7 @@ export function getInstance(){
     }
 }
 async function setInstance(name, noreload){
-    var instances = await getInstances()
+    var instances = await getInstances(true)
     for (var i in instances){
         if (instances[i].name == name){
             localStorage.setItem('vigilo-instance', JSON.stringify(instances[i]))

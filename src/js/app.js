@@ -18,18 +18,26 @@ export default class VigiloApp {
         * SELECT ZONE MODAL
         */
         var current_instance = vigiloconfig.getInstance() == null ? '' : vigiloconfig.getInstance().name;
+        
+        let searchParams = new URLSearchParams(window.location.search)
+
+        if (searchParams.has('beta')){
+            localDataManager.setBeta();
+        }
+
         var instances = await vigiloconfig.getInstances();
+
         for (var i in instances) {
             $("#modal-zone .modal-content .collection").append(`<a href="#!" onclick="setInstance('${instances[i].name}')" class="collection-item${(instances[i].name == current_instance ? ' active' : '')}">${instances[i].name}</a>`)
         }
-
-        let searchParams = new URLSearchParams(window.location.search)
 
         if (searchParams.has('instance')){
             if (searchParams.get('instance') != current_instance){
                 await window.setInstance(searchParams.get('instance'), true);
             }
         }
+
+
 
         M.Modal.init($("#modal-zone"));
         if (vigiloconfig.getInstance() == null) {

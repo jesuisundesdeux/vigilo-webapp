@@ -55,5 +55,13 @@ class LocalDataManager {
   isAdmin(){
     return sessionStorage.getItem("vigilo-isAdmin") === "true"
   }
+
+  setBeta(){
+    sessionStorage.setItem("vigilo-beta", true)
+  }
+
+  isBeta(){
+    return sessionStorage.getItem("vigilo-beta") === "true"
+  }
 }
 export default new LocalDataManager();
