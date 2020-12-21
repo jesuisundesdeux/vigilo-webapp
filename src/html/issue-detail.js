@@ -22,7 +22,7 @@ export default async function (issue) {
   } else if (localDataManager.userCanEdit(issue)) {
     // J'ai fait ce signalement et il n'est pas encore approuvé
     var scope = await vigilo.getScope();
-    if (semver.gte( scope.backend_version ,"0.0.18")) {
+    if (semver.gte( scope.backend_version ,"0.0.17")) {
       btns = btn_delete;
     }
     
