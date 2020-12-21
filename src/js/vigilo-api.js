@@ -147,9 +147,17 @@ export function acl(key){
 export function approve(key, token, status){
   var options = {
     url: baseUrl() + "/approve.php?key=" + key + "&token=" + token + "&approved=" + status,
+    }
+    return request(options)
 }
-return request(options)
-}
+
+export function deleteIssue(token, secretId) {
+    var options = {
+      url: baseUrl() + "/delete.php?secretid=" + secretId + "&token=" + token,
+      }
+      return request(options)
+  }
+  
 
 export function getScope(){
     var url = baseUrl() + "/get_scope.php?scope=" + vigiloconfig.getInstance().scope;

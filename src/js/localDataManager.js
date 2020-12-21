@@ -63,5 +63,9 @@ class LocalDataManager {
   isBeta(){
     return sessionStorage.getItem("vigilo-beta") === "true"
   }
+
+  userCanEdit(issue){
+    return this.getTokenSecretId(issue.token) != undefined && issue.approved == "0"
+  }
 }
 export default new LocalDataManager();

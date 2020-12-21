@@ -30,7 +30,7 @@ export async function viewIssue(token) {
 	var issues = await dataManager.getData();
 	var issue = issues.filter(item => item.token == token);
 	if( issue.length > 0) {
-		$("#modal-issue").empty().append(issueDetail(issue[0]));
+		$("#modal-issue").empty().append(await issueDetail(issue[0]));
 		M.Materialbox.init($("#modal-issue .materialboxed"));
 		window.history.replaceState({}, '', issue[0].permLink)
 		modal.open()

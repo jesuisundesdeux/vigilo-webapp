@@ -1,10 +1,15 @@
 import localDataManager from '../js/localDataManager';
+import * as vigilo from '../js/vigilo-api';
 
-export default function (issue) {
+import * as semver from 'semver';
+
+
+export default async function (issue) {
   const btn_to_approve = `<a class="btn-floating waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')"><i class="material-icons right">remove_circle</i></a>\n`;
   const btn_approve = `<a class="btn-floating waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')"><i class="material-icons center">check_circle</i></a>\n`;
   const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')"><i class="material-icons center-align">delete</i></a>\n`;
   const btn_edit = `<a class="btn-floating waves-effect waves-light blue" onclick="startForm('${issue.token}')"><i class="material-icons center">edit</i></a>\n`;
+  const btn_delete = `<a class="btn-floating waves-effect waves-light red" onclick="deleteIssue('${issue.token}','2')"><i class="material-icons center-align">delete</i></a>\n`;
   var btns = "";
   if (localDataManager.isAdmin()) {
     if (issue.approved == "0") {
@@ -14,6 +19,13 @@ export default function (issue) {
     } else if (issue.approved == "2") {
       btns = btn_approve + btn_to_approve;
     }
+  } else if (localDataManager.userCanEdit(issue)) {
+    // J'ai fait ce signalement et il n'est pas encore approuvé
+    var scope = await vigilo.getScope();
+    if (semver.gte( scope.backend_version ,"0.0.17")) {
+      btns = btn_delete;
+    }
+    
   }
 
   return `
@@ -83,4 +95,23 @@ ${btns}
 </div>
 
 `
+}
+
+
+window.deleteIssue = async function(token) {
+
+  vigilo.deleteIssue(token, localDataManager.getTokenSecretId(token))
+  .then((resp) => {
+    if (resp.status != 0) {
+      throw "error"
+    }
+    setTimeout(function () {
+      window.location.reload()
+    }, 1000)
+  })
+  .catch((e) => {
+    $("#modal-form-loader")
+      .empty()
+      .append(errorCard(e))
+  })
 }
