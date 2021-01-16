@@ -3,6 +3,7 @@ import * as map from './issue-map';
 import * as list from './issue-list';
 import * as filters from './issue-filter';
 import * as form from './form';
+import * as navs from './navs';
 import * as stats from './stats';
 import * as admin from './admin';
 import github_issue from '../html/github_issue';
@@ -58,12 +59,8 @@ export default class VigiloApp {
         /**
          * SIDENAV
          */
-        M.Sidenav.init($("#mobile-menu"));
-        M.Tabs.init($("#mobile-menu .tabs"), {
-            onShow: function () {
-                M.Sidenav.getInstance($("#mobile-menu")).close()
-            }
-        });
+        navs.init();
+
 
         /**
          * ISSUE FORM

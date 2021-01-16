@@ -34,6 +34,11 @@ body {
 	}
   #version {
     position: absolute;
+    bottom: (56px + 48px);
+    width: 100%;
+  }
+  #version-server {
+    position: absolute;
     bottom: 56px;
     width: 100%;
   }
