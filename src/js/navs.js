@@ -9,4 +9,5 @@ export async function init() {
     });
     var version = (await vigilo.getScope()).backend_version
     $("li#version-server a").append(version)
+    $("li#version-server a").attr("href", $("li#version-server a").attr("href")+version)
 }
