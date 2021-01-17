@@ -3,6 +3,7 @@ import localDataManager from './localDataManager';
 
 const SCOPES_URL="https://vigilo-bf7f2.firebaseio.com/citylist.json";
 const CATEGORIES_URL="https://vigilo-bf7f2.firebaseio.com/categorieslist.json";
+const RESOLVABLE_CATEGORIES=[3,4,5,6,8,100,50,51]
 
 export async function getInstances(all){
     
@@ -32,7 +33,8 @@ export function getCategories() {
                 toreturn[cat[i].catid] = {
                     name: cat[i].catname,
                     color: cat[i].catcolor,
-                    disable: cat[i].catdisable
+                    disable: cat[i].catdisable,
+                    resolvable: RESOLVABLE_CATEGORIES.includes(cat[i].catid),
                 };
             }
             return toreturn;

@@ -44,6 +44,7 @@ export function getIssues(options) {
                             item.approved = parseInt(item.approved);
                             item.categorie_str = cats[item.categorie].name;
                             item.color = cats[item.categorie].color;
+                            item.resolvable = cats[item.categorie].resolvable;
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.mosaic = baseUrl() + "/mosaic.php?t=" + item.token;
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token;
@@ -95,16 +96,34 @@ export function createIssue(data, key) {
     return request(options)
 }
 
-export async function addImage(token, secretId, data) {
+export function createResolution(data) {
+    if (data.token === undefined || data.token == ""){
+      data.token = generateToken();
+    }
+    var opts = "";
+
+    var options = {
+        url: baseUrl() + "/create_resolution.php"+opts,
+        method: "POST",
+        headers: {
+            "Content-Type": CONTENT_TYPE_X_WWW_FORM_URLENCODED
+        },
+        body: data
+
+    }
+    return request(options)
+}
+
+export async function addImage(token, secretId, data, isResolution) {
     var scope = await getScope();
     if (semver.gte( scope.backend_version ,"0.0.16")) {
-        return _addImage_after_0_0_16(token, secretId, data);
+        return _addImage_after_0_0_16(token, secretId, data, isResolution);
     } else {
-        return _addImage_before_0_0_16(token, secretId, data);
+        return _addImage_before_0_0_16(token, secretId, data, isResolution);
     }
 }
 
-function _addImage_before_0_0_16(token, secretId, data) {
+function _addImage_before_0_0_16(token, secretId, data, isResolution) {
     var b64 = atob(data);
     var array = [];
     for (var p = 0; p < b64.length; p++) {
@@ -113,7 +132,7 @@ function _addImage_before_0_0_16(token, secretId, data) {
     var u8array = new Uint8Array(array);
 
     var options = {
-        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId,
+        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId+(isResolution?"&type=resolution":""),
         method: "POST",
         headers: {
             //"Content-Type": CONTENT_TYPE_JPEG
@@ -124,9 +143,9 @@ function _addImage_before_0_0_16(token, secretId, data) {
     return request(options)
 }
 
-function _addImage_after_0_0_16(token, secretId, data) {
+function _addImage_after_0_0_16(token, secretId, data, isResolution) {
     var options = {
-        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId + "&method=base64",
+        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId + "&method=base64"+(isResolution?"&type=resolution":""),
         method: "POST",
         headers: {
             "Content-Type": CONTENT_TYPE_X_WWW_FORM_URLENCODED

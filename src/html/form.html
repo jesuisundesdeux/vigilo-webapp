@@ -78,9 +78,15 @@
             <input id="issue-comment" type="text" class="validate" maxlength="50">
             <label for="issue-comment">Description courte <span class="grey-text">(max 50 car.)</span></label>
           </div>
-          <div class="input-field col s12">
+          <div class="input-field col s12 onissueonly">
             <textarea id="issue-explanation" class="materialize-textarea"></textarea>
             <label for="issue-explanation">Commentaires</label>
+          </div>
+          <div class="input-field col s12 onresolutiononly">
+            <h6 class="grey-text">Observations résolues</h6>
+            <div id="related-issues">
+              Il faut d'abord indiquer une adresse ou un point sur la carte.
+            </div>
           </div>
         </div>
       </div>

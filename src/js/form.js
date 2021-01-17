@@ -7,17 +7,26 @@ import piexif from 'piexifjs';
 
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
+import relatedIssueCard from '../html/related-issue-card';
 import errorCard from '../html/error';
 import ImageDrawable from './image-drawable';
 import LocalDataManager from './localDataManager';
 import dataManager from './dataManager';
+
+import * as semver from 'semver';
 
 window.startForm = async function (token) {
   clearForm()
   var modal = M.Modal.getInstance($("#modal-form")[0]);
   modal.open();
   await initFormMap();
+
+  $("#issue-cat option[value=resolution]").removeProp("disabled");
+  $(".onissueonly").show();
+  $(".onresolutiononly").hide();
+
   if (token !== undefined) {
+    $("#issue-cat option[value=resolution]").prop("disabled", "true");
     var issues = await dataManager.getData();
     var issue = issues.filter(item => item.token == token)[0];
 
@@ -286,6 +295,8 @@ async function initFormMap() {
 
 
 async function setFormMapPoint(latlng, address) {
+  await findNearestIssue(latlng);
+
   if (formmap === undefined) {
     return
   }
@@ -312,6 +323,50 @@ async function setFormMapPoint(latlng, address) {
       }
     })
   }
+}
+
+function deg2rad(val){return val * Math.PI / 180}
+
+// https://numa-bord.com/miniblog/php-calcul-de-distance-entre-2-coordonnees-gps-latitude-longitude/
+function distance(lat1, lng1, lat2, lng2)
+{
+    var earth_radius = 6378137; // Terre = sphère de 6378km de rayon
+    var rlo1         = deg2rad(lng1);
+    var rla1         = deg2rad(lat1);
+    var rlo2         = deg2rad(lng2);
+    var rla2         = deg2rad(lat2);
+    var dlo          = (rlo2 - rlo1) / 2;
+    var dla          = (rla2 - rla1) / 2;
+    var a            = (Math.sin(dla) * Math.sin(dla)) + Math.cos(rla1) * Math.cos(rla2) * (Math.sin(dlo) * Math.sin(dlo));
+    var d            = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    
+    return earth_radius * d;
+}
+
+function isResolvable(i){
+  return i.approved == 1 && i.status !=1 && i.resolvable;
+}
+
+async function findNearestIssue(latlng){
+  var issue = await vigilo.getIssues();
+  var related_issues = issue.filter(isResolvable).filter((i) => distance(latlng.lat, latlng.lng, i.lat_float, i.lon_float) < 500);
+  related_issues.sort((a,b)=>distance(latlng.lat, latlng.lng, a.lat_float, a.lon_float) > distance(latlng.lat, latlng.lng, b.lat_float, b.lon_float))
+  console.log(related_issues);
+  $("#related-issues").empty();
+  related_issues.forEach((i)=>$("#related-issues").append(relatedIssueCard(i)))
+  M.Materialbox.init($("#related-issues .materialboxed"));
+  $(".related-issue a.btn-floating").click(function(){
+    var icon = $(this).find("i");
+    var div = $(this).parent();
+    var isChecked = div.hasClass("checked");
+    if (isChecked){
+      div.removeClass("checked");
+      icon.empty().append("add")
+    } else {
+      div.addClass("checked");
+      icon.empty().append("remove")
+    }
+  })
 }
 
 function addressFormat(address) {
@@ -364,33 +419,44 @@ function setTime(hours, minutes) {
   }
 }
 
+$("#modal-form #issue-cat").change(function(){
+  if ($("#issue-cat").val() == "resolution"){
+    $(".onissueonly").hide();
+    $(".onresolutiononly").show();
+  } else {
+    $(".onissueonly").show();
+    $(".onresolutiononly").hide();
+  }
+})
 
 /**
  * On submit, prepare data and send
  */
 $("#modal-form form").submit((e) => {
-	/*if (vigiloconfig.getInstance().scope !== "develop") {
-		alert("La création n'est autorisée que sur l'environmment de développement.");
-		e.preventDefault()
-		return;
-	}*/
+
 
   var data = {};
   data.token = $("#issue-token").val();
-  data.version = vigiloconfig.VERSION;
-  data.scope = vigiloconfig.getInstance().scope;
-  data.coordinates_lat = mapmarker.getLatLng().lat;
-  data.coordinates_lon = mapmarker.getLatLng().lng;
   data.comment = $("#issue-comment").val();
-  data.explanation = $("#issue-explanation").val();
-  data.categorie = parseInt($("#issue-cat").val());
-  data.address = $("#issue-address").val();
-
+  data.version = vigiloconfig.VERSION;
   data.time = getDate()
   var time = getTime()
   data.time.setHours(time[0])
   data.time.setMinutes(time[1])
   data.time = data.time.getTime()
+
+  var isResolution = $("#issue-cat").val()=="resolution";
+
+  if (isResolution){
+    data.tokenlist = $(".related-issue.checked").map(function(){return $(this).data('token')}).toArray().join(',');
+  } else {
+    data.scope = vigiloconfig.getInstance().scope;
+    data.coordinates_lat = mapmarker.getLatLng().lat;
+    data.coordinates_lon = mapmarker.getLatLng().lng;
+    data.explanation = $("#issue-explanation").val();
+    data.categorie = parseInt($("#issue-cat").val());
+    data.address = $("#issue-address").val();
+  }
 
   var modalLoader = M.Modal.getInstance($("#modal-form-loader"))
   modalLoader.open()
@@ -400,9 +466,17 @@ $("#modal-form form").submit((e) => {
     key = LocalDataManager.getAdminKey();
   }
 
-  vigilo.createIssue(data, key)
+  var firstStep;
+
+  if (isResolution){
+    firstStep = vigilo.createResolution(data);
+  } else {
+    firstStep = vigilo.createIssue(data, key);
+  }
+  
+  firstStep
     .then((createResponse) => {
-      if (createResponse.status != 0) {
+      if (createResponse.status != 0 && createResponse.token == undefined) {
         throw "error"
       }
 
@@ -413,7 +487,7 @@ $("#modal-form form").submit((e) => {
 
       $("#modal-form-loader .determinate").css("width", "50%");
       var jpegb64 = $("#picture-preview canvas")[0].toDataURL("image/jpeg", 1.0).split(",")[1];
-      return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64)
+      return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64, isResolution)
     })
     .then(() => {
       $("#modal-form-loader .determinate").css("width", "100%");
@@ -431,6 +505,7 @@ $("#modal-form form").submit((e) => {
 })
 
 
+
 export async function init() {
   try {
     // Fill category select
@@ -439,6 +514,14 @@ export async function init() {
       if (cats[i].disable == false || LocalDataManager.isAdmin()) {
         $("#issue-cat").append(`<option value="${i}">${cats[i].name}</option>`)
       }
+    }
+
+    //Resolution as a category
+    var scope = await vigilo.getScope();
+    if (semver.gte( scope.backend_version ,"0.0.14")) {
+      var otherCat = $("#issue-cat option").last().remove();
+      $("#issue-cat").append(`<option value="resolution">Un problème a été corrigé !</option>`);
+      $("#issue-cat").append(otherCat);
     }
 
     M.Modal.init($("#modal-form"));

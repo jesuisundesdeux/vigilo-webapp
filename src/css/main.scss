@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
 	padding: 0;
 	margin: 0;
 }
@@ -11,17 +12,20 @@ body {
 @import "~materialize-css/sass/materialize.scss";
 @import "materialize-custom.scss";
 @import "timedout-marker.scss";
-@import '~leaflet/dist/leaflet.css';
-@import '~leaflet-control-geocoder/dist/Control.Geocoder.css';
-@import '~leaflet.fullscreen/Control.FullScreen.css';
-@import '~leaflet.locatecontrol/src/L.Control.Locate.scss';
+@import "~leaflet/dist/leaflet.css";
+@import "~leaflet-control-geocoder/dist/Control.Geocoder.css";
+@import "~leaflet.fullscreen/Control.FullScreen.css";
+@import "~leaflet.locatecontrol/src/L.Control.Locate.scss";
 
 .leaflet-touch .leaflet-control-layers-toggle {
 	height: 30px;
 	width: 30px;
 }
 
-.leaflet-top, .leaflet-bottom, .leaflet-left, .leaflet-right {
+.leaflet-top,
+.leaflet-bottom,
+.leaflet-left,
+.leaflet-right {
 	z-index: 997;
 }
 
@@ -32,16 +36,16 @@ body {
 	ul.tabs {
 		height: 100%;
 	}
-  #version {
-    position: absolute;
-    bottom: (56px + 48px);
-    width: 100%;
-  }
-  #version-server {
-    position: absolute;
-    bottom: 56px;
-    width: 100%;
-  }
+	#version {
+		position: absolute;
+		bottom: (56px + 48px);
+		width: 100%;
+	}
+	#version-server {
+		position: absolute;
+		bottom: 56px;
+		width: 100%;
+	}
 }
 
 nav.nav-extended {
@@ -56,11 +60,11 @@ nav.nav-extended {
 		top: 64px;
 		z-index: 997;
 	}
-  @media #{$small-and-down} {
-    ul.tabs {
-      top: 56px;
-    }
-  }
+	@media #{$small-and-down} {
+		ul.tabs {
+			top: 56px;
+		}
+	}
 	& > div {
 		margin-top: 48px;
 	}
@@ -73,14 +77,13 @@ nav.nav-extended {
 			display: unset;
 		}
 	}
-	
+
 	#issues-map {
-		height: calc( 100vh - 113px );
+		height: calc(100vh - 113px);
 		.spinner {
 			display: block;
 		}
-  }
-  
+	}
 }
 
 #stats {
@@ -94,7 +97,7 @@ nav.nav-extended {
 	flex-wrap: wrap;
 	.card {
 		cursor: pointer;
-		height: calc( 100% - 1rem );
+		height: calc(100% - 1rem);
 		.card-image {
 			display: flex;
 			align-items: center;
@@ -104,7 +107,7 @@ nav.nav-extended {
 
 #modal-form {
 	.card-panel {
-		height: calc( 100% - 1rem );
+		height: calc(100% - 1rem);
 		margin-left: unset;
 		margin-right: unset;
 	}
@@ -114,6 +117,37 @@ nav.nav-extended {
 	canvas {
 		max-height: 200px;
 		max-width: 100%;
+	}
+
+	#related-issues {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		.related-issue {
+			margin-bottom: 10px;
+			max-height: 180px;
+			position: relative;
+			img.materialboxed {
+				max-height: 180px;
+				filter: opacity(30%) grayscale(90%);
+				&.active {
+					filter: unset;
+				}
+			}
+			a.btn-floating {
+				position: absolute;
+				right: 5px;
+				bottom: 5px;
+			}
+			&.checked {
+				img.materialboxed {
+					filter: unset;
+				}
+				a.btn-floating {
+					background-color: #F44336 !important;
+				}
+			}
+		}
 	}
 }
 
