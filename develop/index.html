@@ -48,8 +48,11 @@
         class="material-icons">bug_report</i>Signaler un bug</a></li>
   <li id="admin-status"></li>
   <li id="version" class="center-align"><a
-      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.8.0"
-      target="_blank" class="grey-text">Version : 1.8.0</a></li>
+      href="https://github.com/jesuisundesdeux/vigilo-webapp/releases/tag/v1.8.1"
+      target="_blank" class="grey-text">Version appli : 1.8.1</a></li>
+  <li id="version-server" class="center-align"><a
+        href="https://github.com/jesuisundesdeux/vigilo-backend/releases/tag/v"
+        target="_blank" class="grey-text">Version serveur : </a></li>
 </ul>
 
   <!-- Modal for zone -->
@@ -353,9 +356,15 @@
             <input id="issue-comment" type="text" class="validate" maxlength="50">
             <label for="issue-comment">Description courte <span class="grey-text">(max 50 car.)</span></label>
           </div>
-          <div class="input-field col s12">
+          <div class="input-field col s12 onissueonly">
             <textarea id="issue-explanation" class="materialize-textarea"></textarea>
             <label for="issue-explanation">Commentaires</label>
+          </div>
+          <div class="input-field col s12 onresolutiononly">
+            <h6 class="grey-text">Observations résolues</h6>
+            <div id="related-issues">
+              Il faut d'abord indiquer une adresse ou un point sur la carte.
+            </div>
           </div>
         </div>
       </div>
