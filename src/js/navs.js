@@ -3,7 +3,7 @@ import * as vigilo from './vigilo-api';
 export async function init() {
     M.Sidenav.init($("#mobile-menu"));
     M.Tabs.init($("#mobile-menu .tabs"), {
-        onShow: function () {
+        onShow: function (el) {
             M.Sidenav.getInstance($("#mobile-menu")).close()
         }
     });

@@ -40,6 +40,14 @@ class LocalDataManager {
     this.save()
   }
 
+  getLang(lang){
+    return this._data.lang;
+  }
+  setLang(lang, secretId){
+    this._data.lang = lang;
+    this.save()
+  }
+
   getAdminKey(){
     return this._data.adminKey;
   }

@@ -2,6 +2,7 @@ import localDataManager from '../js/localDataManager';
 import * as vigilo from '../js/vigilo-api';
 
 import * as semver from 'semver';
+import i18next from 'i18next';
 
 
 export default async function (issue) {
@@ -36,13 +37,13 @@ export default async function (issue) {
               <img class="materialboxed center-align" src="${issue.img}">
           </div>
           <div class="center-align hide-on-med-and-down">
-              <a class="waves-effect" title="Voir sur la carte" onclick="centerOnIssue('${issue.token}')">
+              <a class="waves-effect" title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
                 <img class="center-align" src="${issue.map}">
               </a>
           </div>
       </div>
       <div class="col m6 hide-on-small-only hide-on-large-only">
-          <a class="waves-effect" title="Voir sur la carte" onclick="centerOnIssue('${issue.token}')">
+          <a class="waves-effect" title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
             <div class="center-align">
                 <img class="center-align" src="${issue.map}">
             </div>
@@ -57,7 +58,7 @@ export default async function (issue) {
             ${(issue.status == 4) ? '<i class="material-icons">done</i> Ce signalement semble être résolu.' : ''}
             ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
           </h6>
-          <p><b>Référence de suivi :</b> <a href="${issue.permLink}">${issue.token}</a> | <a title="Observations similaires" target="_blank" href="${issue.mosaic}">Observations similaires</a></p>
+          <p><b>${i18next.t("issue-id")} :</b> <a href="${issue.permLink}">${issue.token}</a> | <a title="Observations similaires" target="_blank" href="${issue.mosaic}">Observations similaires</a></p>
 
           <p>
               <b>Catégorie :</b><br>
@@ -78,7 +79,7 @@ export default async function (issue) {
           </p>
       </div>
       <div class="col s12 hide-on-med-and-up">
-          <a class="waves-effect" title="Voir sur la carte" onclick="centerOnIssue('${issue.token}')">
+          <a class="waves-effect" title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
             <div class="center-align">
                 <img class="center-align" src="${issue.map}">
             </div>
@@ -90,7 +91,7 @@ export default async function (issue) {
 ${btns}
 <a title="Observations similaires" target="_blank" class="waves-effect waves-light btn-floating" href="${issue.mosaic}"><i class="material-icons center">view_list</i></a>
 <a title="Lien à partager" class="waves-effect waves-light btn-floating" href="${issue.permLink}"><i class="material-icons center">share</i></a>
-<a title="Voir sur la carte" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
+<a title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
 <a href="#!" title="Fermer" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
 </div>
 
