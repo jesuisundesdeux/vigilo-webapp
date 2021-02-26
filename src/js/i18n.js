@@ -17,7 +17,6 @@ export function init() {
     }
     i18next.init({
         lng: 'fr_FR',
-        fallbackLng: 'fr_FR',
         debug: true,
         resources: data
     }, function (err, t) {
@@ -29,6 +28,12 @@ export function init() {
 function update(){
     $('[data-i18n]').each(function(){
         this.innerHTML = i18next.t($(this).data('i18n'));
+    })
+    $('[data-i18n-attr]').each(function(){
+        var map = $(this).data('i18n-attr');
+        for (var i in map) {
+            $(this).attr(i, i18next.t(map[i]))
+        }
     })
 }
 function setLang(lang) {
