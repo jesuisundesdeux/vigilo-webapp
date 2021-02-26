@@ -29,7 +29,7 @@ export default class VigiloApp {
         var instances = await vigiloconfig.getInstances();
 
         for (var i in instances) {
-            $("#modal-zone .modal-content .collection").append(`<a href="#!" onclick="setInstance('${instances[i].name}')" class="collection-item${(instances[i].name == current_instance ? ' active' : '')}">${instances[i].name}</a>`)
+            $("#modal-zone .modal-content .collection").append(`<a href="#!" onclick="setInstance('${instances[i].name.replace('\'', '\\\'')}')" class="collection-item${(instances[i].name == current_instance ? ' active' : '')}">${instances[i].name}</a>`)
         }
 
         if (searchParams.has('instance')){
