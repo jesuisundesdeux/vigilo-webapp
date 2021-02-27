@@ -1,6 +1,6 @@
 {
     "language": "Langue",
-    "issues": "Les signalements",
+    "issues": "Les observations",
     "stats": "Statistiques",
     "zone-geo": "Zone géographiques",
     "see-on-map": "Voir sur la carte",
@@ -34,5 +34,16 @@
     "week-end": "Week-end",
     "my-reports": "Mes signalements",
     "comment": "Commentaire",
-    "filter-keyword": "Filtrer par mot clé : scooter"
+    "filter-keyword": "Filtrer par mot clé : scooter",
+    "new-report": "Nouvelle observation",
+    "picture": "Photo",
+    "click-edit-picture": "Cliquez sur l'image pour l'éditer.",
+    "address": "Adresse",
+    "date": "Date",
+    "hour": "Heure",
+    "categorie": "Catégorie",
+    "short-description": "Description courte",
+    "max-50-char": "(max 50 car.)",
+    "solved-reports": "Observations résolues",
+    "related-issues-placeholder": "Il faut d'abord indiquer une adresse ou un point sur la carte."
 }
