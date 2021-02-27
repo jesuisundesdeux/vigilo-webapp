@@ -102,9 +102,10 @@ export default class VigiloApp {
         await map.displayIssues();
 
         // Link bug
-        var template = await github_issue();
-        $("a[href='https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md']")
-            .attr('href', 'https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?body='+template)
+        $("a[href='https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md']").click(async function(){
+            var template = await github_issue();
+            $(this).attr('href', 'https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?body='+template)
+        })
 
     }
 

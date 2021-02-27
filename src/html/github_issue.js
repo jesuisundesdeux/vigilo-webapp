@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import * as vigilo from '../js/vigilo-api';
 import * as vigiloconfig from '../js/vigilo-config';
 
@@ -7,22 +8,21 @@ export default async function () {
     var version_server = scope.backend_version;
     var app_version = vigiloconfig.VERSION_NUMBER;
     var body = `
-## Bug
+## ${i18next.t("issue-bug")}
 
-Indiquez ici le comportement anormal
+> ${i18next.t("issue-bug-hint")}
 
-## Navigateur
+## ${i18next.t("issue-navigator")}
 
 ${navigator.userAgent}
 
-## Zone géographique
+## ${i18next.t("zone-geo")}
 
 ${scope_name}
 
-## Version
+## ${i18next.t("app-version")} ${app_version}
 
-- Webapp : ${app_version}
-- Serveur : ${version_server}
+## ${i18next.t("server-version")} ${version_server}
 
 `
     return encodeURIComponent(body);
