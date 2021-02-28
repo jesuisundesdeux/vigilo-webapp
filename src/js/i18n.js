@@ -3,8 +3,8 @@ import M from 'materialize-css';
 import localDataManager from './localDataManager';
 
 const LANGUAGES = {
-    "fr_FR": "Français",
-    "en_US": "English"
+    "fr_FR": "🇫🇷 Français",
+    "en_US": "🇺🇸🇬🇧 English"
 };
 
 export function init() {
@@ -34,6 +34,10 @@ function update(){
         for (var i in map) {
             $(this).attr(i, i18next.t(map[i]))
         }
+    })
+    $('[data-i18n-date]').each(function(){
+        var mdate = new Date($(this).data('i18n-date'));
+        this.innerHTML = mdate.toLocaleString(i18next.language.split("_")[0]);
     })
 }
 function setLang(lang) {

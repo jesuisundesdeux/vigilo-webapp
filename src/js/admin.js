@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import localDataManager from './localDataManager';
 import * as vigilo from './vigilo-api';
 
@@ -51,14 +52,14 @@ export async function init() {
     // Is admin mode ?
     if (localDataManager.isAdmin()){
       document.body.style.backgroundColor="red";
-      $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">stars</i> Désactiver mode admin</a></li>');
+      $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">stars</i> <span data-i18n="moderator-disable">'+i18next.t("moderator-disable")+'</span></a></li>');
       $("#admin-status a").click(()=>{
         localDataManager.setIsAdmin(false);
         window.location.reload()
       })
       initAdmin();
     } else {
-      $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">stars</i> Activer mode admin</a></li>');
+      $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">stars</i> <span data-i18n="moderator-enable">'+i18next.t("moderator-enable")+'</span></a></li>');
       $("#admin-status a").click(()=>{
         localDataManager.setIsAdmin(true);
         window.location.reload()
@@ -67,7 +68,7 @@ export async function init() {
     
   } else {
     // Pending ...
-    $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">star_half</i> Presque modérateur</a></li>');
+    $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">star_half</i> <span data-i18n="moderator-pending">'+i18next.t("moderator-pending")+'</span></a></li>');
     $("#admin-status a").click(()=>{M.Modal.getInstance($("#modal-admin")).open();})
     localDataManager.setIsAdmin(false);
   }

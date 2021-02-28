@@ -14,6 +14,7 @@ import LocalDataManager from './localDataManager';
 import dataManager from './dataManager';
 
 import * as semver from 'semver';
+import i18next from 'i18next';
 
 window.startForm = async function (token) {
   clearForm()
@@ -54,7 +55,21 @@ function clearForm() {
     mapmarker.remove()
   }
   $("#modal-form-loader .determinate").css("width", "10%");
+
   $("#related-issues").removeClass("invalid");
+
+  if (!WE_ARE_ON_A_MOBILE) {
+    M.Datepicker.init($("#issue-date"), {
+      container: 'body',
+      firstDay: (i18next.getResourceBundle(i18next.language).datepicker ? i18next.getResourceBundle(i18next.language).datepicker.firstDay : 0),
+      format: (i18next.getResourceBundle(i18next.language).datepicker ? i18next.getResourceBundle(i18next.language).datepicker.format : "mmm dd, yyyy"),
+      i18n: (i18next.getResourceBundle(i18next.language).datepicker ? i18next.getResourceBundle(i18next.language).datepicker : {}),
+      autoClose: true,
+      onSelect: (date) => {
+        M.Timepicker.getInstance($("#issue-time")).open()
+      }
+    });
+  }
 }
 
 /**
@@ -536,31 +551,13 @@ export async function init() {
     M.Modal.init($("#modal-form-loader"))
 
     if (!WE_ARE_ON_A_MOBILE) {
-      M.Datepicker.init($("#issue-date"), {
-        container: 'body',
-        firstDay: 1,
-        format: 'dd mmm yyyy',
-        i18n: {
-          months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
-          monthsShort: ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
-          weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-          weekdaysShort: ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'],
-          weekdaysAbbrev: ['D', 'L', 'Ma', 'Me', 'J', 'V', 'S'],
-          cancel: "Annuler",
-
-        },
-        autoClose: true,
-        onSelect: (date) => {
-          M.Timepicker.getInstance($("#issue-time")).open()
-        }
-      });
       M.Timepicker.init($("#issue-time"), {
         container: 'body',
         autoClose: true,
         twelveHour: false,
         i18n: {
-          'cancel': 'Annuler',
-          'done': 'ok'
+          'cancel': i18next.t("cancel"),
+          'done': i18next.t("ok")
         },
         onCloseEnd: () => {
           $("#issue-cat").focus()

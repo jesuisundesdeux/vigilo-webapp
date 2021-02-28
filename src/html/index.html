@@ -14,7 +14,7 @@
   <!-- Modal for zone -->
   <div id="modal-zone" class="modal modal-fixed-footer">
     <div class="modal-content">
-      <h5>Zone géographique</h5>
+      <h5 data-i18n="zone-geo">Zone géographique</h5>
       <div class="collection">
       </div>
     </div>
@@ -26,7 +26,7 @@
   <!-- Modal for i18n -->
   <div id="modal-i18n" class="modal modal-fixed-footer">
     <div class="modal-content">
-      <h5>Langue</h5>
+      <h5 data-i18n="language">Langue</h5>
       <div class="collection">
       </div>
     </div>
@@ -56,21 +56,15 @@
   <!-- Modal for admin -->
   <div id="modal-admin" class="modal modal-fixed-footer">
     <div class="modal-content">
-      <h5>Devenir modérateur</h5>
-      Avant toute chose, vous devez prendre contact avec l'association gérant votre zone géographique dans Vigilo.
-
-      Pour devenir modérateur, vous devez posséder une clé d'accès.
-      Insérez la clé fournie par un modérateur dans le champs ci-dessous ou cliquez sur "générer" et transmettez cette
-      clé à un modérateur.
-
-      Votre autorisation d'accès au rôle de modérateur doit être validée par un modérateur.
+      <h5 data-i18n="moderator-become"></h5>
+      <span data-i18n="moderator-text"></span>
 
       <div class="input-field">
         <input id="role_key" type="text" class="validate">
-        <label for="role_key">Votre clé d'accès</label>
-        <button id="generate-key" type="button" class="waves-effect waves-light btn">Générer une clé <i
+        <label for="role_key" data-i18n="your-access-key">Votre clé d'accès</label>
+        <button id="generate-key" type="button" class="waves-effect waves-light btn"><span data-i18n="generate-key">Générer une clé</span> <i
             class="material-icons right">loop</i></button>
-        <button id="save-key" type="button" class="waves-effect waves-light btn">Enregistrer <i
+        <button id="save-key" type="button" class="waves-effect waves-light btn"><span data-i18n="save">Enregistrer</span> <i
             class="material-icons right">save</i></button>
       </div>
     </div>
@@ -82,7 +76,7 @@
   <!-- Modal for issue upload -->
   <div id="modal-form-loader" class="modal">
     <div class="modal-content">
-      <h4>Envoi...</h4>
+      <h4 data-i18n="sending"></h4>
       <div class="progress">
         <div class="determinate" style="width: 10%"></div>
       </div>

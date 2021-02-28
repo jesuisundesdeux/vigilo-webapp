@@ -37,13 +37,13 @@ export default async function (issue) {
               <img class="materialboxed center-align" src="${issue.img}">
           </div>
           <div class="center-align hide-on-med-and-down">
-              <a class="waves-effect" title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
+              <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
                 <img class="center-align" src="${issue.map}">
               </a>
           </div>
       </div>
       <div class="col m6 hide-on-small-only hide-on-large-only">
-          <a class="waves-effect" title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
+          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
             <div class="center-align">
                 <img class="center-align" src="${issue.map}">
             </div>
@@ -51,35 +51,35 @@ export default async function (issue) {
       </div>
       <div class="col s12 m12 l7 xl8">
           <h6 class="center-align valign-wrapper">
-            ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> Ce signalement sera vérifié prochainement par un modérateur' : ''}
-            ${(issue.status == 1) ? '<i class="material-icons">done_all</i> Ce signalement a été pris en compte et le problème corrigé !' : ''}
-            ${(issue.status == 2) ? '<i class="material-icons">info</i> Ce signalement sera prochainement résolu.' : ''}
-            ${(issue.status == 3) ? '<i class="material-icons">hourglass_empty</i> Ce signalement est en cours de résolution.' : ''}
-            ${(issue.status == 4) ? '<i class="material-icons">done</i> Ce signalement semble être résolu.' : ''}
-            ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> J\'ai fait ce signalement' : ''}
+            ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> <span data-i18n="status-unapproved-long">'+i18next.t("status-unapproved-long")+'</span>' : ''}
+            ${(issue.status == 1) ? '<i class="material-icons">done_all</i> <span data-i18n="status-resolved-long">'+i18next.t("status-resolved-long")+'</span>' : ''}
+            ${(issue.status == 2) ? '<i class="material-icons">info</i> <span data-i18n="status-taked-long">'+i18next.t("status-taked-long")+'</span>' : ''}
+            ${(issue.status == 3) ? '<i class="material-icons">hourglass_empty</i> <span data-i18n="status-inprogress-long">'+i18next.t("status-inprogress-long")+'</span>' : ''}
+            ${(issue.status == 4) ? '<i class="material-icons">done</i> <span data-i18n="status-done-long">'+i18next.t("status-done-long")+'</span>' : ''}
+            ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> <span data-i18n="i-make-it">'+i18next.t("i-make-it")+'</span>' : ''}
           </h6>
-          <p><b>${i18next.t("issue-id")} :</b> <a href="${issue.permLink}">${issue.token}</a> | <a title="Observations similaires" target="_blank" href="${issue.mosaic}">Observations similaires</a></p>
+          <p><b>${i18next.t("issue-id")} :</b> <a href="${issue.permLink}">${issue.token}</a> | <a data-i18n="issues-similar" data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" href="${issue.mosaic}">${i18next.t("issues-similar")}</a></p>
 
           <p>
-              <b>Catégorie :</b><br>
+              <b><span data-i18n="category">${i18next.t("category")}</span></b><br>
               ${issue.categorie_str}
           </p>
           <p>
-              <b>Date :</b><br>
-              ${issue.date_obj.toLocaleString('fr')}
+              <b><span data-i18n="date">${i18next.t("date")}</span></b><br>
+              ${issue.date_obj.toLocaleString(i18next.language.split("_")[0])}
           </p>
           <p>
-              <b>Remarque :</b><br>
+              <b><span data-i18n="comment">${i18next.t("comment")}</span></b><br>
               ${issue.comment}
               <br><blockquote>${issue.explanation}</blockquote>
           </p>
           <p>
-              <b>Localisation :</b><br>
+              <b><span data-i18n="location">${i18next.t("location")}</span></b><br>
               ${issue.address}
           </p>
       </div>
       <div class="col s12 hide-on-med-and-up">
-          <a class="waves-effect" title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
+          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
             <div class="center-align">
                 <img class="center-align" src="${issue.map}">
             </div>
@@ -89,10 +89,10 @@ export default async function (issue) {
 </div>
 <div class="modal-footer">
 ${btns}
-<a title="Observations similaires" target="_blank" class="waves-effect waves-light btn-floating" href="${issue.mosaic}"><i class="material-icons center">view_list</i></a>
-<a title="Lien à partager" class="waves-effect waves-light btn-floating" href="${issue.permLink}"><i class="material-icons center">share</i></a>
-<a title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
-<a href="#!" title="Fermer" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
+<a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" class="waves-effect waves-light btn-floating" href="${issue.mosaic}"><i class="material-icons center">view_list</i></a>
+<a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${issue.permLink}"><i class="material-icons center">share</i></a>
+<a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
+<a href="#!" data-i18n-attr='{"title": "close"}' title="${i18next.t("close")}" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
 </div>
 
 `
