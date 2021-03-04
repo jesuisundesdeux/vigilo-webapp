@@ -15,15 +15,7 @@ import localDataManager from './localDataManager';
 export default class VigiloApp {
     async init() {
 
-        /**
-         * DATA MODAL
-         */
-        // Delete Cache
-        $("#delete-cached-data").click(async function(){
-            await dataManager.cleanCachedData();
-            window.location.reload();
-        })
-
+        
         /**
         * SELECT ZONE MODAL
         */
@@ -117,6 +109,16 @@ export default class VigiloApp {
         var template = await github_issue();
         $("a[href='https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?template=bug.md']")
             .attr('href', 'https://github.com/jesuisundesdeux/vigilo-webapp/issues/new?body='+template)
+
+        /**
+         * DATA MODAL
+         */
+        // Delete Cache
+        $("#delete-cached-data").click(async function(){
+            await dataManager.cleanCachedData();
+            window.location.reload();
+        })
+        $("#delete-cached-data").append('('+(await dataManager.countCachedData())+')')
 
     }
 

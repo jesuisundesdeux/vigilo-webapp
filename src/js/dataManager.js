@@ -27,7 +27,7 @@ class DataManager {
     });
   }
   getDB() {
-    if (staticDB === undefined){
+    if (staticDB === undefined) {
       staticDB = new Dexie('MyDatabase');
       // Declare tables, IDs and indexes
       staticDB.version(1).stores({
@@ -37,16 +37,35 @@ class DataManager {
     return staticDB.issues;
   }
   async loadCachedData() {
-    this._data = await this.getDB().where("scope").equalsIgnoreCase(vigiloconfig.getInstance().scope).toArray();
-    console.log("Load cached data: "+this._data.length);
+    try {
+      this._data = await this.getDB().where("scope").equalsIgnoreCase(vigiloconfig.getInstance().scope).toArray();
+      console.log("Load cached data: " + this._data.length);
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  async countCachedData() {
+    try {
+      return await this.getDB().count();
+    } catch (e) {
+      return -1;
+    }
   }
   async cleanCachedData() {
-    this.getDB().clear();
+    try {
+      await this.getDB().clear();
+    } catch (e) {
+      console.log(e)
+    }
   }
   async saveCachedData() {
-    this.cleanCachedData();
-    await this.getDB().bulkAdd(this._data);
-    console.log("Save cached data: "+this._data.length);
+    try {
+      this.cleanCachedData();
+      await this.getDB().bulkAdd(this._data);
+      console.log("Save cached data: " + this._data.length);
+    } catch (e) {
+      console.log(e)
+    }
   }
   async getAllData() {
     if (this._data.length == 0) {
@@ -74,7 +93,7 @@ class DataManager {
         item.permLink = window.location.protocol + "//" + window.location.host + "/?token=" + item.token + "&instance=" + encodeURIComponent(vigiloconfig.getInstance().name);
         return item
       });
-      console.log("Load new data: "+newdata.length);
+      console.log("Load new data: " + newdata.length);
       this._data = newdata.concat(this._data).sort((a, b) => b.time - a.time);
 
       this.saveCachedData();
