@@ -8,7 +8,7 @@ export async function init() {
 	try {
 		// Fill category select + count
 		var cats = await vigiloconfig.getCategories();
-		var issues = await vigilo.getIssues();
+		var issues = await dataManager.getAllData();
 		for (var i in cats) {
 			$("#modal-filters #categories-select")
 				.append(`<div class="col s12 m6"><label>

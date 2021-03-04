@@ -348,7 +348,7 @@ function isResolvable(i){
 }
 
 async function findNearestIssue(latlng){
-  var issue = await vigilo.getIssues();
+  var issue = await dataManager.getAllData();
   var related_issues = issue.filter(isResolvable).filter((i) => distance(latlng.lat, latlng.lng, i.lat_float, i.lon_float) < 500);
   related_issues.sort((a,b)=>distance(latlng.lat, latlng.lng, a.lat_float, a.lon_float) > distance(latlng.lat, latlng.lng, b.lat_float, b.lon_float))
   console.log(related_issues);

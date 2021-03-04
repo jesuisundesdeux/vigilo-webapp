@@ -1,5 +1,4 @@
 import * as vigiloconfig from './vigilo-config';
-import localDataManager from './localDataManager';
 
 import * as semver from 'semver';
 
@@ -11,6 +10,7 @@ function baseUrl() {
 };
 
 import {request} from './utils';
+
 var issue_cache = {};
 export function getIssues(options) {
     /**
@@ -22,47 +22,14 @@ export function getIssues(options) {
      * - int GET['count'] : (Facultatif) : nombre d'observations à retourner
      * - int GET[''offset'] : (Facultatif) : Offset de la liste de resultat (GET['count'] obligatoire)
      */
+
     options = options || {};
     options.scope = vigiloconfig.getInstance().scope
     var url = baseUrl() + "/get_issues.php?" + Object.entries(options).map((kv) => {
         return kv[0] + "=" + encodeURIComponent(kv[1])
     }).join("&")
 
-    if (issue_cache[url] !== undefined){
-        return Promise.resolve(issue_cache[url]);
-    }
-
-    return new Promise((resolve, reject) => {
-        vigiloconfig.getCategories()
-            .then((cats) => {
-                request(url)
-                    .then((obj) => {
-                        var data = obj.map((item) => {
-                            item.lon_float = parseFloat(item.coordinates_lon);
-                            item.lat_float = parseFloat(item.coordinates_lat);
-                            item.status = parseInt(item.status);
-                            item.approved = parseInt(item.approved);
-                            item.categorie_str = cats[item.categorie].name;
-                            item.color = cats[item.categorie].color;
-                            item.resolvable = cats[item.categorie].resolvable;
-                            item.date_obj = new Date(parseInt(item.time) * 1000);
-                            item.mosaic = baseUrl() + "/mosaic.php?t=" + item.token;
-                            item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token;
-                            item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token;
-                            if (localDataManager.isAdmin() && item.approved == 0){
-                              item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
-                            }
-                            item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
-                            item.permLink = window.location.protocol + "//" + window.location.host + "/?token=" + item.token + "&instance=" + encodeURIComponent(vigiloconfig.getInstance().name);
-                            return item
-                        })
-                        issue_cache[url] = data;
-                        resolve(data)
-                    })
-                    .catch(reject)
-            })
-            .catch(reject);
-    });
+    return request(url);
 };
 
 function generateToken() {

@@ -16,6 +16,15 @@ export default class VigiloApp {
     async init() {
 
         /**
+         * DATA MODAL
+         */
+        // Delete Cache
+        $("#delete-cached-data").click(async function(){
+            await dataManager.cleanCachedData();
+            window.location.reload();
+        })
+
+        /**
         * SELECT ZONE MODAL
         */
         var current_instance = vigiloconfig.getInstance() == null ? '' : vigiloconfig.getInstance().name;
@@ -61,12 +70,13 @@ export default class VigiloApp {
          */
         navs.init();
 
+        await dataManager.getAllData()
 
         /**
          * ISSUE FORM
          */
         form.init();
-        stats.init()
+        
 
         /**
          * ISSUES LIST AND MAP
@@ -90,14 +100,18 @@ export default class VigiloApp {
             await map.displayIssues(true)
         })
 
-        await filters.init();
+        
 
         if (searchParams.has('token')){
             await list.viewIssue(searchParams.get('token'))
         }
 
-        await list.displayIssues(30);
-        await map.displayIssues();
+        list.displayIssues(30);
+        map.displayIssues();
+
+
+        stats.init()
+        filters.init();
 
         // Link bug
         var template = await github_issue();

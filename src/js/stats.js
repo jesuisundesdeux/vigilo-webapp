@@ -1,11 +1,11 @@
-import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
+import dataManager from './dataManager';
 import Chart from 'chart.js';
 Chart.defaults.global.legend.position = "bottom";
 Chart.defaults.global.maintainAspectRatio = false;
 
 export async function init() {
-    var data = await vigilo.getIssues();
+    var data = await dataManager.getAllData();
     makeStats(data);
 }
 

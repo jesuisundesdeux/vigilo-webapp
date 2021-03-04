@@ -1,10 +1,16 @@
 import * as vigilo from './vigilo-api';
-import LocalDataManager from './localDataManager';
+import localDataManager from './localDataManager';
+import * as vigiloconfig from './vigilo-config';
+import Dexie from 'dexie';
 
+function baseUrl() {
+  return decodeURIComponent(vigiloconfig.getInstance().api_path)
+};
+var staticDB = undefined;
 class DataManager {
   constructor() {
     let parsedUrl = new URL(window.location.href);
-
+    this._data = [];
     this.dow = [];
     this.hour = [];
     this.categories = [];
@@ -13,9 +19,70 @@ class DataManager {
     this.onlyme = false;
     this.cities = [];
     this.comment = parsedUrl.searchParams.get("comment") || ""; //HTML get parameter to share URL
+
+  }
+  loadData(fromdate) {
+    return vigilo.getIssues({
+      "t": fromdate
+    });
+  }
+  getDB() {
+    if (staticDB === undefined){
+      staticDB = new Dexie('MyDatabase');
+      // Declare tables, IDs and indexes
+      staticDB.version(1).stores({
+        issues: '++id,scope'
+      });
+    }
+    return staticDB.issues;
+  }
+  async loadCachedData() {
+    this._data = await this.getDB().where("scope").equalsIgnoreCase(vigiloconfig.getInstance().scope).toArray();
+    console.log("Load cached data: "+this._data.length);
+  }
+  async cleanCachedData() {
+    this.getDB().clear();
+  }
+  async saveCachedData() {
+    this.cleanCachedData();
+    await this.getDB().bulkAdd(this._data);
+    console.log("Save cached data: "+this._data.length);
+  }
+  async getAllData() {
+    if (this._data.length == 0) {
+      await this.loadCachedData();
+      var cats = await vigiloconfig.getCategories();
+      var maxtime = this._data.reduce((acc, cur) => (cur.time > acc ? cur.time : acc), 0);
+      var scope = vigiloconfig.getInstance().scope
+      var newdata = (await this.loadData(maxtime)).map((item) => {
+        item.scope = scope;
+        item.lon_float = parseFloat(item.coordinates_lon);
+        item.lat_float = parseFloat(item.coordinates_lat);
+        item.status = parseInt(item.status);
+        item.approved = parseInt(item.approved);
+        item.categorie_str = cats[item.categorie].name;
+        item.color = cats[item.categorie].color;
+        item.resolvable = cats[item.categorie].resolvable;
+        item.date_obj = new Date(parseInt(item.time) * 1000);
+        item.mosaic = baseUrl() + "/mosaic.php?t=" + item.token;
+        item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token;
+        item.img = baseUrl() + "/generate_panel.php?s=800&token=" + item.token;
+        if (localDataManager.isAdmin() && item.approved == 0) {
+          item.img = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + localDataManager.getAdminKey();
+        }
+        item.map = baseUrl() + "/maps/" + item.token + "_zoom.jpg"
+        item.permLink = window.location.protocol + "//" + window.location.host + "/?token=" + item.token + "&instance=" + encodeURIComponent(vigiloconfig.getInstance().name);
+        return item
+      });
+      console.log("Load new data: "+newdata.length);
+      this._data = newdata.concat(this._data).sort((a, b) => b.time - a.time);
+
+      this.saveCachedData();
+    }
+    return this._data;
   }
   async getData() {
-    var data = await vigilo.getIssues();
+    var data = await this.getAllData();
     var date_now = Date.now();
     data = data.filter((issue) => {
       if (this.dow.length > 0) {
@@ -34,7 +101,7 @@ class DataManager {
         }
       }
       if (this.cities.length > 0) {
-        if (issue.cityname == undefined){
+        if (issue.cityname == undefined) {
           return false;
         }
         if (this.cities.indexOf(issue.cityname.toLowerCase()) == -1) {
@@ -42,7 +109,7 @@ class DataManager {
         }
       }
       if (this.onlyme) {
-        if (LocalDataManager.getTokenSecretId(issue.token) == undefined) {
+        if (localDataManager.getTokenSecretId(issue.token) == undefined) {
           return false;
         }
       }
@@ -65,7 +132,7 @@ class DataManager {
           return false;
         }
       }
-      if (this.comment != ""){
+      if (this.comment != "") {
         return issue.comment.indexOf(this.comment) != -1;
       }
 
