@@ -15,7 +15,7 @@ import localDataManager from './localDataManager';
 
 export default class VigiloApp {
     async init() {
-        i18n.init();
+        await i18n.init();
 
         /**
         * SELECT ZONE MODAL

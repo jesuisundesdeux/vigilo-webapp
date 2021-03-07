@@ -1,20 +1,30 @@
 import i18next from 'i18next';
 import M from 'materialize-css';
 import localDataManager from './localDataManager';
+import * as vigiloconfig from './vigilo-config';
 
 const LANGUAGES = {
     "fr_FR": "🇫🇷 Français",
     "en_US": "🇺🇸🇬🇧 English"
 };
 
-export function init() {
+export async function init() {
     var data = {};
+    var cats = await vigiloconfig.getCategories();
     for (var i in LANGUAGES) {
         data[i] = {
             "translation": require("../i18n/" + i + ".json")
         };
+        for (var j in cats){
+            if (cats[j].i18n[LANGUAGES[i]] !== undefined){
+                data[i].translation["category-name-"+cats[j].id] = cats[j].i18n[LANGUAGES[i]];
+            } else {
+                data[i].translation["category-name-"+cats[j].id] = cats[j].name;
+            }
+        }
         $("#modal-i18n .modal-content .collection").append(`<a href="#!" onclick="setLang('${i}')" class="collection-item">${LANGUAGES[i]}</a>`)
     }
+    console.log(data)
     i18next.init({
         lng: 'fr_FR',
         debug: true,

@@ -3,6 +3,7 @@ import * as vigilo from './vigilo-api';
 import errorCard from '../html/error';
 import dataManager from './dataManager';
 import LocalDataManager from './localDataManager';
+import i18next from 'i18next';
 
 export async function init() {
 	try {
@@ -12,8 +13,8 @@ export async function init() {
 		for (var i in cats) {
 			$("#modal-filters #categories-select")
 				.append(`<div class="col s12 m6"><label>
-                  <input type="checkbox" checked="checked"  name="categories" value="${i}" />
-                  <span>${cats[i].name}</span>
+                  <input type="checkbox" checked="checked" data-i18n="category-name-${i}" name="categories" value="${i}" />
+                  <span>${i18next.t("category-name-"+i)}</span>
                 </label>
               </div`)
 		}

@@ -27,7 +27,8 @@ function onChartResize(chart, size) {
 async function makeStats(issues) {
     // Prepare data structures
     var dataLast30Days = {};
-    var dataByCat = {}
+    var dataByCat = {};
+    var dataByCatLabel = [];
 
     var today = new Date()
     truncDateToDay(today)
@@ -46,7 +47,8 @@ async function makeStats(issues) {
             dataLast30Days[cat].data[time] = 0
         }
 
-        dataByCat[cats[cat].name] = 0;
+        dataByCat[cats[cat].id] = 0;
+        dataByCatLabel.push(cats[cat].name);
     }
 
     // Compute data
@@ -63,7 +65,7 @@ async function makeStats(issues) {
             totalDataLast30Days++;
         }
 
-        dataByCat[issues[i].categorie_str]++;
+        dataByCat[issues[i].categorie]++;
     }
 
     // Refactor data
@@ -114,7 +116,7 @@ async function makeStats(issues) {
                     backgroundColor: Object.values(cats).map((x)=>x.color)
                 }
             ],
-            labels: Object.keys(dataByCat)
+            labels: dataByCatLabel
         },
         options: {
             onResize: onChartResize,

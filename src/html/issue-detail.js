@@ -62,7 +62,7 @@ export default async function (issue) {
 
           <p>
               <b><span data-i18n="category">${i18next.t("category")}</span></b><br>
-              ${issue.categorie_str}
+              <span data-i18n="category-name-${issue.categorie}">${i18next.t("category-name-"+issue.categorie)}</span>
           </p>
           <p>
               <b><span data-i18n="date">${i18next.t("date")}</span></b><br>

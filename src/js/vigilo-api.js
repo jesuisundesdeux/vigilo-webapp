@@ -42,7 +42,6 @@ export function getIssues(options) {
                             item.lat_float = parseFloat(item.coordinates_lat);
                             item.status = parseInt(item.status);
                             item.approved = parseInt(item.approved);
-                            item.categorie_str = cats[item.categorie].name;
                             item.color = cats[item.categorie].color;
                             item.resolvable = cats[item.categorie].resolvable;
                             item.date_obj = new Date(parseInt(item.time) * 1000);

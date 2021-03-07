@@ -30,8 +30,16 @@ export function getCategories() {
                 if (cat[i].catdisable !== true) {
                    cat[i].catdisable = false;
                 }
+                cat[i].i18n = [];
+                for (var j in cat[i]) {
+                    if (j.startsWith("catname_")){
+                        cat[i].i18n[j.replace("catname_", "")] = cat[i][j];
+                    }
+                }
                 toreturn[cat[i].catid] = {
+                    id: cat[i].catid,
                     name: cat[i].catname,
+                    i18n: cat [i].i18n,
                     color: cat[i].catcolor,
                     disable: cat[i].catdisable,
                     resolvable: RESOLVABLE_CATEGORIES.includes(cat[i].catid),
