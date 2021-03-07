@@ -63,7 +63,6 @@ module.exports = {
 			lang: "fr",
 			background_color: '#fdd835',
 			theme_color: '#fdd835',
-			crossorigin: 'use-credentials', //can be null, use-credentials or anonymous
 			ios: true,
 			icons: [{
 					src: path.resolve('src/img/favicon.png'),
