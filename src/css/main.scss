@@ -148,6 +148,9 @@ nav.nav-extended {
 				}
 			}
 		}
+		&.invalid {
+			border: solid 2px red;
+		}
 	}
 }
 

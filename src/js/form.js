@@ -54,6 +54,7 @@ function clearForm() {
     mapmarker.remove()
   }
   $("#modal-form-loader .determinate").css("width", "10%");
+  $("#related-issues").removeClass("invalid");
 }
 
 /**
@@ -449,6 +450,13 @@ $("#modal-form form").submit((e) => {
 
   if (isResolution){
     data.tokenlist = $(".related-issue.checked").map(function(){return $(this).data('token')}).toArray().join(',');
+    if (data.tokenlist.length == 0){
+      // TODO I18N
+      M.toast({html: 'Vous devez sélectionner au moins une observation résolue', classes: "red"})
+      $("#related-issues").addClass("invalid");
+      e.preventDefault();
+      return
+    }
   } else {
     data.scope = vigiloconfig.getInstance().scope;
     data.coordinates_lat = mapmarker.getLatLng().lat;
@@ -457,7 +465,7 @@ $("#modal-form form").submit((e) => {
     data.categorie = parseInt($("#issue-cat").val());
     data.address = $("#issue-address").val();
   }
-
+  $("#related-issues").removeClass("invalid");
   var modalLoader = M.Modal.getInstance($("#modal-form-loader"))
   modalLoader.open()
 
