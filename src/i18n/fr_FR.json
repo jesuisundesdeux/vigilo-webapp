@@ -12,6 +12,7 @@
     "error": "Oups... une erreur est survenue.",
     "filters": "Filtres",
     "categories": "Catégories",
+    "category-name-resolution": "Un problème a été corrigé !", 
     "status": "Statut",
     "status-unapproved": "Non modéré",
     "status-unapproved-long": "Ce signalement sera vérifié prochainement par un modérateur",

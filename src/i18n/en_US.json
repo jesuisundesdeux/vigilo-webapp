@@ -12,6 +12,7 @@
     "error": "Oops ... an error has occured. ",
     "filters": "Filters",
     "categories": "Categories",
+    "category-name-resolution": "A problem has been fixed!",
     "status": "Status",
     "status-unapproved": "Not moderat",
     "status-unapproved-long": "This report will be checked soon by a moderator",

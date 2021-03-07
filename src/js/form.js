@@ -41,7 +41,7 @@ window.startForm = async function (token) {
     setTime(issue.date_obj.getHours(), issue.date_obj.getMinutes());
 
     $("#issue-cat option[value='" + issue.categorie + "']").prop('selected', true);
-    $("#issue-cat").parent().find("input[type='text']").val(issue.categorie_str);
+    $("#issue-cat").parent().find("input[type='text']").val(i18next.t("category-name-"+issue.categorie));
 
     $("#issue-comment").val(issue.comment);
     $("#issue-explanation").val(issue.explanation);
@@ -535,7 +535,7 @@ export async function init() {
     var cats = await vigiloconfig.getCategories();
     for (var i in cats) {
       if (cats[i].disable == false || LocalDataManager.isAdmin()) {
-        $("#issue-cat").append(`<option value="${i}">${cats[i].name}</option>`)
+        $("#issue-cat").append(`<option data-i18n="category-name-${i}" value="${i}">${i18next.t("category-name-"+i)}</option>`)
       }
     }
 
@@ -543,7 +543,7 @@ export async function init() {
     var scope = await vigilo.getScope();
     if (semver.gte( scope.backend_version ,"0.0.14")) {
       var otherCat = $("#issue-cat option").last().remove();
-      $("#issue-cat").append(`<option value="resolution">Un problème a été corrigé !</option>`);
+      $("#issue-cat").append(`<option value="resolution" data-i18n="category-name-resolution">${i18next.t("category-name-resolution")}</option>`);
       $("#issue-cat").append(otherCat);
     }
 
