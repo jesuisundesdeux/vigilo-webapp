@@ -466,8 +466,7 @@ $("#modal-form form").submit((e) => {
   if (isResolution){
     data.tokenlist = $(".related-issue.checked").map(function(){return $(this).data('token')}).toArray().join(',');
     if (data.tokenlist.length == 0){
-      // TODO I18N
-      M.toast({html: 'Vous devez sélectionner au moins une observation résolue', classes: "red"})
+      M.toast({html: i18next.t('solved-reports-required'), classes: "red"})
       $("#related-issues").addClass("invalid");
       e.preventDefault();
       return
