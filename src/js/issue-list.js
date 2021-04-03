@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import dataManager from './dataManager';
 import errorCard from '../html/error';
 import issueCard from '../html/issue-card';
@@ -21,7 +22,7 @@ export async function displayIssues(count) {
 				$("#issues .cards-container").append(issueCard(issue))
 			})
 		} else {
-			$("#issues .cards-container").append('<div class="no-issue-to-display-container"><div class="no-issue-to-display">Aucun signalement..</div></div>')
+			$("#issues .cards-container").append('<div class="no-issue-to-display-container"><div class="no-issue-to-display" data-i18n="no-issue">' + i18next.t("no-issue") + '</div></div>')
 		}
 
 	} catch (e) {

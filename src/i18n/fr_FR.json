@@ -10,6 +10,7 @@
     "app-version": "Version appli :",
     "server-version": "Version serveur :",
     "error": "Oups... une erreur est survenue.",
+    "no-issue": "Aucun signalement...",
     "filters": "Filtres",
     "categories": "Catégories",
     "category-name-resolution": "Un problème a été corrigé !", 
