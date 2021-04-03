@@ -14,11 +14,16 @@ export async function cleanIssues() {
 export async function displayIssues(count) {
 	try {
 		var issues = await dataManager.getData();
-		issues = issues.slice(offset, offset + count);
-		offset += issues.length;
-		issues.forEach((issue) => {
-			$("#issues .cards-container").append(issueCard(issue))
-		})
+		if (issues.length) {
+			issues = issues.slice(offset, offset + count);
+			offset += issues.length;
+			issues.forEach((issue) => {
+				$("#issues .cards-container").append(issueCard(issue))
+			})
+		} else {
+			$("#issues .cards-container").append('<div class="no-issue-to-display-container"><div class="no-issue-to-display">Aucun signalement..</div></div>')
+		}
+
 	} catch (e) {
 		$("#issues").empty().append(errorCard(e));
 	}
@@ -29,7 +34,7 @@ export async function viewIssue(token) {
 	var modal = M.Modal.getInstance($("#modal-issue")[0]);
 	var issues = await dataManager.getData();
 	var issue = issues.filter(item => item.token == token);
-	if( issue.length > 0) {
+	if (issue.length > 0) {
 		$("#modal-issue").empty().append(await issueDetail(issue[0]));
 		M.Materialbox.init($("#modal-issue .materialboxed"));
 		window.history.replaceState({}, '', issue[0].permLink)

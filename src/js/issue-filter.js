@@ -23,7 +23,7 @@ export async function init() {
 		// Fill city select + count
 		var scope = await vigilo.getScope();
 		var cities = scope.cities.sort((a, b) => parseInt(a.population) <= parseInt(b.population))
-		if (cities && cities.length > 0 && issues[0].cityname !== undefined) {
+		if (cities && cities.length > 0 && issues.length && issues[0].cityname !== undefined) {
 			for (var i in cities) {
 				$("#modal-filters #city-select")
 					.append(`<div class="col s12 m6 l4">
@@ -51,7 +51,7 @@ export async function init() {
 		addBadge("dow", countIssueDay(issues));
 
 		// My issue count
-		$("input[name=owner]").parent().parent().parent().find("h6").append(' ('+countIssueFromMe(issues)+')');
+		$("input[name=owner]").parent().parent().parent().find("h6").append(' (' + countIssueFromMe(issues) + ')');
 
 		M.Modal.init($("#modal-filters"));
 		M.Modal.getInstance($("#modal-filters")).options.onCloseStart = function () {
@@ -137,7 +137,7 @@ function countIssueStatus(issues) {
 	}, count);
 	return count;
 }
-function countIssueAge(issues){
+function countIssueAge(issues) {
 	var count = {
 		1: 0,
 		3: 0,
@@ -147,8 +147,8 @@ function countIssueAge(issues){
 	var date_now = Date.now();
 	issues.reduce(function (accumulator, currentIssue) {
 		var issue_age = (date_now - currentIssue.date_obj) / (1000 * 60 * 60 * 24);
-		for (var i in accumulator){
-			if (i > issue_age){
+		for (var i in accumulator) {
+			if (i > issue_age) {
 				accumulator[i]++
 			}
 		}
@@ -156,19 +156,19 @@ function countIssueAge(issues){
 	}, count);
 	return count;
 }
-function countIssueHour(issues){
+function countIssueHour(issues) {
 	var count = {
 		"morning": 0,
 		"afternoon": 0,
 		"night": 0,
 	}
-	var morning = [6,7,8,9,10,11,12];
-	var afternoon = [13,14,15,16,17,18,19];
+	var morning = [6, 7, 8, 9, 10, 11, 12];
+	var afternoon = [13, 14, 15, 16, 17, 18, 19];
 	issues.reduce(function (accumulator, currentIssue) {
 		var hour = currentIssue.date_obj.getHours();
-		if (morning.indexOf(hour) != -1){
+		if (morning.indexOf(hour) != -1) {
 			accumulator.morning++
-		} else if (afternoon.indexOf(hour) != -1){
+		} else if (afternoon.indexOf(hour) != -1) {
 			accumulator.afternoon++
 		} else {
 			accumulator.night++
@@ -178,16 +178,16 @@ function countIssueHour(issues){
 	}, count);
 	return count;
 }
-function countIssueDay(issues){
+function countIssueDay(issues) {
 	var count = {
 		"worked": 0,
 		"weekend": 0,
 	}
-	var worked = [1,2,3,4,5];
+	var worked = [1, 2, 3, 4, 5];
 
 	issues.reduce(function (accumulator, currentIssue) {
 		var day = currentIssue.date_obj.getDay();
-		if (worked.indexOf(day) != -1){
+		if (worked.indexOf(day) != -1) {
 			accumulator.worked++
 		} else {
 			accumulator.weekend++
@@ -198,8 +198,8 @@ function countIssueDay(issues){
 	return count;
 }
 
-function countIssueFromMe(issues){
-	return issues.filter((item)=>{
+function countIssueFromMe(issues) {
+	return issues.filter((item) => {
 		return LocalDataManager.getTokenSecretId(item.token) != undefined
 	}).length
 }
