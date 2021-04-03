@@ -42,3 +42,31 @@ Pour l'installer `docker-compose exec webpack npm install --save leaflet`
 ```
 docker-compose exec webpack npm --no-git-tag-version version [major | minor | patch]
 ```
+
+## Traduction
+
+Le dossier [./src/i18n](./src/i18n) contient les fichiers de traduction. Ce sont des couples clé/valeur.
+
+La mise en place de la traduction se fait soit dans du HTML, soit du JS.
+
+### Dans du HTML
+
+Utiliser l'attribut `data-i18n` pour indiquer la clé de traduction. Le contenu du noeud courant sera remplacé totalement par la valeur de traduction. Si seulement une partie doit être traduite, il faut recourir à une balise `<span>`.
+
+Exemple : `<span data-i18n="zone-geo">`
+
+Le module de traduction gère également, les dates. Il faut fournir la date (`madate.toString()`) dans un attribut `data-i18n-date`.
+
+Pour gérer la traduction d'attribut (ex : `placeholder`), il faut ajouter un attribut `data-i18n-attr` qui, pour chaque attribut à traduire fournit la clé de traduction.
+
+Exemple : `data-i18n-attr='{"placeholder": "filter-keyword"}'`
+
+
+### Dans du JS
+
+Il faut directement utiliser la bibliothèque de traduction :
+
+```
+import i18next from 'i18next';
+var string_translated = i18next.t("issue-bug");
+```
