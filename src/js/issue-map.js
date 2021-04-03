@@ -11,6 +11,12 @@ import dataManager from './dataManager';
 
 var issuesmap, issueslayer;
 
+function fitMapBoundsFromIssues() {
+	if (Object.keys(issueslayer.getBounds()).length) {
+		issuesmap.fitBounds(issueslayer.getBounds())
+	}
+}
+
 export async function init() {
 	if (issuesmap !== undefined) {
 		issuesmap.invalidateSize()
@@ -55,9 +61,9 @@ export async function init() {
 var firstFocus = true;
 export async function focus() {
 	issuesmap.invalidateSize();
-	if (firstFocus){
+	if (firstFocus) {
 		firstFocus = false;
-		issuesmap.fitBounds(issueslayer.getBounds())
+		fitMapBoundsFromIssues()
 	}
 }
 export async function cleanIssues() {
@@ -85,19 +91,19 @@ export async function displayIssues(nozoom) {
 		);
 		issueslayer.addLayer(marker);
 	}
-	if (nozoom != true){
-		issuesmap.fitBounds(issueslayer.getBounds())
+	if (nozoom != true) {
+		fitMapBoundsFromIssues()
 	}
 
 }
 
 
-export async function centerOnIssue (token) {
+export async function centerOnIssue(token) {
 	focus();
 	var issues = await dataManager.getData();
 	var issue = issues.filter(item => item.token == token)[0];
-  issuesmap.setView([issue.lat_float, issue.lon_float], 18)
-  L.timedOutMarker([issue.lat_float, issue.lon_float]).addTo(issuesmap);
+	issuesmap.setView([issue.lat_float, issue.lon_float], 18)
+	L.timedOutMarker([issue.lat_float, issue.lon_float]).addTo(issuesmap);
 	M.Tabs.getInstance($("#issues .tabs")[0]).select('issues-map')
 	M.Modal.getInstance($("#modal-issue")[0]).close();
 }
