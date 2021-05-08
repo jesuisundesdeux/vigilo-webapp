@@ -11,7 +11,6 @@ const LANGUAGES = {
 export async function init() {
     var data = {};
     var cats = await vigiloconfig.getCategories();
-    debugger
     for (var i in LANGUAGES) {
         data[i] = {
             "translation": require("../i18n/" + i + ".json")
