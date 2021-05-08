@@ -11,13 +11,14 @@ const LANGUAGES = {
 export async function init() {
     var data = {};
     var cats = await vigiloconfig.getCategories();
+    debugger
     for (var i in LANGUAGES) {
         data[i] = {
             "translation": require("../i18n/" + i + ".json")
         };
         for (var j in cats){
-            if (cats[j].i18n[LANGUAGES[i]] !== undefined){
-                data[i].translation["category-name-"+cats[j].id] = cats[j].i18n[LANGUAGES[i]];
+            if (cats[j].i18n[i] !== undefined){
+                data[i].translation["category-name-"+cats[j].id] = cats[j].i18n[i];
             } else {
                 data[i].translation["category-name-"+cats[j].id] = cats[j].name;
             }
