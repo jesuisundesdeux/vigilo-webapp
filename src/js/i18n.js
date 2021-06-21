@@ -32,8 +32,12 @@ export async function init() {
     }, function (err, t) {
         update()
     });
-    M.Modal.init($("#modal-i18n"));
-    setLang(localDataManager.getLang());
+
+    // Check if the modal if defined (as it's not done on /stats-iframe.html)
+    if ($("#modal-i18n").length > 0) {
+      M.Modal.init($("#modal-i18n"));
+      setLang(localDataManager.getLang());
+    }
 }
 function update(){
     $('[data-i18n]').each(function(){
