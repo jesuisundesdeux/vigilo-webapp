@@ -6,16 +6,26 @@ const CATEGORIES_URL="https://vigilo-bf7f2.firebaseio.com/categorieslist.json";
 const RESOLVABLE_CATEGORIES=[3,4,5,6,8,100,50,51]
 
 export async function getInstances(all){
-    
-    var scopes = await request(SCOPES_URL);
-    scopes = Object.entries(scopes).map((item)=>{
-        item[1].name = item[0];
-        return item[1]
-    })
+    if (localDataManager.isDev()) {
+      var scopes = []
+      scopes.push({ 
+        api_path: "http://127.0.0.1", 
+        country: "France", 
+        prod: "true", 
+        scope: "XX_dev", 
+        name: "Dev"});
+    }
+    else {
+      var scopes = await request(SCOPES_URL);
+      scopes = Object.entries(scopes).map((item)=>{
+          item[1].name = item[0];
+          return item[1]
+      })
 
     
-    if (!localDataManager.isBeta() && all == undefined){
-        scopes = scopes.filter((item)=>item.prod)
+      if (!localDataManager.isBeta() && all == undefined){
+          scopes = scopes.filter((item)=>item.prod)
+      }
     }
     return scopes
 
