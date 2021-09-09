@@ -72,6 +72,13 @@ class LocalDataManager {
     return sessionStorage.getItem("vigilo-beta") === "true"
   }
 
+  setDev(){
+    sessionStorage.setItem("vigilo-dev", true)
+  }
+
+  isDev(){
+    return sessionStorage.getItem("vigilo-dev") === "true"
+  }
   userCanEdit(issue){
     return this.getTokenSecretId(issue.token) != undefined && issue.approved == "0"
   }

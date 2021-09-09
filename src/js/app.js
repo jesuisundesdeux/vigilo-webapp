@@ -27,6 +27,10 @@ export default class VigiloApp {
         if (searchParams.has('beta')){
             localDataManager.setBeta();
         }
+        else if (searchParams.has('dev')){
+            localDataManager.setDev();
+        }
+
 
         var instances = await vigiloconfig.getInstances();
 
