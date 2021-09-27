@@ -1,8 +1,8 @@
 import {request} from './utils';
 import localDataManager from './localDataManager';
 
-const SCOPES_URL="https://vigilo-bf7f2.firebaseio.com/citylist.json";
-const CATEGORIES_URL="https://vigilo-bf7f2.firebaseio.com/categorieslist.json";
+const SCOPES_URL="https://github.com/jesuisundesdeux/vigilo-conf/blob/main/main/citylist.json";
+const CATEGORIES_URL="https://raw.githubusercontent.com/jesuisundesdeux/vigilo-conf/main/main/categorielist.json";
 const RESOLVABLE_CATEGORIES=[3,4,5,6,8,100,50,51]
 
 export async function getInstances(all){
