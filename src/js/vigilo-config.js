@@ -3,7 +3,7 @@ import localDataManager from './localDataManager';
 
 const SCOPES_URL="https://raw.githubusercontent.com/jesuisundesdeux/vigilo-conf/main/main/citylist.json";
 const CATEGORIES_URL="https://raw.githubusercontent.com/jesuisundesdeux/vigilo-conf/main/main/categorielist.json";
-const RESOLVABLE_CATEGORIES=[3,4,5,6,8,100,50,51]
+const RESOLVABLE_CATEGORIES=[2,3,4,5,6,7,8,11,100]
 
 export async function getInstances(all){
     if (localDataManager.isDev()) {
