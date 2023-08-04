@@ -38,6 +38,6 @@
     "leaflet.locatecontrol": "^0.66.2",
     "materialize-css": "^1.0.0-rc.2",
     "piexifjs": "^1.0.6",
-    "semver": "^5.7.1"
+    "semver": "^5.7.2"
   }
 }
