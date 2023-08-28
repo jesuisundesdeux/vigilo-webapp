@@ -332,7 +332,7 @@ async function setFormMapPoint(latlng, address) {
     M.updateTextFields();
   } else {
     //Reversegeocoding
-    formmap.geocoderCtrl.options.geocoder.reverse(mapmarker.getLatLng(), 1, function (result) {
+    formmap.geocoderCtrl.options.geocoder.reverse(mapmarker.getLatLng(), formmap.options.crs.scale(formmap.getZoom()), function (result) {
       if (result.length > 0) {
         $("#issue-address").val(addressFormat(result[0]))
         M.updateTextFields();
