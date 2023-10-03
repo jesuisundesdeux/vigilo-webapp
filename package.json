@@ -13,7 +13,7 @@
   "license": "",
   "devDependencies": {
     "clean-webpack-plugin": "^1.0.0",
-    "css-loader": "^1.0.1",
+    "css-loader": "^6.8.1",
     "extract-loader": "^3.2.0",
     "file-loader": "^2.0.0",
     "html-loader": "^0.5.5",
