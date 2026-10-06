@@ -41,7 +41,9 @@ window.startForm = async function (token) {
     setDate(issue.date_obj)
     setTime(issue.date_obj.getHours(), issue.date_obj.getMinutes());
 
-    $("#issue-cat option[value='" + issue.categorie + "']").prop('selected', true);
+    $("#issue-cat option").filter(function () {
+      return $(this).val() == issue.categorie;
+    }).prop('selected', true);
     $("#issue-cat").parent().find("input[type='text']").val(i18next.t("category-name-"+issue.categorie));
 
     $("#issue-comment").val(issue.comment);
