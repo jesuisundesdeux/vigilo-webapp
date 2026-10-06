@@ -58,6 +58,7 @@
     "solved-reports-required": "Vous devez sélectionner au moins une observation résolue",
     "location-required": "Veuillez indiquer la localisation de l'observation sur la carte",
     "date-required": "Veuillez indiquer la date de l'observation",
+    "map-tiles-fallback": "Le fond de carte ne se charge pas : passage aux serveurs OpenStreetMap.",
     "related-issues-placeholder": "Il faut d'abord indiquer une adresse ou un point sur la carte.",
     "issue-bug": "Bug",
     "issue-bug-hint": "Indiquez ici le comportement anormal",

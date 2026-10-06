@@ -8,7 +8,8 @@ module.exports = {
 	mode: process.env.WEBPACK_MODE || 'production',
 	entry: './src/js/main.js',
 	output: {
-		filename: 'js/main.js',
+		// content hash in file names so browsers never keep a stale bundle after a deploy
+		filename: 'js/main.[contenthash].js',
 		path: path.resolve(__dirname, 'dist'),
 		// 'auto' = URLs relative to the page/stylesheet, so the same build works
 		// at the site root, under /develop or under PATH_PREFIX
@@ -41,7 +42,7 @@ module.exports = {
 	},
 	plugins: [
 		new MiniCssExtractPlugin({
-			filename: "css/styles.css"
+			filename: "css/styles.[contenthash].css"
 		}),
 		new HtmlWebpackPlugin({
 			filename: "index.html",
