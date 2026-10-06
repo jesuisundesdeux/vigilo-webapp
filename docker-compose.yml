@@ -1,7 +1,7 @@
 version: "3.0"
 services:
   webpack:
-    image: node:15
+    image: node:22
     environment:
       WEBPACK_MODE: ${WEBPACK_MODE:-development}
     ports:
