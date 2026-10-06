@@ -4,6 +4,7 @@ import errorCard from '../html/error';
 import dataManager from './dataManager';
 import LocalDataManager from './localDataManager';
 import i18next from 'i18next';
+import { escapeHtml } from './utils';
 
 export async function init() {
 	try {
@@ -22,14 +23,14 @@ export async function init() {
 
 		// Fill city select + count
 		var scope = await vigilo.getScope();
-		var cities = scope.cities.sort((a, b) => parseInt(a.population) <= parseInt(b.population))
+		var cities = (scope.cities || []).sort((a, b) => parseInt(b.population) - parseInt(a.population))
 		if (cities && cities.length > 0 && issues.length && issues[0].cityname !== undefined) {
 			for (var i in cities) {
 				$("#modal-filters #city-select")
 					.append(`<div class="col s12 m6 l4">
 								<label>
-									<input type="checkbox" name="city" value="${cities[i].name}" checked="checked" />
-									<span>${cities[i].name}</span>
+									<input type="checkbox" name="city" value="${escapeHtml(cities[i].name)}" checked="checked" />
+									<span>${escapeHtml(cities[i].name)}</span>
 				  				</label>
 				  			</div>`);
 			}
@@ -206,6 +207,6 @@ function countIssueFromMe(issues) {
 
 function addBadge(name, count) {
 	for (let [key, value] of Object.entries(count)) {
-		$("#modal-filters input[name='" + name + "'][value='" + key.replace("'", "\\'") + "']").parent().find('span').append(' (' + value + ')');
+		$("#modal-filters input[name='" + name + "']").filter(function () { return $(this).val() == key; }).parent().find('span').append(' (' + value + ')');
 	}
 }

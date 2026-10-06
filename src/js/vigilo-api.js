@@ -10,7 +10,7 @@ function baseUrl() {
     return decodeURIComponent(vigiloconfig.getInstance().api_path)
 };
 
-import {request} from './utils';
+import {request, randomToken} from './utils';
 var issue_cache = {};
 export function getIssues(options) {
     /**
@@ -42,8 +42,9 @@ export function getIssues(options) {
                             item.lat_float = parseFloat(item.coordinates_lat);
                             item.status = parseInt(item.status);
                             item.approved = parseInt(item.approved);
-                            item.color = cats[item.categorie].color;
-                            item.resolvable = cats[item.categorie].resolvable;
+                            var cat = cats[item.categorie] || {};
+                            item.color = cat.color || "#9e9e9e";
+                            item.resolvable = cat.resolvable || false;
                             item.date_obj = new Date(parseInt(item.time) * 1000);
                             item.mosaic = baseUrl() + "/mosaic.php?t=" + item.token;
                             item.img_thumb = baseUrl() + "/generate_panel.php?s=150&token=" + item.token;
@@ -65,13 +66,7 @@ export function getIssues(options) {
 };
 
 function generateToken() {
-    const alphabet = "AZERTYUIOPQSDFGHJKLMWXCVBN1234567890";
-    const length = 8;
-    var token = "";
-    for (var i = 0; i < length; i++) {
-        token += alphabet[Math.floor(Math.random() * Math.floor(alphabet.length))];
-    }
-    return token;
+    return randomToken("AZERTYUIOPQSDFGHJKLMWXCVBN1234567890", 8);
 }
 
 export function createIssue(data, key) {

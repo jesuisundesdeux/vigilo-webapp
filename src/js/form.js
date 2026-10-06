@@ -87,33 +87,47 @@ $("#modal-form input[type=file]").change(function () {
       // Read Exif
       var located = false
       var timestamp = false;
-      var exifObj = piexif.load(e.target.result);
-      if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined) {
+      var exifObj = {};
+      try {
+        exifObj = piexif.load(e.target.result);
+      } catch (err) {
+        // Not a JPEG (PNG, HEIC...) or unreadable EXIF: fallback to geolocation and current time
+        console.warn("Unable to read EXIF data", err);
+      }
+      if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined && exifObj.GPS[piexif.GPSIFD.GPSLongitude] !== undefined) {
         // GPS available : position, date & time
         // Position
         var lat = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLatitude], exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef])
         var lon = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLongitude], exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef])
         setFormMapPoint([lat, lon])
-        // Date
-        var date = new Date(exifObj.GPS[piexif.GPSIFD.GPSDateStamp].split(':').join('-'));
-        // Time
-        var hours = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][1];
-        var minutes = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][1];
-        date.setUTCHours(hours)
-        date.setUTCMinutes(minutes)
-        setDate(date)
-        setTime(date.getHours(), date.getMinutes())
         located = true;
-        timestamp = true;
-      } else if (exifObj['Exif'] !== undefined && exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal] !== undefined) {
-        // No GPS : date & time ?
-        var datetime = exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal]
-        var date = new Date(datetime.split(" ")[0].split(":").join("-"))
-        date.setHours(datetime.split(" ")[1].split(":")[0])
-        date.setMinutes(datetime.split(" ")[1].split(":")[1])
-        setDate(date)
-        setTime(date.getHours(), date.getMinutes())
-        timestamp = true;
+        if (exifObj.GPS[piexif.GPSIFD.GPSDateStamp] !== undefined && exifObj.GPS[piexif.GPSIFD.GPSTimeStamp] !== undefined) {
+          // Date
+          var date = new Date(exifObj.GPS[piexif.GPSIFD.GPSDateStamp].split(':').join('-'));
+          // Time
+          var hours = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][1];
+          var minutes = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][1];
+          date.setUTCHours(hours)
+          date.setUTCMinutes(minutes)
+          if (!isNaN(date.getTime())) {
+            setDate(date)
+            setTime(date.getHours(), date.getMinutes())
+            timestamp = true;
+          }
+        }
+      }
+      if (!timestamp && exifObj['Exif'] !== undefined && exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal] !== undefined) {
+        // No GPS timestamp : date & time ? (format "YYYY:MM:DD HH:MM:SS")
+        var datetime = String(exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal]).split(" ")
+        var date = new Date((datetime[0] || "").split(":").join("-"))
+        var hm = (datetime[1] || "").split(":")
+        date.setHours(hm[0])
+        date.setMinutes(hm[1])
+        if (!isNaN(date.getTime())) {
+          setDate(date)
+          setTime(date.getHours(), date.getMinutes())
+          timestamp = true;
+        }
       }
 
       if (!located) {
@@ -249,7 +263,7 @@ async function initFormMap() {
       ext: 'png'
     }).addTo(formmap),
     "Photos": L.tileLayer(
-      "https://wxs.ign.fr/choisirgeoportail/geoportail/wmts?" +
+      "https://data.geopf.fr/wmts?" +
       "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
       "&STYLE=normal" +
       "&TILEMATRIXSET=PM" +
@@ -262,7 +276,7 @@ async function initFormMap() {
         minZoom: 0,
         maxZoom: 20,
         maxNativeZoom: 18,
-        attribution: '<a href="http://www.ign.fr">IGN-F/Geoportail</a>',
+        attribution: '<a href="https://www.ign.fr">IGN-F/Géoplateforme</a>',
         tileSize: 256
       }
     ),
@@ -364,10 +378,10 @@ function isResolvable(i){
 }
 
 async function findNearestIssue(latlng){
+  latlng = L.latLng(latlng); // accept [lat, lon] arrays as well as LatLng objects
   var issue = await vigilo.getIssues();
   var related_issues = issue.filter(isResolvable).filter((i) => distance(latlng.lat, latlng.lng, i.lat_float, i.lon_float) < 500);
-  related_issues.sort((a,b)=>distance(latlng.lat, latlng.lng, a.lat_float, a.lon_float) > distance(latlng.lat, latlng.lng, b.lat_float, b.lon_float))
-  console.log(related_issues);
+  related_issues.sort((a,b)=>distance(latlng.lat, latlng.lng, a.lat_float, a.lon_float) - distance(latlng.lat, latlng.lng, b.lat_float, b.lon_float))
   $("#related-issues").empty();
   related_issues.forEach((i)=>$("#related-issues").append(relatedIssueCard(i)))
   M.Materialbox.init($("#related-issues .materialboxed"));
@@ -457,6 +471,11 @@ $("#modal-form form").submit((e) => {
   data.version = vigiloconfig.VERSION;
   data.time = getDate()
   var time = getTime()
+  if (!(data.time instanceof Date) || isNaN(data.time.getTime())) {
+    M.toast({html: i18next.t('date-required'), classes: "red"})
+    e.preventDefault();
+    return
+  }
   data.time.setHours(time[0])
   data.time.setMinutes(time[1])
   data.time = data.time.getTime()
@@ -472,6 +491,11 @@ $("#modal-form form").submit((e) => {
       return
     }
   } else {
+    if (!formmap || !formmap.hasLayer(mapmarker)) {
+      M.toast({html: i18next.t('location-required'), classes: "red"})
+      e.preventDefault();
+      return
+    }
     data.scope = vigiloconfig.getInstance().scope;
     data.coordinates_lat = mapmarker.getLatLng().lat;
     data.coordinates_lon = mapmarker.getLatLng().lng;

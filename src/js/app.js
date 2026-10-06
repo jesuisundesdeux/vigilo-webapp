@@ -9,6 +9,7 @@ import * as admin from './admin';
 import * as i18n from './i18n';
 import github_issue from '../html/github_issue';
 import M from 'materialize-css';
+import { escapeHtml } from './utils';
 
 import dataManager from './dataManager';
 import localDataManager from './localDataManager';
@@ -34,9 +35,11 @@ export default class VigiloApp {
 
         var instances = await vigiloconfig.getInstances();
 
-        for (var i in instances) {
-            $("#modal-zone .modal-content .collection").append(`<a href="#!" onclick="setInstance('${instances[i].name.replace('\'', '\\\'')}')" class="collection-item${(instances[i].name == current_instance ? ' active' : '')}">${instances[i].name}</a>`)
-        }
+        instances.forEach((instance) => {
+            $(`<a href="#!" class="collection-item${(instance.name == current_instance ? ' active' : '')}">${escapeHtml(instance.name)}</a>`)
+                .on('click', () => window.setInstance(instance.name))
+                .appendTo("#modal-zone .modal-content .collection");
+        })
 
         if (searchParams.has('instance')){
             if (searchParams.get('instance') != current_instance){

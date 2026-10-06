@@ -65,6 +65,36 @@ function make_request(options) {
     });
 }
 
+export function escapeHtml(value) {
+    if (value === undefined || value === null) {
+        return "";
+    }
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+/**
+ * Keep only characters allowed in an issue token, so it can be safely
+ * embedded in an inline JS handler (e.g. onclick="viewIssue('...')").
+ */
+export function safeToken(token) {
+    return String(token || "").replace(/[^A-Za-z0-9_-]/g, "");
+}
+
+export function randomToken(alphabet, length) {
+    const values = new Uint32Array(length);
+    window.crypto.getRandomValues(values);
+    var token = "";
+    for (var i = 0; i < length; i++) {
+        token += alphabet[values[i] % alphabet.length];
+    }
+    return token;
+}
+
 export function request(options, nocache) {
     nocache = nocache || false;
 
@@ -87,8 +117,8 @@ export function request(options, nocache) {
             requests_cache[options.url].listeners.push(def);
             return def.promise;
         }
-    } else {
-        return make_request(options)
     }
+    // No cache, or previous request failed: (re)try
+    return make_request(options)
 
 };

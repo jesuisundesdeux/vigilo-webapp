@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import localDataManager from './localDataManager';
 import * as vigilo from './vigilo-api';
+import { randomToken } from './utils';
 
 var key = "";
 
@@ -19,12 +20,7 @@ export async function init() {
 
   // button handler in admin modal
   $("#modal-admin #generate-key").click(() => {
-    const alphabet = "AZERTYUIOPQSDFGHJKLMWXCVBN1234567890";
-    const length = 40;
-    var generated = "";
-    for (var i = 0; i < length; i++) {
-      generated += alphabet[Math.floor(Math.random() * Math.floor(alphabet.length))];
-    }
+    var generated = randomToken("AZERTYUIOPQSDFGHJKLMWXCVBN1234567890", 40);
     $("#modal-admin input").val(generated);
     M.updateTextFields();
   });

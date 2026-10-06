@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import { escapeHtml } from '../js/utils';
 
 export default function(e){
   return `
@@ -8,7 +9,7 @@ export default function(e){
               ${i18next.t("error")}
               <hr>
               <code>
-                  ${e}
+                  ${escapeHtml(e)}
               </code>
           </div>
       </div>

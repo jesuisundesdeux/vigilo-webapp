@@ -65,8 +65,10 @@ class DataManager {
           return false;
         }
       }
-      if (this.comment != ""){
-        return issue.comment.indexOf(this.comment) != -1;
+      if (this.comment != "") {
+        if ((issue.comment || "").toLowerCase().indexOf(this.comment.toLowerCase()) == -1) {
+          return false;
+        }
       }
 
       if (this.age != 0) {
