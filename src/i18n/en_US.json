@@ -58,7 +58,7 @@
     "solved-reports-required": "You must select at least one resolved report",
     "location-required": "Please set the location of the observation on the map",
     "date-required": "Please set the date of the observation",
-    "map-tiles-fallback": "The base map is not loading: switching to Plan IGN.",
+    "map-tiles-fallback": "The base map is not loading: switching to the OpenStreetMap servers.",
     "related-issues-placeholder": "You must first indicate an address or a point on the map.",
     "issue-bug": "Issue",
     "issue-bug-hint": "Indicate the abnormal behavior here",
