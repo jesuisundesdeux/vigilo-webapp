@@ -14,8 +14,8 @@ body {
 @import "timedout-marker.scss";
 @import "~leaflet/dist/leaflet.css";
 @import "~leaflet-control-geocoder/dist/Control.Geocoder.css";
-@import "~leaflet.fullscreen/Control.FullScreen.css";
-@import "~leaflet.locatecontrol/src/L.Control.Locate.scss";
+@import "~leaflet.fullscreen/dist/Control.FullScreen.css";
+@import "~leaflet.locatecontrol/dist/L.Control.Locate.css";
 
 .leaflet-touch .leaflet-control-layers-toggle {
   height: 30px;

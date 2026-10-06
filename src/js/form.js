@@ -1,8 +1,8 @@
 import $ from 'jquery';
 import L from 'leaflet';
-import 'leaflet-control-geocoder';
-import 'leaflet.fullscreen';
-import 'leaflet.locatecontrol';
+import { geocoder } from 'leaflet-control-geocoder';
+import 'leaflet.fullscreen'; // registers the fullscreenControl map option
+import { locate } from 'leaflet.locatecontrol';
 import { addBaseLayers } from './map-layers';
 import piexif from 'piexifjs';
 
@@ -266,14 +266,14 @@ async function initFormMap() {
 
   formmap.on('click locationfound', (e) => { setFormMapPoint(e.latlng) })
 
-  formmap.geocoderCtrl = L.Control.geocoder({
+  formmap.geocoderCtrl = geocoder({
     position: 'topright',
     defaultMarkGeocode: false
   }).on('markgeocode', function (e) {
     setFormMapPoint(e.geocode.center, e.geocode)
   }).addTo(formmap)
 
-  L.control.locate({
+  locate({
     locateOptions: {
       enableHighAccuracy: true
     },
@@ -319,7 +319,7 @@ async function setFormMapPoint(latlng, address) {
     M.updateTextFields();
   } else {
     //Reversegeocoding
-    formmap.geocoderCtrl.options.geocoder.reverse(mapmarker.getLatLng(), formmap.options.crs.scale(formmap.getZoom()), function (result) {
+    formmap.geocoderCtrl.options.geocoder.reverse(mapmarker.getLatLng(), formmap.options.crs.scale(formmap.getZoom())).then(function (result) {
       if (result.length > 0) {
         $("#issue-address").val(addressFormat(result[0]))
         M.updateTextFields();

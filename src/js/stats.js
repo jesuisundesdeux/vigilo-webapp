@@ -1,8 +1,10 @@
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
-import Chart from 'chart.js';
-Chart.defaults.global.legend.position = "bottom";
-Chart.defaults.global.maintainAspectRatio = false;
+import { Chart, registerables } from 'chart.js';
+import 'chartjs-adapter-date-fns';
+Chart.register(...registerables);
+Chart.defaults.plugins.legend.position = "bottom";
+Chart.defaults.maintainAspectRatio = false;
 
 export async function init() {
     var data = await vigilo.getIssues();
@@ -76,7 +78,7 @@ async function makeStats(issues) {
 
     // Refactor data
     for (var cat in dataLast30Days) {
-        dataLast30Days[cat].data = Object.entries(dataLast30Days[cat].data).map((item) => { return { t: new Date(parseInt(item[0])), y: item[1] } })
+        dataLast30Days[cat].data = Object.entries(dataLast30Days[cat].data).map((item) => { return { x: parseInt(item[0]), y: item[1] } })
     }
     dataLast30Days = Object.values(dataLast30Days)
 
@@ -87,15 +89,17 @@ async function makeStats(issues) {
         data: { datasets: dataLast30Days },
         options: {
             onResize: onChartResize,
-            tooltips: {
-                mode: 'index',
-                intersect: false
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
             },
             responsive: true,
             scales: {
-                xAxes: [{
-                    type: 'time',
-                    distribution: 'series',
+                x: {
+                    // 'timeseries' = one evenly spaced bar per day (was distribution: 'series' in Chart.js 2)
+                    type: 'timeseries',
                     time: {
                         minUnit: "day"
                     },
@@ -104,10 +108,10 @@ async function makeStats(issues) {
                         autoSkip: true
                     },
                     stacked: true
-                }],
-                yAxes: [{
+                },
+                y: {
                     stacked: true
-                }]
+                }
             }
         }
     });
