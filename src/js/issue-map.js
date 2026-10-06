@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet-control-geocoder';
 import 'leaflet.fullscreen';
 import 'leaflet.locatecontrol';
+import { addBaseLayers } from './map-layers';
 import './circle-marker-dynamic';
 import './timedout-marker';
 
@@ -27,35 +28,7 @@ export async function init() {
 	issuesmap = L.map('issues-map').setView([43.605413, 3.879568], 11);
 	window.issuesmap = issuesmap;
 
-	var baseLayers = {
-		"Carte": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
-			subdomains: 'abcd',
-			minZoom: 0,
-			maxZoom: 20,
-			ext: 'png'
-		}).addTo(issuesmap),
-		"Photos": L.tileLayer(
-			"https://data.geopf.fr/wmts?" +
-			"&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
-			"&STYLE=normal" +
-			"&TILEMATRIXSET=PM" +
-			"&FORMAT=image/jpeg" +
-			"&LAYER=ORTHOIMAGERY.ORTHOPHOTOS" +
-			"&TILEMATRIX={z}" +
-			"&TILEROW={y}" +
-			"&TILECOL={x}",
-			{
-				minZoom: 0,
-				maxZoom: 20,
-				maxNativeZoom: 18,
-				attribution: '<a href="https://www.ign.fr">IGN-F/Géoplateforme</a>',
-				tileSize: 256
-			}
-		),
-	};
-
-	L.control.layers(baseLayers, {}).addTo(issuesmap);
+	addBaseLayers(issuesmap);
 
 }
 var firstFocus = true;
