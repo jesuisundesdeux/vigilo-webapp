@@ -1,6 +1,6 @@
 # vigilo-webapp
 
-[![Build Status](https://travis-ci.org/jesuisundesdeux/vigilo-webapp.svg?branch=master)](https://travis-ci.org/jesuisundesdeux/vigilo-webapp)
+[![Build & deploy](https://github.com/jesuisundesdeux/vigilo-webapp/actions/workflows/deploy.yml/badge.svg)](https://github.com/jesuisundesdeux/vigilo-webapp/actions/workflows/deploy.yml)
 
 
 ## Let's go!

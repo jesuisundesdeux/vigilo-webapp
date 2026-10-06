@@ -1,0 +1,68 @@
+# Replaces .travis.yml: builds master (site root) and develop (/develop)
+# and publishes both to the gh-pages branch (app.vigilo.city).
+name: Build & deploy
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+  workflow_dispatch:
+
+# node-sass 4.14 (used by sass-loader) only ships prebuilt binaries up to Node 14
+env:
+  NODE_VERSION: "14"
+  WEBPACK_MODE: production
+
+jobs:
+  build:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run webpack
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          path: master
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          path: develop
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Build master
+        working-directory: master
+        run: npm ci && npm run webpack
+
+      - name: Build develop
+        working-directory: develop
+        run: npm ci && npm run webpack
+
+      - name: Assemble site
+        run: |
+          mv master/dist public
+          mv develop/dist public/develop
+
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./public
+          cname: app.vigilo.city
