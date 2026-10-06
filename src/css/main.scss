@@ -9,7 +9,7 @@ body {
   height: 100%;
 }
 
-@import "~materialize-css/sass/materialize.scss";
+@import "~@materializecss/materialize/sass/materialize.scss";
 @import "materialize-custom.scss";
 @import "timedout-marker.scss";
 @import "~leaflet/dist/leaflet.css";

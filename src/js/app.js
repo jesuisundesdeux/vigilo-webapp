@@ -8,7 +8,7 @@ import * as stats from './stats';
 import * as admin from './admin';
 import * as i18n from './i18n';
 import github_issue from '../html/github_issue';
-import M from 'materialize-css';
+import M from '@materializecss/materialize';
 import { escapeHtml } from './utils';
 
 import dataManager from './dataManager';
