@@ -11,7 +11,7 @@ export async function init() {
 
 function truncDateToDay(date) {
     truncDateToHour(date)
-    date.setUTCHours(0)
+    date.setHours(0)
 }
 function truncDateToHour(date) {
     date.setMinutes(0)
@@ -43,8 +43,10 @@ async function makeStats(issues) {
             backgroundColor: cats[cat].color,
         }
         for (var i = 0; i < 31; i++) {
-            var time = today.getTime() - i * 24 * 60 * 60 * 1000;
-            dataLast30Days[cat].data[time] = 0
+            // Step by calendar day (not 24h) so local midnights stay aligned across DST changes
+            var day = new Date(today.getTime());
+            day.setDate(day.getDate() - i);
+            dataLast30Days[cat].data[day.getTime()] = 0
         }
 
         dataByCat[cats[cat].id] = 0;
@@ -56,6 +58,10 @@ async function makeStats(issues) {
     var total = issues.length;
 
     for (var i in issues) {
+        if (dataLast30Days[issues[i].categorie] === undefined) {
+            // Unknown category (missing from categorielist.json)
+            continue;
+        }
 
         var truncated_date = new Date(issues[i].date_obj.getTime())
         truncDateToDay(truncated_date);

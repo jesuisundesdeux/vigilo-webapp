@@ -24,10 +24,8 @@ export async function init() {
         }
         $("#modal-i18n .modal-content .collection").append(`<a href="#!" onclick="setLang('${i}')" class="collection-item">${LANGUAGES[i]}</a>`)
     }
-    console.log(data)
     i18next.init({
         lng: 'fr_FR',
-        debug: true,
         resources: data
     }, function (err, t) {
         update()

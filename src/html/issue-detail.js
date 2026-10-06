@@ -3,14 +3,17 @@ import * as vigilo from '../js/vigilo-api';
 
 import * as semver from 'semver';
 import i18next from 'i18next';
+import errorCard from './error';
+import { escapeHtml, safeToken } from '../js/utils';
 
 
 export default async function (issue) {
-  const btn_to_approve = `<a class="btn-floating waves-effect waves-light blue" onclick="adminApprove('${issue.token}','0')"><i class="material-icons right">remove_circle</i></a>\n`;
-  const btn_approve = `<a class="btn-floating waves-effect waves-light green" onclick="adminApprove('${issue.token}','1')"><i class="material-icons center">check_circle</i></a>\n`;
-  const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${issue.token}','2')"><i class="material-icons center-align">delete</i></a>\n`;
-  const btn_edit = `<a class="btn-floating waves-effect waves-light blue" onclick="startForm('${issue.token}')"><i class="material-icons center">edit</i></a>\n`;
-  const btn_delete = `<a class="btn-floating waves-effect waves-light red" onclick="deleteIssue('${issue.token}','2')"><i class="material-icons center-align">delete</i></a>\n`;
+  const token = safeToken(issue.token);
+  const btn_to_approve = `<a class="btn-floating waves-effect waves-light blue" onclick="adminApprove('${token}','0')"><i class="material-icons right">remove_circle</i></a>\n`;
+  const btn_approve = `<a class="btn-floating waves-effect waves-light green" onclick="adminApprove('${token}','1')"><i class="material-icons center">check_circle</i></a>\n`;
+  const btn_refuse = `<a class="btn-floating waves-effect waves-light red" onclick="adminApprove('${token}','2')"><i class="material-icons center-align">delete</i></a>\n`;
+  const btn_edit = `<a class="btn-floating waves-effect waves-light blue" onclick="startForm('${token}')"><i class="material-icons center">edit</i></a>\n`;
+  const btn_delete = `<a class="btn-floating waves-effect waves-light red" onclick="deleteIssue('${token}','2')"><i class="material-icons center-align">delete</i></a>\n`;
   var btns = "";
   if (localDataManager.isAdmin()) {
     if (issue.approved == "0") {
@@ -34,18 +37,18 @@ export default async function (issue) {
   <div class="row">
       <div class="col s12 m6 l5 xl4">
           <div class="center-align">
-              <img class="materialboxed center-align" src="${issue.img}">
+              <img class="materialboxed center-align" src="${escapeHtml(issue.img)}">
           </div>
           <div class="center-align hide-on-med-and-down">
-              <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
-                <img class="center-align" src="${issue.map}">
+              <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${token}')">
+                <img class="center-align" src="${escapeHtml(issue.map)}">
               </a>
           </div>
       </div>
       <div class="col m6 hide-on-small-only hide-on-large-only">
-          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
+          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${token}')">
             <div class="center-align">
-                <img class="center-align" src="${issue.map}">
+                <img class="center-align" src="${escapeHtml(issue.map)}">
             </div>
           </a>
       </div>
@@ -58,11 +61,11 @@ export default async function (issue) {
             ${(issue.status == 4) ? '<i class="material-icons">done</i> <span data-i18n="status-done-long">'+i18next.t("status-done-long")+'</span>' : ''}
             ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> <span data-i18n="i-make-it">'+i18next.t("i-make-it")+'</span>' : ''}
           </h6>
-          <p><b>${i18next.t("issue-id")} :</b> <a href="${issue.permLink}">${issue.token}</a> | <a data-i18n="issues-similar" data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" href="${issue.mosaic}">${i18next.t("issues-similar")}</a></p>
+          <p><b>${i18next.t("issue-id")} :</b> <a href="${escapeHtml(issue.permLink)}">${token}</a> | <a data-i18n="issues-similar" data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" href="${escapeHtml(issue.mosaic)}">${i18next.t("issues-similar")}</a></p>
 
           <p>
               <b><span data-i18n="category">${i18next.t("category")}</span></b><br>
-              <span data-i18n="category-name-${issue.categorie}">${i18next.t("category-name-"+issue.categorie)}</span>
+              <span data-i18n="category-name-${escapeHtml(issue.categorie)}">${i18next.t("category-name-"+issue.categorie)}</span>
           </p>
           <p>
               <b><span data-i18n="date">${i18next.t("date")}</span></b><br>
@@ -70,18 +73,18 @@ export default async function (issue) {
           </p>
           <p>
               <b><span data-i18n="comment">${i18next.t("comment")}</span></b><br>
-              ${issue.comment}
-              <br><blockquote>${issue.explanation}</blockquote>
+              ${escapeHtml(issue.comment)}
+              <br><blockquote>${escapeHtml(issue.explanation)}</blockquote>
           </p>
           <p>
               <b><span data-i18n="location">${i18next.t("location")}</span></b><br>
-              ${issue.address}
+              ${escapeHtml(issue.address)}
           </p>
       </div>
       <div class="col s12 hide-on-med-and-up">
-          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${issue.token}')">
+          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${token}')">
             <div class="center-align">
-                <img class="center-align" src="${issue.map}">
+                <img class="center-align" src="${escapeHtml(issue.map)}">
             </div>
           </a>
       </div>
@@ -89,9 +92,9 @@ export default async function (issue) {
 </div>
 <div class="modal-footer">
 ${btns}
-<a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" class="waves-effect waves-light btn-floating" href="${issue.mosaic}"><i class="material-icons center">view_list</i></a>
-<a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${issue.permLink}"><i class="material-icons center">share</i></a>
-<a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${issue.token}')"><i class="material-icons center">map</i></a>
+<a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.mosaic)}"><i class="material-icons center">view_list</i></a>
+<a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.permLink)}"><i class="material-icons center">share</i></a>
+<a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${token}')"><i class="material-icons center">map</i></a>
 <a href="#!" data-i18n-attr='{"title": "close"}' title="${i18next.t("close")}" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
 </div>
 
@@ -111,8 +114,7 @@ window.deleteIssue = async function(token) {
     }, 1000)
   })
   .catch((e) => {
-    $("#modal-form-loader")
-      .empty()
-      .append(errorCard(e))
+    $("#modal-issue .modal-content")
+      .prepend(errorCard(e))
   })
 }

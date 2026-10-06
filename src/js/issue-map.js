@@ -36,7 +36,7 @@ export async function init() {
 			ext: 'png'
 		}).addTo(issuesmap),
 		"Photos": L.tileLayer(
-			"https://wxs.ign.fr/choisirgeoportail/geoportail/wmts?" +
+			"https://data.geopf.fr/wmts?" +
 			"&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0" +
 			"&STYLE=normal" +
 			"&TILEMATRIXSET=PM" +
@@ -49,7 +49,7 @@ export async function init() {
 				minZoom: 0,
 				maxZoom: 20,
 				maxNativeZoom: 18,
-				attribution: '<a href="http://www.ign.fr">IGN-F/Geoportail</a>',
+				attribution: '<a href="https://www.ign.fr">IGN-F/Géoplateforme</a>',
 				tileSize: 256
 			}
 		),
