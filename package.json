@@ -30,9 +30,9 @@
     "i18next": "^26.4.2",
     "jquery": "^3.7.1",
     "leaflet": "^1.9.4",
-    "leaflet-control-geocoder": "^1.13.0",
-    "leaflet.fullscreen": "^1.6.0",
-    "leaflet.locatecontrol": "^0.66.2",
+    "leaflet-control-geocoder": "^4.0.0",
+    "leaflet.fullscreen": "^5.3.3",
+    "leaflet.locatecontrol": "^0.90.1",
     "materialize-css": "^1.0.0-rc.2",
     "piexifjs": "^1.0.6",
     "semver": "^7.8.5"

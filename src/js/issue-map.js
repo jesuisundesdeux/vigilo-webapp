@@ -1,9 +1,6 @@
 
 import $ from 'jquery';
 import L from 'leaflet';
-import 'leaflet-control-geocoder';
-import 'leaflet.fullscreen';
-import 'leaflet.locatecontrol';
 import { addBaseLayers } from './map-layers';
 import './circle-marker-dynamic';
 import './timedout-marker';
