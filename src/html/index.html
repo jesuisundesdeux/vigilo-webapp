@@ -1,17 +1,40 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="splash">
 
 <head>
   <meta charset="utf-8">
   <link rel="icon" type="image/png" href="${require('../img/favicon.png')}">
-  <link rel="apple-touch-icon" type="image/png" href="${require('../img/favicon.png')}">
+  <link rel="apple-touch-icon" type="image/png" href="${require('../img/icon.png')}">
+  <meta name="theme-color" content="#fdd835">
+  <!-- Loading screen styles: inline so that it is complete at the first paint, in the same
+       yellow as the launch screen of the installed app (manifest background_color) -->
+  <style>
+    html.splash, html.splash body { background: #fdd835; }
+    #app-splash {
+      position: fixed; inset: 0; z-index: 10000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #fdd835; color: #1f2328; text-align: center; padding: 24px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      transition: opacity .3s ease, visibility .3s ease;
+    }
+    #app-splash.splash-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #app-splash .splash-content { display: flex; flex-direction: column; align-items: center; }
+    #app-splash .splash-logo { width: min(260px, 62vw); height: auto; }
+    #app-splash .splash-tagline { margin: 6px 0 32px; font-weight: 600; font-size: 15px; opacity: .85; }
+    #app-splash .splash-progress { position: relative; width: 160px; height: 4px; border-radius: 999px; background: rgba(31, 35, 40, .15); overflow: hidden; }
+    #app-splash .splash-progress span { position: absolute; top: 0; bottom: 0; width: 40%; border-radius: 999px; background: #1f2328; animation: splash-progress 1.2s cubic-bezier(.4, 0, .2, 1) infinite; }
+    #app-splash .splash-status { margin: 14px 0 0; font-size: 14px; font-weight: 500; color: rgba(31, 35, 40, .75); min-height: 1.4em; }
+    #app-splash .splash-instance { position: absolute; bottom: max(24px, env(safe-area-inset-bottom)); left: 0; right: 0; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(31, 35, 40, .6); }
+    @keyframes splash-progress { 0% { left: -40%; } 100% { left: 100%; } }
+    @media (prefers-reduced-motion: reduce) { #app-splash .splash-progress span { animation-duration: 2.4s; } }
+  </style>
 </head>
 
 <body>
   <!-- Loading screen, removed by js/splash.js once the observations are displayed -->
   <div id="app-splash" role="status" aria-live="polite">
     <div class="splash-content">
-      <img class="splash-logo" src="${require('../img/vigilo-wordmark.png')}" alt="Vigilo" width="320" height="139">
+      <img class="splash-logo" src="${require('../img/vigilo-wordmark.png?inline')}" alt="Vigilo" width="260" height="113">
       <p class="splash-tagline">À pied ou à vélo, ayez le réflexe Vigilo</p>
       <div class="splash-progress" aria-hidden="true"><span></span></div>
       <p class="splash-status">Chargement…</p>

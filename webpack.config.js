@@ -39,7 +39,13 @@ module.exports = {
 				filename: "fonts/[contenthash]-[name][ext]"
 			}
 		}, {
+			// "?inline": embedded in the page as a data URI (loading screen)
 			test: /\.(png|svg(z*)|jp(e*)g|gif)$/,
+			resourceQuery: /inline/,
+			type: 'asset/inline'
+		}, {
+			test: /\.(png|svg(z*)|jp(e*)g|gif)$/,
+			resourceQuery: { not: [/inline/] },
 			type: 'asset/resource',
 			generator: {
 				filename: "img/[contenthash]-[name][ext]"
@@ -67,20 +73,23 @@ module.exports = {
 		new WebpackPwaManifest({
 			// the plugin doesn't understand output.publicPath 'auto'
 			publicPath: process.env.PATH_PREFIX ? process.env.PATH_PREFIX + '/' : './',
-			name: 'Vǐgǐlo',
-			short_name: 'Vǐgǐlo',
+			name: 'Vigilo',
+			short_name: 'Vigilo',
 			description: 'Vigilo est une application qui permet aux citoyens qui se déplacent avec des moyens de locomotion non motorisés (piétons, cyclistes, ...) de remonter des observations sur les problèmes de déplacements auxquels ils font face au quotidien.',
 			lang: "fr",
 			background_color: '#fdd835',
 			theme_color: '#fdd835',
 			ios: true,
+			// square icon (src/img/icon.png): the launch screen of the installed app is built from it
 			icons: [{
-					src: path.resolve('src/img/favicon.png'),
-					sizes: [48, 72, 96]
+					src: path.resolve('src/img/icon.png'),
+					sizes: [48, 72, 96, 128, 192, 256, 384, 512, 1024]
 				},
 				{
-					src: path.resolve('src/img/vigilo.png'),
-					sizes: [128, 192, 256, 384, 512, 1024]
+					// the logo stays inside the safe zone of adaptive icons
+					src: path.resolve('src/img/icon.png'),
+					sizes: [192, 512],
+					purpose: 'maskable'
 				}
 			]
 		})
