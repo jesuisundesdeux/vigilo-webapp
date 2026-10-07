@@ -338,3 +338,12 @@ nav {
     text-align: center;
   }
 }
+
+// Hint under the picture field (desktop): images can be pasted (issue #26)
+.paste-hint {
+  font-size: 0.85rem;
+  margin-top: 6px;
+  i.material-icons.tiny {
+    vertical-align: -3px;
+  }
+}

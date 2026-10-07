@@ -66,6 +66,8 @@
     "link-copied": "Link copied to the clipboard",
     "see-on-osm": "See on OpenStreetMap",
     "source-code": "Source code (AGPL v3)",
+    "paste-hint": "You can also paste an image (Ctrl+V)",
+    "pasted-image": "Pasted image",
     "nearby-none": "No other observation within 500 m",
     "nearby-one": "1 other observation within 500 m",
     "nearby-other": "{{count}} other observations within 500 m",
