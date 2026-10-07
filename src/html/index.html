@@ -58,6 +58,17 @@
   <div id="modal-issue" class="modal modal-fixed-footer big">
   </div>
 
+  <!-- Modal for the Panoramax viewer (see js/panoramax.js) -->
+  <div id="modal-panoramax" class="modal modal-fixed-footer big">
+    <div class="modal-content">
+      <iframe title="Panoramax" allow="fullscreen; clipboard-write" allowfullscreen></iframe>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" target="_blank" rel="noopener" class="panoramax-open btn-flat waves-effect"><i class="material-icons left">open_in_new</i><span data-i18n="open-in-panoramax">Ouvrir dans Panoramax</span></a>
+      <a href="#!" data-i18n-attr='{"title": "close"}' title="Fermer" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
+    </div>
+  </div>
+
   <!-- Modal for form -->
   <div id="modal-form" class="modal modal-fixed-footer fullscreen">
     ${require('./form.html')}

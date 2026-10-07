@@ -2,6 +2,8 @@
  * Panoramax (https://panoramax.fr): look for a street-level picture at the
  * coordinates of an observation, through the federated catalog (all instances).
  */
+import M from '@materializecss/materialize';
+
 const PANORAMAX_URL = "https://explore.panoramax.fr";
 // Search box half-size, in degrees (~50 m, as the Panoramax viewer does)
 const SEARCH_RADIUS_DEG = 0.0005;
@@ -47,10 +49,27 @@ export function findPanoramaxPicture(lat, lon) {
 				return {
 					id: nearest.id,
 					// same link as the "open on Panoramax" one of the Panoramax viewer
-					url: PANORAMAX_URL + "/?pic=" + encodeURIComponent(nearest.id)
+					url: PANORAMAX_URL + "/?pic=" + encodeURIComponent(nearest.id),
+					// viewer focused on the picture, with the map around (embeddable in an iframe,
+					// as offered by the share menu of Panoramax)
+					embedUrl: PANORAMAX_URL + "/#focus=pic&pic=" + encodeURIComponent(nearest.id) + "&map=18/" + lat + "/" + lon
 				};
 			})
 			.catch(() => null);
 	}
 	return cache[key];
+}
+
+/**
+ * Open the Panoramax viewer on a picture, in a popup over the current page
+ */
+export function openPanoramaxViewer(picture) {
+	var modal = $("#modal-panoramax");
+	var instance = M.Modal.getInstance(modal[0]) || M.Modal.init(modal[0], {
+		// stop the viewer (and its network activity) once closed
+		onCloseEnd: () => modal.find("iframe").attr("src", "about:blank")
+	});
+	modal.find("iframe").attr("src", picture.embedUrl);
+	modal.find(".panoramax-open").attr("href", picture.url);
+	instance.open();
 }

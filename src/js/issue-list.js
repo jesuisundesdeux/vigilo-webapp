@@ -5,7 +5,7 @@ import issueCard from '../html/issue-card';
 import issueDetail from '../html/issue-detail';
 import { showIssueMiniMap } from './issue-minimap';
 import { safeToken } from './utils';
-import { findPanoramaxPicture } from './panoramax';
+import { findPanoramaxPicture, openPanoramaxViewer } from './panoramax';
 /**
  * Functions for issues list
  */
@@ -45,12 +45,16 @@ export async function viewIssue(token) {
 		modal.open()
 		showIssueMiniMap($("#modal-issue .issue-minimap")[0], $("#modal-issue .issue-minimap-caption")[0], issue[0]);
 		// "See with Panoramax" button, only if a street-level picture exists there
-		var button = $("#modal-issue .panoramax-btn");
+		var row = $("#modal-issue .panoramax-row");
 		findPanoramaxPicture(issue[0].lat_float, issue[0].lon_float).then((picture) => {
 			if (picture) {
-				button.attr({ href: picture.url, title: i18next.t("see-on-panoramax") }).removeClass("loading");
+				row.find(".panoramax-btn").removeClass("loading").on("click", (e) => {
+					e.preventDefault();
+					openPanoramaxViewer(picture);
+				});
+				row.find(".panoramax-label").attr("data-i18n", "see-on-panoramax").text(i18next.t("see-on-panoramax"));
 			} else {
-				button.remove();
+				row.remove();
 			}
 		});
 	} else {
