@@ -1,0 +1,318 @@
+// Visual refresh of the Materialize 1.x components used by the app.
+
+body {
+  background: $vigilo-bg;
+  color: $vigilo-ink;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: $vigilo-link;
+}
+
+// ---- Top bar
+nav {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.06);
+  .brand-logo {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: 1.7rem;
+  }
+  .sidenav-trigger i {
+    color: $vigilo-ink;
+  }
+}
+
+// ---- List / Map tabs: segmented control
+#content ul.tabs {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 1px 0 $vigilo-border;
+  .tab a {
+    color: $vigilo-ink-soft !important;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    &.active {
+      color: $vigilo-ink !important;
+      background-color: transparent;
+    }
+    &:focus, &:focus.active {
+      background-color: rgba($vigilo-yellow, 0.18);
+    }
+  }
+  .indicator {
+    background-color: $vigilo-yellow-dark;
+    height: 3px;
+  }
+}
+
+// ---- Observation cards
+.cards-container {
+  padding-top: 12px;
+  .card.horizontal {
+    border-radius: $vigilo-radius;
+    overflow: hidden;
+    box-shadow: $vigilo-shadow;
+    border: 1px solid $vigilo-border;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    &:hover {
+      box-shadow: $vigilo-shadow-hover;
+      transform: translateY(-1px);
+    }
+    .card-image {
+      flex: 0 0 38%;
+      max-width: 38%;
+      background: #e9ecef;
+      img {
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+      }
+    }
+    .card-content {
+      padding: 14px 16px;
+      h5 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.35;
+        margin: 0 0 6px;
+        i.material-icons {
+          font-size: 18px;
+          vertical-align: -3px;
+          color: $vigilo-ink-soft;
+        }
+      }
+      p.grey-text {
+        color: $vigilo-ink-soft !important;
+        font-size: 0.88rem;
+        line-height: 1.4;
+        margin: 2px 0;
+      }
+    }
+  }
+}
+
+// Category color dot (card and detail)
+.cat-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: 1px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.no-issue-to-display {
+  color: $vigilo-ink-soft;
+}
+
+// ---- Floating action buttons
+.fixed-action-btn > .btn-floating.btn-large,
+#issues > .fixed-action-btn > a.btn-floating {
+  box-shadow: 0 6px 16px rgba(16, 24, 40, 0.25);
+}
+#issues > .fixed-action-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  a.btn-floating.blue {
+    background-color: #fff !important;
+    i { color: $vigilo-ink; }
+  }
+  a.btn-floating.yellow {
+    background-color: $vigilo-yellow !important;
+    i { color: $vigilo-ink; }
+  }
+}
+
+// ---- Modals (detail, form, filters, zone, language)
+.modal {
+  border-radius: 18px;
+  box-shadow: 0 24px 48px rgba(16, 24, 40, 0.25);
+  &.fullscreen {
+    border-radius: 0;
+  }
+  &.bottom-sheet {
+    border-radius: 18px 18px 0 0;
+  }
+  .modal-content h3, .modal-content h4, .modal-content h5 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .modal-content h3 {
+    font-size: 2rem;
+  }
+  .modal-footer {
+    border-top: 1px solid $vigilo-border;
+    background: #fff;
+    .btn-floating {
+      box-shadow: none;
+      margin-left: 6px;
+    }
+  }
+}
+
+// Observation detail
+#modal-issue {
+  .modal-content {
+    p {
+      margin: 0 0 14px;
+      b {
+        display: inline-block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $vigilo-ink-soft;
+        margin-bottom: 2px;
+      }
+    }
+    h6 {
+      background: rgba($vigilo-yellow, 0.25);
+      border-radius: $vigilo-radius-small;
+      padding: 6px 10px;
+      font-size: 0.95rem;
+      // the status banner only shows when the observation has a status icon
+      &:not(:has(i)) {
+        display: none;
+      }
+    }
+    img.materialboxed {
+      border-radius: $vigilo-radius-small;
+    }
+    blockquote {
+      border-left-color: $vigilo-yellow-dark;
+      margin: 8px 0 0;
+    }
+  }
+}
+
+// Filters bottom sheet
+#modal-filters {
+  h5 {
+    font-size: 1.4rem;
+  }
+  h6 {
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  label span {
+    color: $vigilo-ink;
+  }
+}
+
+// ---- Form
+#modal-form {
+  background: $vigilo-bg;
+  .card-panel {
+    border-radius: $vigilo-radius;
+    box-shadow: none;
+    border: 1px solid $vigilo-border;
+  }
+  #form-map {
+    border-radius: $vigilo-radius-small;
+    overflow: hidden;
+  }
+  .btn, .btn-large {
+    border-radius: 999px;
+  }
+}
+
+.btn, .btn-large, .btn-small {
+  border-radius: 10px;
+  text-transform: none;
+  font-weight: 600;
+  letter-spacing: 0;
+  box-shadow: none;
+}
+// floating buttons stay round (they also carry .btn-large)
+.btn-floating, .btn-floating.btn-large {
+  border-radius: 50%;
+}
+
+// ---- Side menu
+.sidenav {
+  .user-view {
+    margin-bottom: 0;
+    .background img {
+      filter: brightness(0.75);
+    }
+  }
+  ul.tabs .tab a,
+  li > a {
+    color: $vigilo-ink !important;
+    text-transform: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border-radius: 0 999px 999px 0;
+    margin-right: 12px;
+    text-align: left;
+    padding-left: 24px;
+    i.material-icons {
+      color: $vigilo-ink-soft;
+    }
+  }
+  ul.tabs .tab a.active {
+    background: rgba($vigilo-yellow, 0.45);
+    i.material-icons { color: $vigilo-ink; }
+  }
+  ul.tabs .indicator {
+    display: none;
+  }
+  #version a, #version-server a {
+    font-size: 0.8rem;
+    color: $vigilo-ink-soft !important;
+  }
+}
+
+// ---- Collections (zone / language pickers)
+.collection {
+  border-radius: $vigilo-radius-small;
+  border-color: $vigilo-border;
+  .collection-item {
+    border-bottom-color: $vigilo-border;
+    &.active {
+      font-weight: 600;
+    }
+  }
+}
+
+// ---- Stats
+#stats {
+  padding-top: 16px;
+  > .row {
+    background: #fff;
+    border: 1px solid $vigilo-border;
+    border-radius: $vigilo-radius;
+    padding: 16px 8px;
+    margin-bottom: 16px;
+    .white {
+      background: transparent !important;
+    }
+    h2 {
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0.6rem 0 0.2rem;
+    }
+    h6 {
+      color: $vigilo-ink-soft;
+    }
+  }
+  > hr {
+    display: none;
+  }
+}
+
+// ---- Toasts
+.toast {
+  border-radius: 12px;
+  background-color: $vigilo-ink;
+  font-weight: 500;
+}
+
+// ---- Leaflet controls
+.leaflet-bar, .leaflet-control-layers, .leaflet-control-geocoder {
+  border-radius: $vigilo-radius-small !important;
+  overflow: hidden;
+}

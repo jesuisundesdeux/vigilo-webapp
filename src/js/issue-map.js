@@ -56,7 +56,10 @@ export async function displayIssues(nozoom) {
 			{
 				styles: STYLES,
 				issue: issues[i],
-				color: issues[i].color
+				// category color fill with a white outline, readable on any base map
+				color: '#ffffff',
+				fillColor: issues[i].color,
+				fillOpacity: 0.9
 			}
 		);
 		issueslayer.addLayer(marker);
@@ -82,19 +85,19 @@ window.centerOnIssue = centerOnIssue
 
 const STYLES = {
 	"0-11": {
-		radius: 1,
-		weight: 1,
-	},
-	"12-13": {
-		radius: 2,
-		weight: 1,
-	},
-	"14-15": {
 		radius: 4,
 		weight: 1,
 	},
-	"16-20": {
-		radius: 8,
+	"12-13": {
+		radius: 5,
+		weight: 1.5,
+	},
+	"14-15": {
+		radius: 7,
 		weight: 2,
+	},
+	"16-20": {
+		radius: 10,
+		weight: 2.5,
 	}
 }

@@ -1,0 +1,34 @@
+// Vigilo design tokens, loaded before Materialize to override its defaults
+// (Materialize's own defaults were pink/teal and clashed with the Vigilo yellow).
+
+$vigilo-yellow: #fdd835;
+$vigilo-yellow-dark: #f2c200;
+$vigilo-ink: #1f2328;
+$vigilo-ink-soft: #5f6b7a;
+$vigilo-bg: #f4f5f7;
+$vigilo-border: #e3e6ea;
+$vigilo-link: #0b63ce;
+$vigilo-radius: 14px;
+$vigilo-radius-small: 10px;
+$vigilo-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 2px 8px rgba(16, 24, 40, 0.06);
+$vigilo-shadow-hover: 0 4px 16px rgba(16, 24, 40, 0.12);
+
+// Materialize overrides
+$primary-color: $vigilo-yellow;
+$secondary-color: $vigilo-ink;
+$link-color: $vigilo-link;
+$success-color: #2e7d32;
+$error-color: #c62828;
+$button-raised-background: $vigilo-ink;
+$button-raised-color: #fff;
+$button-floating-background: $vigilo-ink;
+$input-focus-color: $vigilo-ink;
+$radio-fill-color: $vigilo-ink;
+$switch-bg-color: $vigilo-ink;
+$tabs-text-color: $vigilo-ink;
+$tabs-underline-color: $vigilo-yellow-dark;
+$collection-active-bg-color: $vigilo-yellow;
+$collection-active-color: $vigilo-ink;
+$card-link-color: $vigilo-link;
+$off-black: $vigilo-ink;
+$font-stack: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
