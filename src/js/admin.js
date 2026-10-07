@@ -3,6 +3,7 @@ import localDataManager from './localDataManager';
 import * as vigilo from './vigilo-api';
 import { randomToken } from './utils';
 import { refreshIssueCard } from './issue-list';
+import * as map from './issue-map';
 
 var key = "";
 
@@ -97,7 +98,9 @@ function initAdmin(){
     var issue = issues.find((i) => i.token == token);
     if (issue !== undefined) {
       issue.approved = parseInt(status);
-      refreshIssueCard(issue);
+      await refreshIssueCard(issue);
+      map.cleanIssues();
+      map.displayIssues(true);
     }
     M.Modal.getInstance($("#modal-issue")[0]).close();
     M.toast({ html: i18next.t("moderation-done-" + status) });

@@ -52,8 +52,18 @@ export async function viewIssue(token) {
  * Re-render one card in place (e.g. after a moderation action), without
  * reloading the list nor losing the scroll position.
  */
-export function refreshIssueCard(issue) {
-	$("#issues .card[onclick=\"viewIssue('" + safeToken(issue.token) + "')\"]").parent().replaceWith(issueCard(issue));
+export async function refreshIssueCard(issue) {
+	var card = $("#issues .card[onclick=\"viewIssue('" + safeToken(issue.token) + "')\"]").parent();
+	var stillMatchesFilters = (await dataManager.getData()).some((i) => i.token == issue.token);
+	if (stillMatchesFilters) {
+		card.replaceWith(issueCard(issue));
+	} else if (card.length) {
+		// e.g. a moderator listing only the observations to moderate: the card leaves the list
+		card.remove();
+		offset = Math.max(0, offset - 1);
+		// keep the list filled: load the next observation, if any
+		await displayIssues(1);
+	}
 }
 
 window.viewIssue = viewIssue
