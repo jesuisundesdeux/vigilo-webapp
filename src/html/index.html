@@ -10,6 +10,17 @@
 <body>
   ${require('./navs.html')}
 
+  <!-- Install the web app (add to home screen), see js/install.js -->
+  <div id="install-banner" class="install-banner hide">
+    <img src="${require('../img/favicon.png')}" alt="">
+    <div class="install-banner-text">
+      <strong data-i18n="install-app">Installer l'appli</strong>
+      <span data-i18n="install-banner-text">Ajoutez Vigilo à votre écran d'accueil pour l'ouvrir en un geste.</span>
+    </div>
+    <a href="#!" class="btn btn-small install-app-btn" data-i18n="install">Installer</a>
+    <a href="#!" class="install-banner-close" data-i18n-attr='{"title": "close"}' title="Fermer"><i class="material-icons">close</i></a>
+  </div>
+
   <!-- Modal for zone -->
   <div id="modal-zone" class="modal modal-fixed-footer">
     <div class="modal-content">
