@@ -73,13 +73,16 @@ export default async function (issue) {
               ${escapeHtml(issue.address)}
               <a href="https://www.openstreetmap.org/?mlat=${encodeURIComponent(issue.lat_float)}&mlon=${encodeURIComponent(issue.lon_float)}#map=19/${encodeURIComponent(issue.lat_float)}/${encodeURIComponent(issue.lon_float)}" target="_blank" rel="noopener" data-i18n-attr='{"title": "see-on-osm"}' title="${i18next.t("see-on-osm")}"><i class="material-icons tiny">open_in_new</i></a>
           </p>
+          <!-- shown while looking for a Panoramax picture, removed if there is none (see js/panoramax.js) -->
+          <p class="panoramax-row">
+              <a href="#!" class="btn btn-small waves-effect waves-light panoramax-btn loading"><span class="panoramax-loader"></span><i class="material-icons left">streetview</i><span class="panoramax-label">${i18next.t("panoramax-searching")}</span></a>
+          </p>
       </div>
   </div>
 </div>
 <div class="modal-footer">
 ${btns}
 <a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.mosaic)}"><i class="material-icons center">view_list</i></a>
-<a title="${i18next.t("panoramax-searching")}" target="_blank" rel="noopener" class="waves-effect waves-light btn-floating panoramax-btn loading"><span class="panoramax-loader"></span><i class="material-icons center">streetview</i></a>
 <a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.permLink)}" onclick="return shareIssue(this)"><i class="material-icons center">share</i></a>
 <a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${token}')"><i class="material-icons center">map</i></a>
 <a href="#!" data-i18n-attr='{"title": "close"}' title="${i18next.t("close")}" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
