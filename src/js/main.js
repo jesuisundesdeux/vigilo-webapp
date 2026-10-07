@@ -28,6 +28,8 @@ document.addEventListener('error', (e) => {
 	}
 }, true);
 
+// registers the install prompt listener before the app is initialized
+import './install';
 import VigiloApp from './app';
 window.vigilo = new VigiloApp();
 window.vigilo.init()

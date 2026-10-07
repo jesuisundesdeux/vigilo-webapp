@@ -360,3 +360,80 @@ nav {
     vertical-align: -3px;
   }
 }
+
+// "Install the app" banner (js/install.js)
+.install-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  max-width: 480px;
+  z-index: 998; // above the floating buttons, below the side menu and modals
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px 12px 14px;
+  background: #fff;
+  border: 1px solid $vigilo-border;
+  border-radius: $vigilo-radius;
+  box-shadow: 0 6px 24px rgba(16, 24, 40, 0.18);
+  &.hide {
+    display: none !important;
+  }
+  > img {
+    width: 32px;
+    height: 32px;
+    flex: none;
+  }
+  .install-banner-text {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.3;
+    strong {
+      display: block;
+    }
+    span {
+      font-size: 0.85rem;
+      color: $vigilo-ink-soft;
+    }
+  }
+  .install-app-btn {
+    flex: none;
+  }
+  .install-banner-close {
+    flex: none;
+    color: $vigilo-ink-soft;
+    display: flex;
+    padding: 4px;
+  }
+}
+// small screens: keep the floating buttons usable above the banner
+@media only screen and (max-width: 600px) {
+  body.install-banner-shown .fixed-action-btn {
+    bottom: calc(23px + var(--install-banner-h, 0px));
+  }
+}
+
+// "See with Panoramax" button: spinner while looking for a picture
+.panoramax-btn {
+  position: relative;
+  &.loading {
+    pointer-events: none;
+    cursor: progress;
+  }
+  .panoramax-loader {
+    display: none;
+    position: absolute;
+    inset: 2px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top-color: $vigilo-yellow;
+    border-radius: 50%;
+    animation: panoramax-spin 0.8s linear infinite;
+  }
+  &.loading .panoramax-loader {
+    display: block;
+  }
+}
+@keyframes panoramax-spin {
+  to { transform: rotate(360deg); }
+}
