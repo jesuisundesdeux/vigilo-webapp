@@ -70,6 +70,7 @@
     "moderator-warning": "Vous allez passer en mode modération.\n\n1) Respectez la vie privée des autres.\n2) Réfléchissez avant de valider, refuser ou supprimer une observation.\n3) De grands pouvoirs impliquent de grandes responsabilités.\n\nContinuer ?",
     "link-copied": "Lien copié dans le presse-papier",
     "see-on-osm": "Voir sur OpenStreetMap",
+    "see-on-panoramax": "Voir avec Panoramax",
     "source-code": "Code source (AGPL v3)",
     "paste-hint": "Vous pouvez aussi coller une image (Ctrl+V)",
     "pasted-image": "Image collée",

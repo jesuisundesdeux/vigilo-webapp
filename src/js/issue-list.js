@@ -5,6 +5,7 @@ import issueCard from '../html/issue-card';
 import issueDetail from '../html/issue-detail';
 import { showIssueMiniMap } from './issue-minimap';
 import { safeToken } from './utils';
+import { findPanoramaxPicture } from './panoramax';
 /**
  * Functions for issues list
  */
@@ -43,6 +44,13 @@ export async function viewIssue(token) {
 		window.history.replaceState({}, '', issue[0].permLink)
 		modal.open()
 		showIssueMiniMap($("#modal-issue .issue-minimap")[0], $("#modal-issue .issue-minimap-caption")[0], issue[0]);
+		// "See with Panoramax" button, only if a street-level picture exists there
+		var button = $("#modal-issue .panoramax-btn");
+		findPanoramaxPicture(issue[0].lat_float, issue[0].lon_float).then((picture) => {
+			if (picture && $.contains(document, button[0])) {
+				button.attr("href", picture.url).removeClass("hide");
+			}
+		});
 	} else {
 		console.warn("This token does not exist: ", token);
 	}
