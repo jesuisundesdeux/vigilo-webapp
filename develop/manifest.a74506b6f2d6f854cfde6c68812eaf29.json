@@ -1,53 +1,65 @@
 {
   "icons": [
     {
-      "src": "./icon_1024x1024.b806deb10145c3cf406357e33d4d26a1.png",
+      "src": "./icon_512x512.793b4802c99ab8941a3b478d35a92425.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon_192x192.b2d11246183594c3f4cbc50208287be1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon_1024x1024.cc7312b34339a0c5ee6d9fc9ddbbb249.png",
       "sizes": "1024x1024",
       "type": "image/png"
     },
     {
-      "src": "./icon_512x512.80d5062b0235d6a6125eaa109ab3ede9.png",
+      "src": "./icon_512x512.793b4802c99ab8941a3b478d35a92425.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "./icon_384x384.1357cfded6880da62f13d628c3290d9d.png",
+      "src": "./icon_384x384.c98a7774bf6ad6c2d4b75504e80ac973.png",
       "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "./icon_256x256.e31cb62702d73d730888aec86ae367f0.png",
+      "src": "./icon_256x256.6410449399583bbea15785a3de6fd8d8.png",
       "sizes": "256x256",
       "type": "image/png"
     },
     {
-      "src": "./icon_192x192.bceaf24234dc12ed8ba137c6b60563b8.png",
+      "src": "./icon_192x192.b2d11246183594c3f4cbc50208287be1.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icon_128x128.bbf58cbfc03ad960c97e70a3af6038ce.png",
+      "src": "./icon_128x128.92bb7652709dc987f6cf9aa65710cab8.png",
       "sizes": "128x128",
       "type": "image/png"
     },
     {
-      "src": "./icon_96x96.d827f6856da21ea6667e230d9299122a.png",
+      "src": "./icon_96x96.cd1e7790752810c686c3c1c05bc344bb.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "./icon_72x72.28f2fa6edad7f94d2580d616efe30330.png",
+      "src": "./icon_72x72.87dc6e115dee623ac22cbc447679dddd.png",
       "sizes": "72x72",
       "type": "image/png"
     },
     {
-      "src": "./icon_48x48.43c84a6c31485bf4350d086efe06c724.png",
+      "src": "./icon_48x48.30936ced0909ca9c80b1920f2484444f.png",
       "sizes": "48x48",
       "type": "image/png"
     }
   ],
-  "name": "Vǐgǐlo",
-  "short_name": "Vǐgǐlo",
+  "name": "Vigilo",
+  "short_name": "Vigilo",
   "orientation": "portrait",
   "display": "standalone",
   "start_url": ".",
