@@ -168,9 +168,10 @@ export function acl(key){
 
 export function approve(key, token, status){
   var options = {
-    url: baseUrl() + "/approve.php?key=" + key + "&token=" + token + "&approved=" + status,
+    url: baseUrl() + "/approve.php?key=" + encodeURIComponent(key) + "&token=" + token + "&approved=" + status,
     }
-    return request(options)
+    // never cached: the same action can be repeated on an observation (approve, unapprove, approve...)
+    return request(options, true)
 }
 
 export function deleteIssue(token, secretId) {

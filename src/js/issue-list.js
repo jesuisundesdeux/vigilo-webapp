@@ -4,6 +4,7 @@ import errorCard from '../html/error';
 import issueCard from '../html/issue-card';
 import issueDetail from '../html/issue-detail';
 import { showIssueMiniMap } from './issue-minimap';
+import { safeToken } from './utils';
 /**
  * Functions for issues list
  */
@@ -45,6 +46,14 @@ export async function viewIssue(token) {
 	} else {
 		console.warn("This token does not exist: ", token);
 	}
+}
+
+/**
+ * Re-render one card in place (e.g. after a moderation action), without
+ * reloading the list nor losing the scroll position.
+ */
+export function refreshIssueCard(issue) {
+	$("#issues .card[onclick=\"viewIssue('" + safeToken(issue.token) + "')\"]").parent().replaceWith(issueCard(issue));
 }
 
 window.viewIssue = viewIssue

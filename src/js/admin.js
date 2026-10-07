@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import localDataManager from './localDataManager';
 import * as vigilo from './vigilo-api';
 import { randomToken } from './utils';
+import { refreshIssueCard } from './issue-list';
 
 var key = "";
 
@@ -84,7 +85,21 @@ function initAdmin(){
     if (confirmKey !== undefined && !window.confirm(i18next.t(confirmKey))) {
       return;
     }
-    await vigilo.approve(localDataManager.getAdminKey(), token, status);
-    window.location.reload()
+    try {
+      await vigilo.approve(localDataManager.getAdminKey(), token, status);
+    } catch (e) {
+      M.toast({ html: i18next.t("moderation-failed"), classes: "red" });
+      return;
+    }
+    // Update the observation in place instead of reloading the whole page, so that
+    // moderators can process several observations in a row without waiting
+    var issues = await vigilo.getIssues();
+    var issue = issues.find((i) => i.token == token);
+    if (issue !== undefined) {
+      issue.approved = parseInt(status);
+      refreshIssueCard(issue);
+    }
+    M.Modal.getInstance($("#modal-issue")[0]).close();
+    M.toast({ html: i18next.t("moderation-done-" + status) });
   }
 }
