@@ -54,6 +54,9 @@ window.startForm = async function (token) {
 
 function clearForm() {
   $('#modal-form form').trigger("reset");
+  // A picture is required, from the gallery or from the camera button (see file change handler)
+  $("#issue-picture").prop("required", true);
+  photoLocatePending = false;
   if (mapmarker !== undefined) {
     mapmarker.remove()
   }
@@ -75,12 +78,39 @@ function clearForm() {
   }
 }
 
+// A photo older than this is not located with the phone's current position (issue #128)
+const RECENT_PHOTO_MS = 30 * 60 * 1000;
+// Set while geolocating the phone because the photo has no GPS position
+var photoLocatePending = false;
+
+/**
+ * Does the photo still carry camera metadata (maker, model, shooting date)?
+ * If so, a missing GPS position was most likely removed by the phone
+ * (Android strips it from photos handed to web pages, issue #128).
+ */
+function hasCameraMetadata(exifObj) {
+  var zeroth = exifObj['0th'] || {};
+  var exif = exifObj['Exif'] || {};
+  return zeroth[piexif.ImageIFD.Make] !== undefined
+    || zeroth[piexif.ImageIFD.Model] !== undefined
+    || exif[piexif.ExifIFD.DateTimeOriginal] !== undefined;
+}
+
+function longToast(key, options) {
+  M.toast({ html: i18next.t(key, options), displayLength: 8000 });
+}
+
 /**
  * On file change, load image, read date, time and position and generate a rotated image
  */
 $("#modal-form input[type=file]").change(function () {
   var input = this;
+  // Taken right now with the camera button: the phone's position is the photo's position
+  var fromCamera = input.hasAttribute("capture");
   if (input.files && input.files[0]) {
+    if (fromCamera) {
+      $("#issue-picture").prop("required", false);
+    }
     var reader = new FileReader();
     reader.onload = function (e) {
 
@@ -90,6 +120,7 @@ $("#modal-form input[type=file]").change(function () {
       // Read Exif
       var located = false
       var timestamp = false;
+      var photoDate = null;
       var exifObj = {};
       try {
         exifObj = piexif.load(e.target.result);
@@ -116,6 +147,7 @@ $("#modal-form input[type=file]").change(function () {
             setDate(date)
             setTime(date.getHours(), date.getMinutes())
             timestamp = true;
+            photoDate = date;
           }
         }
       }
@@ -130,12 +162,22 @@ $("#modal-form input[type=file]").change(function () {
           setDate(date)
           setTime(date.getHours(), date.getMinutes())
           timestamp = true;
+          photoDate = date;
         }
       }
 
       if (!located) {
-        // geolocate and add point
-        formmap.locate();
+        // No GPS position in the photo: the phone's current position is only
+        // relevant if the photo was just taken (issue #128)
+        var recent = fromCamera || (photoDate !== null && Math.abs(Date.now() - photoDate.getTime()) < RECENT_PHOTO_MS);
+        if (recent) {
+          photoLocatePending = true;
+          formmap.locate({ enableHighAccuracy: true });
+        } else if (hasCameraMetadata(exifObj)) {
+          longToast("photo-location-removed");
+        } else {
+          longToast("photo-no-location");
+        }
       }
 
       if (!timestamp) {
@@ -267,6 +309,18 @@ async function initFormMap() {
   })
 
   formmap.on('click locationfound', (e) => { setFormMapPoint(e.latlng) })
+  formmap.on('locationfound', (e) => {
+    if (photoLocatePending) {
+      photoLocatePending = false;
+      longToast("photo-location-estimated", { accuracy: Math.round(e.accuracy) });
+    }
+  })
+  formmap.on('locationerror', () => {
+    if (photoLocatePending) {
+      photoLocatePending = false;
+      longToast("geolocation-failed");
+    }
+  })
 
   formmap.geocoderCtrl = geocoder({
     position: 'topright',
@@ -581,6 +635,7 @@ export async function init() {
       M.FormSelect.init($("#issue-cat"))
     } else {
       // Use browser default inputs on mobile
+      $(".camera-capture").removeClass('hide')
       $("#issue-cat").addClass('browser-default')
       $("#issue-date").attr('type', 'date');
       $("#issue-time").attr('type', 'time');
