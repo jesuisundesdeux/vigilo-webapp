@@ -104,60 +104,71 @@ function longToast(key, options) {
  * On file change, load image, read date, time and position and generate a rotated image
  */
 $("#modal-form input[type=file]").change(function () {
-  var input = this;
-  // Taken right now with the camera button: the phone's position is the photo's position
-  var fromCamera = input.hasAttribute("capture");
-  if (input.files && input.files[0]) {
-    if (fromCamera) {
-      $("#issue-picture").prop("required", false);
+  if (this.files && this.files[0]) {
+    // Taken right now with the camera button: the phone's position is the photo's position
+    loadPicture(this.files[0], this.hasAttribute("capture"), this.id != "issue-picture");
+  }
+})
+
+/**
+ * Paste an image from the clipboard into the form (issue #26), e.g. a photo
+ * copied from an image editor. Text pastes are left untouched.
+ */
+$(document).on("paste", function (event) {
+  if (!$("#modal-form").hasClass("open")) {
+    return;
+  }
+  var clipboard = event.originalEvent.clipboardData;
+  var image = clipboard ? Array.from(clipboard.files || []).find((f) => f.type.indexOf("image/") == 0) : undefined;
+  if (image === undefined) {
+    return;
+  }
+  event.preventDefault();
+  $("#modal-form .file-path").val(i18next.t("pasted-image"));
+  loadPicture(image, false, true);
+})
+
+/**
+ * Load a picture (file input, camera or clipboard): preview, date/time and position
+ * from EXIF, or a fallback explained to the user.
+ * notFromMainInput: the required gallery input stays empty, so it must not block submission.
+ */
+function loadPicture(file, fromCamera, notFromMainInput) {
+  if (notFromMainInput) {
+    $("#issue-picture").prop("required", false);
+  }
+  var reader = new FileReader();
+  reader.onload = function (e) {
+
+    // Render image preview
+    renderImage(e.target.result);
+
+    // Read Exif
+    var located = false
+    var timestamp = false;
+    var photoDate = null;
+    var exifObj = {};
+    try {
+      exifObj = piexif.load(e.target.result);
+    } catch (err) {
+      // Not a JPEG (PNG, HEIC...) or unreadable EXIF: fallback to geolocation and current time
+      console.warn("Unable to read EXIF data", err);
     }
-    var reader = new FileReader();
-    reader.onload = function (e) {
-
-      // Render image preview
-      renderImage(e.target.result);
-
-      // Read Exif
-      var located = false
-      var timestamp = false;
-      var photoDate = null;
-      var exifObj = {};
-      try {
-        exifObj = piexif.load(e.target.result);
-      } catch (err) {
-        // Not a JPEG (PNG, HEIC...) or unreadable EXIF: fallback to geolocation and current time
-        console.warn("Unable to read EXIF data", err);
-      }
-      if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined && exifObj.GPS[piexif.GPSIFD.GPSLongitude] !== undefined) {
-        // GPS available : position, date & time
-        // Position
-        var lat = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLatitude], exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef])
-        var lon = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLongitude], exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef])
-        setFormMapPoint([lat, lon])
-        located = true;
-        if (exifObj.GPS[piexif.GPSIFD.GPSDateStamp] !== undefined && exifObj.GPS[piexif.GPSIFD.GPSTimeStamp] !== undefined) {
-          // Date
-          var date = new Date(exifObj.GPS[piexif.GPSIFD.GPSDateStamp].split(':').join('-'));
-          // Time
-          var hours = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][1];
-          var minutes = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][1];
-          date.setUTCHours(hours)
-          date.setUTCMinutes(minutes)
-          if (!isNaN(date.getTime())) {
-            setDate(date)
-            setTime(date.getHours(), date.getMinutes())
-            timestamp = true;
-            photoDate = date;
-          }
-        }
-      }
-      if (!timestamp && exifObj['Exif'] !== undefined && exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal] !== undefined) {
-        // No GPS timestamp : date & time ? (format "YYYY:MM:DD HH:MM:SS")
-        var datetime = String(exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal]).split(" ")
-        var date = new Date((datetime[0] || "").split(":").join("-"))
-        var hm = (datetime[1] || "").split(":")
-        date.setHours(hm[0])
-        date.setMinutes(hm[1])
+    if (exifObj.GPS != undefined && exifObj.GPS[piexif.GPSIFD.GPSLatitude] !== undefined && exifObj.GPS[piexif.GPSIFD.GPSLongitude] !== undefined) {
+      // GPS available : position, date & time
+      // Position
+      var lat = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLatitude], exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef])
+      var lon = piexif.GPSHelper.dmsRationalToDeg(exifObj.GPS[piexif.GPSIFD.GPSLongitude], exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef])
+      setFormMapPoint([lat, lon])
+      located = true;
+      if (exifObj.GPS[piexif.GPSIFD.GPSDateStamp] !== undefined && exifObj.GPS[piexif.GPSIFD.GPSTimeStamp] !== undefined) {
+        // Date
+        var date = new Date(exifObj.GPS[piexif.GPSIFD.GPSDateStamp].split(':').join('-'));
+        // Time
+        var hours = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][0][1];
+        var minutes = exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][0] / exifObj.GPS[piexif.GPSIFD.GPSTimeStamp][1][1];
+        date.setUTCHours(hours)
+        date.setUTCMinutes(minutes)
         if (!isNaN(date.getTime())) {
           setDate(date)
           setTime(date.getHours(), date.getMinutes())
@@ -165,33 +176,47 @@ $("#modal-form input[type=file]").change(function () {
           photoDate = date;
         }
       }
-
-      if (!located) {
-        // No GPS position in the photo: the phone's current position is only
-        // relevant if the photo was just taken (issue #128)
-        var recent = fromCamera || (photoDate !== null && Math.abs(Date.now() - photoDate.getTime()) < RECENT_PHOTO_MS);
-        if (recent) {
-          photoLocatePending = true;
-          formmap.locate({ enableHighAccuracy: true });
-        } else if (hasCameraMetadata(exifObj)) {
-          longToast("photo-location-removed");
-        } else {
-          longToast("photo-no-location");
-        }
-      }
-
-      if (!timestamp) {
-        // Use current time
-        var now = new Date();
-        setDate(now)
-        setTime(now.getHours(), now.getMinutes())
-      }
-
-
     }
-    reader.readAsDataURL(input.files[0]);
+    if (!timestamp && exifObj['Exif'] !== undefined && exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal] !== undefined) {
+      // No GPS timestamp : date & time ? (format "YYYY:MM:DD HH:MM:SS")
+      var datetime = String(exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal]).split(" ")
+      var date = new Date((datetime[0] || "").split(":").join("-"))
+      var hm = (datetime[1] || "").split(":")
+      date.setHours(hm[0])
+      date.setMinutes(hm[1])
+      if (!isNaN(date.getTime())) {
+        setDate(date)
+        setTime(date.getHours(), date.getMinutes())
+        timestamp = true;
+        photoDate = date;
+      }
+    }
+
+    if (!located) {
+      // No GPS position in the photo: the phone's current position is only
+      // relevant if the photo was just taken (issue #128)
+      var recent = fromCamera || (photoDate !== null && Math.abs(Date.now() - photoDate.getTime()) < RECENT_PHOTO_MS);
+      if (recent) {
+        photoLocatePending = true;
+        formmap.locate({ enableHighAccuracy: true });
+      } else if (hasCameraMetadata(exifObj)) {
+        longToast("photo-location-removed");
+      } else {
+        longToast("photo-no-location");
+      }
+    }
+
+    if (!timestamp) {
+      // Use current time
+      var now = new Date();
+      setDate(now)
+      setTime(now.getHours(), now.getMinutes())
+    }
+
+
   }
-})
+  reader.readAsDataURL(file);
+}
 
 function renderImage(src) {
   var image = new Image();
@@ -633,6 +658,7 @@ export async function init() {
         }
       });
       M.FormSelect.init($("#issue-cat"))
+      $(".paste-hint").removeClass('hide')
     } else {
       // Use browser default inputs on mobile
       $(".camera-capture").removeClass('hide')

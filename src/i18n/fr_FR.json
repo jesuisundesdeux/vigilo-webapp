@@ -66,6 +66,8 @@
     "link-copied": "Lien copié dans le presse-papier",
     "see-on-osm": "Voir sur OpenStreetMap",
     "source-code": "Code source (AGPL v3)",
+    "paste-hint": "Vous pouvez aussi coller une image (Ctrl+V)",
+    "pasted-image": "Image collée",
     "nearby-none": "Aucune autre observation à moins de 500 m",
     "nearby-one": "1 autre observation à moins de 500 m",
     "nearby-other": "{{count}} autres observations à moins de 500 m",
