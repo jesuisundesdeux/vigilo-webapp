@@ -78,6 +78,10 @@ function clearForm() {
   }
 }
 
+// Quality of the uploaded JPEG: 1.0 produced needlessly heavy files for no visible gain,
+// and photos are now displayed as is (not only through the backend's panel)
+const JPEG_QUALITY = 0.9;
+
 // A photo older than this is not located with the phone's current position (issue #128)
 const RECENT_PHOTO_MS = 30 * 60 * 1000;
 // Set while geolocating the phone because the photo has no GPS position
@@ -594,7 +598,7 @@ $("#modal-form form").submit((e) => {
       }
 
       $("#modal-form-loader .determinate").css("width", "50%");
-      var jpegb64 = $("#picture-preview canvas")[0].toDataURL("image/jpeg", 1.0).split(",")[1];
+      var jpegb64 = $("#picture-preview canvas")[0].toDataURL("image/jpeg", JPEG_QUALITY).split(",")[1];
       return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64, isResolution)
     })
     .then(() => {
