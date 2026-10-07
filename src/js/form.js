@@ -506,7 +506,7 @@ $("#modal-form form").submit((e) => {
   firstStep
     .then((createResponse) => {
       if (createResponse.status != 0 && createResponse.token == undefined) {
-        throw "error"
+        throw (createResponse.error || createResponse.message || JSON.stringify(createResponse))
       }
 
       // Store secretId
@@ -525,9 +525,18 @@ $("#modal-form form").submit((e) => {
       }, 1000)
     })
     .catch((e) => {
-      $("#modal-form-loader")
-        .empty()
-        .append(errorCard(e))
+      // Show the error and let the user go back to the form to fix it (issue #86)
+      $("#modal-form-loader .form-error").remove();
+      $("#modal-form-loader .modal-content").append(
+        $('<div class="form-error"></div>')
+          .append(errorCard(e))
+          .append($('<a class="btn waves-effect waves-light"></a>')
+            .text(i18next.t("back-to-form"))
+            .on('click', () => {
+              $("#modal-form-loader .form-error").remove();
+              $("#modal-form-loader .determinate").css("width", "10%");
+              M.Modal.getInstance($("#modal-form-loader")).close();
+            })))
     })
 
   e.preventDefault();

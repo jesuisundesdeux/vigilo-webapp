@@ -57,6 +57,10 @@ export async function init() {
     } else {
       $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">stars</i> <span data-i18n="moderator-enable">'+i18next.t("moderator-enable")+'</span></a></li>');
       $("#admin-status a").click(()=>{
+        // Remind moderators of their responsibilities (issue #80)
+        if (!window.confirm(i18next.t("moderator-warning"))) {
+          return;
+        }
         localDataManager.setIsAdmin(true);
         window.location.reload()
       })

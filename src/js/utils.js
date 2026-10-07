@@ -40,9 +40,9 @@ function make_request(options) {
         if (xhr.status != 200) {
             requests_cache[options.url].status = STATUS_KO;
             for (var i in requests_cache[options.url].listeners) {
-                requests_cache[options.url].listeners[i].reject();
+                requests_cache[options.url].listeners[i].reject(`HTTP Code: ${xhr.status} (${xhr.statusText})\n${xhr.responseText}`);
             }
-            return Promise.reject()
+            return Promise.reject(`HTTP Code: ${xhr.status} (${xhr.statusText})\n${xhr.responseText}`)
         }
         try {
             var response = JSON.parse(xhr.responseText)
