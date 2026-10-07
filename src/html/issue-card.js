@@ -17,7 +17,7 @@ export default function (issue) {
             ${(issue.status == 3) ? '<i class="material-icons" data-i18n-attr=\'{"title": "status-inprogress-long"}\' title="'+i18next.t("status-inprogress-long")+'">hourglass_empty</i>' : ''}
             ${(issue.status == 4) ? '<i class="material-icons" data-i18n-attr=\'{"title": "status-done-long"}\' title="'+i18next.t("status-done-long")+'">done</i>' : ''}
             ${(LocalDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons" data-i18n-attr=\'{"title": "i-make-it"}\' title="'+i18next.t("i-make-it")+'">person</i>' : ''}
-            <span data-i18n="category-name-${escapeHtml(issue.categorie)}">${i18next.t("category-name-"+issue.categorie)}</span>
+            <span class="cat-dot" style="background-color: ${escapeHtml(issue.color)}"></span><span data-i18n="category-name-${escapeHtml(issue.categorie)}">${i18next.t("category-name-"+issue.categorie)}</span>
           </h5>
           <p class="grey-text">${escapeHtml(issue.address)}</p>
           <p class="grey-text" data-i18n-date="${issue.date_obj.toString()}">${issue.date_obj.toLocaleString(i18next.language.split("_")[0])}</p>

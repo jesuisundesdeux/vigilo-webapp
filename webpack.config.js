@@ -33,6 +33,12 @@ module.exports = {
 			test: /\.html$/,
 			use: path.resolve(__dirname, 'webpack/html-interpolate-loader.js')
 		}, {
+			test: /\.(woff2?|ttf|eot)$/,
+			type: 'asset/resource',
+			generator: {
+				filename: "fonts/[contenthash]-[name][ext]"
+			}
+		}, {
 			test: /\.(png|svg(z*)|jp(e*)g|gif)$/,
 			type: 'asset/resource',
 			generator: {

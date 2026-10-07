@@ -26,6 +26,7 @@
     "webpack-pwa-manifest": "^4.3.0"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
     "@materializecss/materialize": "^1.2.2",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
@@ -36,6 +37,7 @@
     "leaflet-control-geocoder": "^4.0.0",
     "leaflet.fullscreen": "^5.3.3",
     "leaflet.locatecontrol": "^0.90.1",
+    "material-icons": "^1.13.14",
     "piexifjs": "^1.0.6",
     "semver": "^7.8.5"
   }

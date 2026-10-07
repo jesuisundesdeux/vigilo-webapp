@@ -9,6 +9,11 @@ body {
   height: 100%;
 }
 
+// Fonts bundled with the app (no request to Google Fonts)
+@import "~@fontsource-variable/inter/index.css";
+@import "~material-icons/iconfont/filled.css";
+
+@import "theme-variables.scss";
 @import "~@materializecss/materialize/sass/materialize.scss";
 @import "materialize-custom.scss";
 @import "timedout-marker.scss";
@@ -182,3 +187,5 @@ nav.nav-extended {
   font-size: 1.4rem;
   margin-top: 8rem;
 }
+
+@import "theme.scss";
