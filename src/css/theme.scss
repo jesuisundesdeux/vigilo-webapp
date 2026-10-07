@@ -469,3 +469,157 @@ nav {
 @keyframes panoramax-spin {
   to { transform: rotate(360deg); }
 }
+
+// ---- Loading screen (index.html #app-splash, js/splash.js)
+#app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(1200px 600px at 50% 35%, lighten($vigilo-yellow, 10%) 0%, rgba(255, 255, 255, 0) 60%),
+    $vigilo-yellow;
+  color: $vigilo-ink;
+  text-align: center;
+  padding: 24px;
+  transition: opacity .35s ease, visibility .35s ease;
+  &.splash-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: splash-in .5s ease-out both;
+  }
+  .splash-logo {
+    width: min(320px, 70vw);
+    height: auto;
+  }
+  .splash-tagline {
+    margin: 4px 0 32px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    opacity: .85;
+  }
+  .splash-progress {
+    position: relative;
+    width: 180px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba($vigilo-ink, .15);
+    overflow: hidden;
+    span {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 40%;
+      border-radius: 999px;
+      background: $vigilo-ink;
+      animation: splash-progress 1.2s cubic-bezier(.4, 0, .2, 1) infinite;
+    }
+  }
+  .splash-status {
+    margin: 14px 0 0;
+    font-size: .9rem;
+    font-weight: 500;
+    color: rgba($vigilo-ink, .75);
+    min-height: 1.4em;
+  }
+  .splash-instance {
+    position: absolute;
+    bottom: max(24px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    margin: 0;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba($vigilo-ink, .6);
+  }
+}
+@keyframes splash-progress {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
+@keyframes splash-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+// ---- Loading placeholders (list and map)
+.skeleton-list {
+  // same columns as the observation cards (col s12 l6 xl4)
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 0 .75rem;
+  @media #{$large-and-up} { grid-template-columns: 1fr 1fr; }
+  @media #{$extra-large-and-up} { grid-template-columns: 1fr 1fr 1fr; }
+}
+.skeleton-card {
+  display: flex;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid $vigilo-border;
+  border-radius: $vigilo-radius;
+  overflow: hidden;
+  height: 120px;
+  .skeleton-img {
+    width: 38%;
+    flex: none;
+  }
+  .skeleton-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 16px 0 0;
+    span {
+      height: 12px;
+      border-radius: 6px;
+      &:nth-child(1) { width: 55%; height: 14px; }
+      &:nth-child(2) { width: 80%; }
+      &:nth-child(3) { width: 35%; }
+    }
+  }
+  .skeleton-img, .skeleton-lines span {
+    background: linear-gradient(90deg, #eceef1 0%, #f6f7f9 40%, #eceef1 80%) 0 0 / 300% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+.map-loading {
+  height: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  span {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba($vigilo-ink, .12);
+    border-top-color: $vigilo-ink;
+    border-radius: 50%;
+    animation: map-loading-spin .8s linear infinite;
+  }
+}
+@keyframes map-loading-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #app-splash .splash-content { animation: none; }
+  #app-splash .splash-progress span { animation-duration: 2.4s; }
+  .skeleton-card .skeleton-img, .skeleton-card .skeleton-lines span { animation: none; }
+}
