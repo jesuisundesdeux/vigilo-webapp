@@ -4,6 +4,7 @@ import errorCard from '../html/error';
 import issueCard from '../html/issue-card';
 import issueDetail from '../html/issue-detail';
 import { showIssueMiniMap } from './issue-minimap';
+import { safeToken } from './utils';
 /**
  * Functions for issues list
  */
@@ -44,6 +45,24 @@ export async function viewIssue(token) {
 		showIssueMiniMap($("#modal-issue .issue-minimap")[0], $("#modal-issue .issue-minimap-caption")[0], issue[0]);
 	} else {
 		console.warn("This token does not exist: ", token);
+	}
+}
+
+/**
+ * Re-render one card in place (e.g. after a moderation action), without
+ * reloading the list nor losing the scroll position.
+ */
+export async function refreshIssueCard(issue) {
+	var card = $("#issues .card[onclick=\"viewIssue('" + safeToken(issue.token) + "')\"]").parent();
+	var stillMatchesFilters = (await dataManager.getData()).some((i) => i.token == issue.token);
+	if (stillMatchesFilters) {
+		card.replaceWith(issueCard(issue));
+	} else if (card.length) {
+		// e.g. a moderator listing only the observations to moderate: the card leaves the list
+		card.remove();
+		offset = Math.max(0, offset - 1);
+		// keep the list filled: load the next observation, if any
+		await displayIssues(1);
 	}
 }
 

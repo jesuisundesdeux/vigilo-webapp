@@ -89,6 +89,18 @@ export async function init() {
 
 		$('#modal-filters label').click(updateCheckbox);
 
+		// Moderators: by default only the observations waiting for moderation are listed
+		// (can be changed in the filters)
+		if (LocalDataManager.isAdmin()) {
+			$("#modal-filters input[name=status]").each(function () {
+				$(this).prop('checked', $(this).val() == 'unapproved');
+			});
+			updateCheckbox.call($("#modal-filters input[name=status]").first().closest('label'));
+			// set before the first display, without triggering a re-render
+			dataManager.status = ['unapproved'];
+			M.toast({ html: i18next.t("moderator-default-filter"), displayLength: 6000 });
+		}
+
 
 	} catch (e) {
 		$("#issues .cards-container").empty().append(errorCard(e));
