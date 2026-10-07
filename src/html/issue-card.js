@@ -6,7 +6,7 @@ export default function (issue) {
   return `<div class="col s12 m12 l6 xl4">
   <div class="card horizontal" onclick="viewIssue('${safeToken(issue.token)}')">
       <div class="card-image">
-          <img src="${escapeHtml(issue.img_thumb)}">
+          <img src="${escapeHtml(issue.img_thumb)}" data-fallback="${escapeHtml(issue.img_thumb_panel)}" loading="lazy" decoding="async" alt="">
       </div>
       <div class="card-content">
           <span class="card-title"></span>
