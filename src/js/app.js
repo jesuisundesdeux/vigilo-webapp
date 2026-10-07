@@ -9,6 +9,7 @@ import * as admin from './admin';
 import * as i18n from './i18n';
 import github_issue from '../html/github_issue';
 import M from '@materializecss/materialize';
+import { refreshIssueMiniMap } from './issue-minimap';
 import { escapeHtml } from './utils';
 
 import dataManager from './dataManager';
@@ -84,7 +85,7 @@ export default class VigiloApp {
         M.Tabs.getInstance($("#issues .tabs")).options.onShow = function () { map.focus() }
         await map.init()
 
-        M.Modal.init($("#modal-issue"));
+        M.Modal.init($("#modal-issue"), { onOpenEnd: refreshIssueMiniMap });
         $(window).scroll(() => {
             if (($(window.document.body).height() - $(window).height() - $(window).scrollTop()) < 10) {
                 list.displayIssues(30)

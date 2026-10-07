@@ -32,7 +32,8 @@ function geoplateformeLayer(layer, format, maxNativeZoom) {
  * All providers are keyless. If the default layer (OSM France) can't load any tile,
  * switch to the main OpenStreetMap servers and warn the user.
  */
-export function addBaseLayers(map) {
+export function addBaseLayers(map, options) {
+	options = options || {};
 	var osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">les contributeurs OpenStreetMap</a>';
 	var osmFr = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
 		attribution: osmAttribution + ', tuiles <a href="https://www.openstreetmap.fr">OSM France</a>',
@@ -52,12 +53,14 @@ export function addBaseLayers(map) {
 	var photos = geoplateformeLayer("ORTHOIMAGERY.ORTHOPHOTOS", "image/jpeg", 18);
 
 	(defaultUnavailable ? osm : osmFr).addTo(map);
-	L.control.layers({
-		"Carte": osmFr,
-		"OpenStreetMap": osm,
-		"Plan IGN": planIgn,
-		"Photos": photos
-	}, {}).addTo(map);
+	if (options.control !== false) {
+		L.control.layers({
+			"Carte": osmFr,
+			"OpenStreetMap": osm,
+			"Plan IGN": planIgn,
+			"Photos": photos
+		}, {}).addTo(map);
+	}
 
 	var loaded = 0;
 	var errors = 0;

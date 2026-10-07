@@ -3,6 +3,7 @@ import dataManager from './dataManager';
 import errorCard from '../html/error';
 import issueCard from '../html/issue-card';
 import issueDetail from '../html/issue-detail';
+import { showIssueMiniMap } from './issue-minimap';
 /**
  * Functions for issues list
  */
@@ -40,6 +41,7 @@ export async function viewIssue(token) {
 		M.Materialbox.init($("#modal-issue .materialboxed"));
 		window.history.replaceState({}, '', issue[0].permLink)
 		modal.open()
+		showIssueMiniMap($("#modal-issue .issue-minimap")[0], $("#modal-issue .issue-minimap-caption")[0], issue[0]);
 	} else {
 		console.warn("This token does not exist: ", token);
 	}

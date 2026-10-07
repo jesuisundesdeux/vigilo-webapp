@@ -39,20 +39,12 @@ export default async function (issue) {
           <div class="center-align">
               <img class="materialboxed center-align" src="${escapeHtml(issue.img)}">
           </div>
-          <div class="center-align hide-on-med-and-down">
-              <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${token}')">
-                <img class="center-align" src="${escapeHtml(issue.map)}">
-              </a>
+          <div class="issue-minimap-wrapper">
+              <div class="issue-minimap"></div>
+              <p class="issue-minimap-caption grey-text"></p>
           </div>
       </div>
-      <div class="col m6 hide-on-small-only hide-on-large-only">
-          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${token}')">
-            <div class="center-align">
-                <img class="center-align" src="${escapeHtml(issue.map)}">
-            </div>
-          </a>
-      </div>
-      <div class="col s12 m12 l7 xl8">
+      <div class="col s12 m6 l7 xl8">
           <h6 class="center-align valign-wrapper">
             ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> <span data-i18n="status-unapproved-long">'+i18next.t("status-unapproved-long")+'</span>' : ''}
             ${(issue.status == 1) ? '<i class="material-icons">done_all</i> <span data-i18n="status-resolved-long">'+i18next.t("status-resolved-long")+'</span>' : ''}
@@ -81,13 +73,6 @@ export default async function (issue) {
               ${escapeHtml(issue.address)}
               <a href="https://www.openstreetmap.org/?mlat=${encodeURIComponent(issue.lat_float)}&mlon=${encodeURIComponent(issue.lon_float)}#map=19/${encodeURIComponent(issue.lat_float)}/${encodeURIComponent(issue.lon_float)}" target="_blank" rel="noopener" data-i18n-attr='{"title": "see-on-osm"}' title="${i18next.t("see-on-osm")}"><i class="material-icons tiny">open_in_new</i></a>
           </p>
-      </div>
-      <div class="col s12 hide-on-med-and-up">
-          <a class="waves-effect" data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" onclick="centerOnIssue('${token}')">
-            <div class="center-align">
-                <img class="center-align" src="${escapeHtml(issue.map)}">
-            </div>
-          </a>
       </div>
   </div>
 </div>
