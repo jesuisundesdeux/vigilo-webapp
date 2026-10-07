@@ -18,6 +18,7 @@ export function hideSplash() {
 	}
 	hidden = true;
 	splash.classList.add('splash-hidden');
+	document.documentElement.classList.remove('splash');
 	// removed after the fade out (or right away when there is no transition)
 	var remove = () => splash.parentNode && splash.parentNode.removeChild(splash);
 	splash.addEventListener('transitionend', remove);
