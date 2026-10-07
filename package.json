@@ -12,7 +12,7 @@
   "author": "",
   "license": "",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.15"
   },
   "devDependencies": {
     "css-loader": "^7.1.5",
@@ -22,7 +22,7 @@
     "sass-loader": "^16.0.8",
     "webpack": "^5.111.1",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.6",
+    "webpack-dev-server": "^6.0.0",
     "webpack-pwa-manifest": "^4.3.0"
   },
   "dependencies": {
