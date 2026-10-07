@@ -30,6 +30,8 @@ document.addEventListener('error', (e) => {
 
 // registers the install prompt listener before the app is initialized
 import './install';
+import { hideSplash } from './splash';
 import VigiloApp from './app';
 window.vigilo = new VigiloApp();
-window.vigilo.init()
+// the loading screen goes away when the app is ready, or if it fails to start
+window.vigilo.init().catch((e) => console.error(e)).finally(hideSplash);

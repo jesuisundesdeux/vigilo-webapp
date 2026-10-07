@@ -8,6 +8,25 @@
 </head>
 
 <body>
+  <!-- Loading screen, removed by js/splash.js once the observations are displayed -->
+  <div id="app-splash" role="status" aria-live="polite">
+    <div class="splash-content">
+      <img class="splash-logo" src="${require('../img/vigilo-wordmark.png')}" alt="Vigilo" width="320" height="139">
+      <p class="splash-tagline">À pied ou à vélo, ayez le réflexe Vigilo</p>
+      <div class="splash-progress" aria-hidden="true"><span></span></div>
+      <p class="splash-status">Chargement…</p>
+    </div>
+    <p class="splash-instance"></p>
+  </div>
+  <script>
+    // territory chosen on a previous visit, shown while loading
+    try {
+      var vigiloInstance = JSON.parse(localStorage.getItem('vigilo-instance'));
+      if (vigiloInstance && vigiloInstance.name) {
+        document.querySelector('#app-splash .splash-instance').textContent = vigiloInstance.name;
+      }
+    } catch (e) {}
+  </script>
   ${require('./navs.html')}
 
   <!-- Install the web app (add to home screen), see js/install.js -->

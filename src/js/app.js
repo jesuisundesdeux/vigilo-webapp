@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import * as vigiloconfig from './vigilo-config';
 import * as map from './issue-map';
 import * as list from './issue-list';
@@ -11,6 +12,7 @@ import github_issue from '../html/github_issue';
 import M from '@materializecss/materialize';
 import { refreshIssueMiniMap } from './issue-minimap';
 import { escapeHtml } from './utils';
+import { hideSplash, setSplashStatus } from './splash';
 
 import dataManager from './dataManager';
 import localDataManager from './localDataManager';
@@ -52,9 +54,11 @@ export default class VigiloApp {
 
         M.Modal.init($("#modal-zone"));
         if (vigiloconfig.getInstance() == null) {
+            hideSplash();
             M.Modal.getInstance($("#modal-zone")).open();
             return
         }
+        setSplashStatus(i18next.t("loading-issues"));
 
         /**
          * TITLE
@@ -107,6 +111,7 @@ export default class VigiloApp {
         }
 
         await list.displayIssues(30);
+        hideSplash();
         await map.displayIssues();
 
         // Link bug

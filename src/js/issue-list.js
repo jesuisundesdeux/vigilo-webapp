@@ -18,6 +18,8 @@ export async function cleanIssues() {
 export async function displayIssues(count) {
 	try {
 		var issues = await dataManager.getData();
+		// loading placeholders
+		$("#issues .cards-container .skeleton-list").remove();
 		if (issues.length) {
 			issues = issues.slice(offset, offset + count);
 			offset += issues.length;
