@@ -70,3 +70,9 @@ Il faut directement utiliser la bibliothèque de traduction :
 import i18next from 'i18next';
 var string_translated = i18next.t("issue-bug");
 ```
+
+## Licence
+
+Vigilo webapp est un logiciel libre distribué sous licence [GNU Affero General Public License v3](./LICENSE) (AGPL-3.0-or-later).
+
+Toute instance en ligne d'une version modifiée doit donc proposer à ses utilisateurs le code source de ces modifications (article 13 de l'AGPL). Le lien « Code source » du menu latéral pointe vers ce dépôt : pensez à le faire pointer vers votre propre dépôt si vous déployez une version modifiée.

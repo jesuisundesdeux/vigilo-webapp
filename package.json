@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "",
+  "license": "AGPL-3.0-or-later",
   "engines": {
     "node": ">=22.15"
   },
