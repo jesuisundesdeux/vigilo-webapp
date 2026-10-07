@@ -57,14 +57,14 @@ export async function init() {
 		M.Modal.init($("#modal-filters"));
 		M.Modal.getInstance($("#modal-filters")).options.onCloseStart = function () {
 			dataManager.setFilter({
-				categories: $.map($("#modal-filters input[name=categories]:checked"), (i) => $(i).val()),
+				categories: checkedValues("categories"),
 				dow: $.map($("#modal-filters input[name=dow]:checked"), (i) => $(i).val()),
 				hour: $.map($("#modal-filters input[name=hour]:checked"), (i) => $(i).val()),
 				onlyme: ($.map($("#modal-filters input[name=owner]:checked"), (i) => $(i).val()).indexOf('me') != -1),
 				comment: $("#modal-filters input[name=comment]").val(),
 				status: $.map($("#modal-filters input[name=status]:checked"), (i) => $(i).val()),
 				age: parseInt($.map($("#modal-filters input[name=age]:checked"), (i) => $(i).val())[0]),
-				cities: $.map($("#modal-filters input[name=city]:checked"), (i) => $(i).val()),
+				cities: checkedValues("city"),
 			})
 		}
 
@@ -93,6 +93,19 @@ export async function init() {
 	} catch (e) {
 		$("#issues .cards-container").empty().append(errorCard(e));
 	}
+}
+
+/**
+ * Checked values of a filter group, or [] (= no filtering) when every box is checked,
+ * so that issues whose city/category is missing from the instance configuration stay visible.
+ */
+function checkedValues(name) {
+	var all = $("#modal-filters input[name=" + name + "]");
+	var checked = all.filter(":checked");
+	if (checked.length == all.length) {
+		return [];
+	}
+	return $.map(checked, (i) => $(i).val());
 }
 
 function countIssue(issues, attr, keys) {

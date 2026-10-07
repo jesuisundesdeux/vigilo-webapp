@@ -29,7 +29,7 @@ class DataManager {
         }
       }
       if (this.categories.length > 0) {
-        if (this.categories.indexOf(issue.categorie) == -1) {
+        if (this.categories.indexOf(String(issue.categorie)) == -1) {
           return false;
         }
       }
