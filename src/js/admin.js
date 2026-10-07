@@ -75,6 +75,11 @@ export async function init() {
 
 function initAdmin(){
   window.adminApprove = async function(token, status){
+    // 0 = back to moderation queue, 2 = refused: both hide the observation (issue #110)
+    var confirmKey = {"0": "moderation-confirm-unapprove", "2": "moderation-confirm-refuse"}[status];
+    if (confirmKey !== undefined && !window.confirm(i18next.t(confirmKey))) {
+      return;
+    }
     await vigilo.approve(localDataManager.getAdminKey(), token, status);
     window.location.reload()
   }

@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import L from 'leaflet';
-import { geocoder } from 'leaflet-control-geocoder';
+import { geocoder, geocoders } from 'leaflet-control-geocoder';
 import 'leaflet.fullscreen'; // registers the fullscreenControl map option
 import { locate } from 'leaflet.locatecontrol';
 import { addBaseLayers } from './map-layers';
@@ -268,7 +268,15 @@ async function initFormMap() {
 
   formmap.geocoderCtrl = geocoder({
     position: 'topright',
-    defaultMarkGeocode: false
+    defaultMarkGeocode: false,
+    // Only suggest addresses inside the instance's zone (otherwise homonymous streets
+    // from anywhere in the world are proposed, see issue #121)
+    geocoder: geocoders.nominatim({
+      geocodingQueryParams: {
+        viewbox: [scope.coordinate_lon_min, scope.coordinate_lat_min, scope.coordinate_lon_max, scope.coordinate_lat_max].join(','),
+        bounded: 1
+      }
+    })
   }).on('markgeocode', function (e) {
     setFormMapPoint(e.geocode.center, e.geocode)
   }).addTo(formmap)
@@ -288,7 +296,7 @@ async function initFormMap() {
   $("i.location_searching").append('location_searching')
 
   $("#issue-address").change(() => {
-    if (mapmarker.getLatLng().lat == 0 && mapmarker.getLatLng().lng == 0) {
+    if (!formmap.hasLayer(mapmarker)) {
       formmap.geocoderCtrl._input.value = $("#issue-address").val()
       formmap.geocoderCtrl._geocode()
     }
