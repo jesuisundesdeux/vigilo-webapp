@@ -360,3 +360,27 @@ nav {
     vertical-align: -3px;
   }
 }
+
+// "See with Panoramax" button: spinner while looking for a picture
+.panoramax-btn {
+  position: relative;
+  &.loading {
+    pointer-events: none;
+    cursor: progress;
+  }
+  .panoramax-loader {
+    display: none;
+    position: absolute;
+    inset: 2px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top-color: $vigilo-yellow;
+    border-radius: 50%;
+    animation: panoramax-spin 0.8s linear infinite;
+  }
+  &.loading .panoramax-loader {
+    display: block;
+  }
+}
+@keyframes panoramax-spin {
+  to { transform: rotate(360deg); }
+}

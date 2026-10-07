@@ -47,8 +47,10 @@ export async function viewIssue(token) {
 		// "See with Panoramax" button, only if a street-level picture exists there
 		var button = $("#modal-issue .panoramax-btn");
 		findPanoramaxPicture(issue[0].lat_float, issue[0].lon_float).then((picture) => {
-			if (picture && $.contains(document, button[0])) {
-				button.attr("href", picture.url).removeClass("hide");
+			if (picture) {
+				button.attr({ href: picture.url, title: i18next.t("see-on-panoramax") }).removeClass("loading");
+			} else {
+				button.remove();
 			}
 		});
 	} else {

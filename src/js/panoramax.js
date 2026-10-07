@@ -3,8 +3,8 @@
  * coordinates of an observation, through the federated catalog (all instances).
  */
 const PANORAMAX_URL = "https://explore.panoramax.fr";
-// Search box half-size, in degrees (~30 m)
-const SEARCH_RADIUS_DEG = 0.0003;
+// Search box half-size, in degrees (~50 m, as the Panoramax viewer does)
+const SEARCH_RADIUS_DEG = 0.0005;
 
 var searchEndpoint;
 var cache = {};
@@ -16,7 +16,7 @@ function getSearchEndpoint() {
 			.then((r) => r.json())
 			.then((landing) => {
 				var link = (landing.links || []).find((l) => l.rel == "search");
-				return link ? link.href : PANORAMAX_URL + "/api/search";
+				return link ? new URL(link.href, PANORAMAX_URL + "/api/").href : PANORAMAX_URL + "/api/search";
 			})
 			.catch(() => PANORAMAX_URL + "/api/search");
 	}
@@ -46,7 +46,8 @@ export function findPanoramaxPicture(lat, lon) {
 				var nearest = features.reduce((a, b) => dist(b) < dist(a) ? b : a);
 				return {
 					id: nearest.id,
-					url: PANORAMAX_URL + "/#focus=pic&pic=" + encodeURIComponent(nearest.id) + "&map=19/" + lat + "/" + lon
+					// same link as the "open on Panoramax" one of the Panoramax viewer
+					url: PANORAMAX_URL + "/?pic=" + encodeURIComponent(nearest.id)
 				};
 			})
 			.catch(() => null);
