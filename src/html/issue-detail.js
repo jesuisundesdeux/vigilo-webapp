@@ -37,7 +37,7 @@ export default async function (issue) {
   <div class="row">
       <div class="col s12 m6 l5 xl4">
           <div class="center-align">
-              <img class="materialboxed center-align" src="${escapeHtml(issue.img)}">
+              <img class="materialboxed center-align issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="">
           </div>
           <div class="issue-minimap-wrapper">
               <div class="issue-minimap"></div>
