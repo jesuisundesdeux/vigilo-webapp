@@ -65,6 +65,7 @@
     "moderator-warning": "You are about to enter moderation mode.\n\n1) Respect the privacy of others.\n2) Think before you approve, refuse or delete an observation.\n3) With great power comes great responsibility.\n\nContinue?",
     "link-copied": "Link copied to the clipboard",
     "see-on-osm": "See on OpenStreetMap",
+    "source-code": "Source code (AGPL v3)",
     "nearby-none": "No other observation within 500 m",
     "nearby-one": "1 other observation within 500 m",
     "nearby-other": "{{count}} other observations within 500 m",
