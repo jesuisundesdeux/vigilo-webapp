@@ -79,6 +79,7 @@ export default async function (issue) {
           <p>
               <b><span data-i18n="location">${i18next.t("location")}</span></b><br>
               ${escapeHtml(issue.address)}
+              <a href="https://www.openstreetmap.org/?mlat=${encodeURIComponent(issue.lat_float)}&mlon=${encodeURIComponent(issue.lon_float)}#map=19/${encodeURIComponent(issue.lat_float)}/${encodeURIComponent(issue.lon_float)}" target="_blank" rel="noopener" data-i18n-attr='{"title": "see-on-osm"}' title="${i18next.t("see-on-osm")}"><i class="material-icons tiny">open_in_new</i></a>
           </p>
       </div>
       <div class="col s12 hide-on-med-and-up">
@@ -93,7 +94,7 @@ export default async function (issue) {
 <div class="modal-footer">
 ${btns}
 <a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.mosaic)}"><i class="material-icons center">view_list</i></a>
-<a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.permLink)}"><i class="material-icons center">share</i></a>
+<a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.permLink)}" onclick="return shareIssue(this)"><i class="material-icons center">share</i></a>
 <a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${token}')"><i class="material-icons center">map</i></a>
 <a href="#!" data-i18n-attr='{"title": "close"}' title="${i18next.t("close")}" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
 </div>
@@ -117,4 +118,21 @@ window.deleteIssue = async function(token) {
     $("#modal-issue .modal-content")
       .prepend(errorCard(e))
   })
+}
+
+/**
+ * Share an issue link with the native share sheet when available (mobile),
+ * otherwise copy it to the clipboard (issue #55). Falls back to following the link.
+ */
+window.shareIssue = function (link) {
+  var url = link.href;
+  if (navigator.share) {
+    navigator.share({ title: document.title, url: url }).catch(() => {});
+    return false;
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(() => M.toast({ html: i18next.t("link-copied") }));
+    return false;
+  }
+  return true;
 }
