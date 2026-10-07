@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import M from 'materialize-css';
+import M from '@materializecss/materialize';
 
 
 export class ClassImageDrawable {

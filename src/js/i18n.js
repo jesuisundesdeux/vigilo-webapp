@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import M from 'materialize-css';
+import M from '@materializecss/materialize';
 import localDataManager from './localDataManager';
 import * as vigiloconfig from './vigilo-config';
 
