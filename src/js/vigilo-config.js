@@ -31,7 +31,7 @@ export async function getInstances(all){
 
 }
 
-// Categories of the instance (backend >= 0.0.22: national list minus the ones disabled by the
+// Categories of the instance (backend >= 0.0.23: national list minus the ones disabled by the
 // instance, plus its own). Older instances have no get_categories.php: national list of vigilo-conf.
 function instanceCategoriesUrl() {
     var instance = getInstance();
