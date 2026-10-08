@@ -31,33 +31,62 @@ export async function getInstances(all){
 
 }
 
-export function getCategories() {
+// Categories of the instance (backend >= 0.0.22: national list minus the ones disabled by the
+// instance, plus its own). Older instances have no get_categories.php: national list of vigilo-conf.
+function instanceCategoriesUrl() {
+    var instance = getInstance();
+    if (instance == null || !instance.api_path) {
+        return null;
+    }
+    return decodeURIComponent(instance.api_path) + "/get_categories.php";
+}
 
-    return request(CATEGORIES_URL)
-        .then((cat) => {
-            let toreturn = {}
-            for (var i in cat) {
-                if (cat[i].catdisable !== true) {
-                   cat[i].catdisable = false;
-                }
-                cat[i].i18n = [];
-                for (var j in cat[i]) {
-                    if (j.startsWith("catname_")){
-                        cat[i].i18n[j.replace("catname_", "")] = cat[i][j];
-                    }
-                }
-                toreturn[cat[i].catid] = {
-                    id: cat[i].catid,
-                    name: cat[i].catname,
-                    i18n: cat [i].i18n,
-                    color: cat[i].catcolor,
-                    disable: cat[i].catdisable,
-                    resolvable: RESOLVABLE_CATEGORIES.includes(cat[i].catid),
-                };
+function formatCategories(cat) {
+    let toreturn = {}
+    for (var i in cat) {
+        if (cat[i].catdisable !== true) {
+           cat[i].catdisable = false;
+        }
+        cat[i].i18n = [];
+        for (var j in cat[i]) {
+            if (j.startsWith("catname_")){
+                cat[i].i18n[j.replace("catname_", "")] = cat[i][j];
             }
-            return toreturn;
-        });
+        }
+        toreturn[cat[i].catid] = {
+            id: cat[i].catid,
+            name: cat[i].catname,
+            i18n: cat [i].i18n,
+            color: cat[i].catcolor,
+            disable: cat[i].catdisable,
+            // catresolvable may be missing from older lists: hardcoded list then
+            resolvable: (cat[i].catresolvable !== undefined) ? cat[i].catresolvable === true : RESOLVABLE_CATEGORIES.includes(cat[i].catid),
+            custom: cat[i].catcustom === true,
+        };
+    }
+    return toreturn;
+}
 
+var categoriesPromise = null;
+export function getCategories() {
+    if (categoriesPromise !== null) {
+        return categoriesPromise;
+    }
+    var url = instanceCategoriesUrl();
+    var fromInstance = (url === null) ? Promise.reject() : request(url).then((cat) => {
+        if (!Array.isArray(cat) || cat.length == 0) {
+            throw new Error("no categories");
+        }
+        return cat;
+    });
+    categoriesPromise = fromInstance
+        .catch(() => request(CATEGORIES_URL))
+        .then(formatCategories)
+        .catch((e) => {
+            categoriesPromise = null;
+            throw e;
+        });
+    return categoriesPromise;
 };
 
 var pkg= require('../../package.json');

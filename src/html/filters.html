@@ -1,142 +1,83 @@
 <div id="modal-filters" class="modal modal-fixed-footer bottom-sheet">
   <div class="modal-content">
-    <h5 data-i18n="filters">Filtres</h5>
-    <div class="row">
-      <div id="categories-select" class="col s12 l8">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> <span data-i18n="categories">Catégories</span></h6>
-      </div>
+    <div class="filters-header">
+      <h5 data-i18n="filters">Filtres</h5>
+      <a href="#!" id="filters-reset" class="btn-flat"><i class="material-icons left">restart_alt</i><span data-i18n="filters-reset">Réinitialiser</span></a>
+    </div>
 
-      <div class="col s6 m6 l2">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> <span data-i18n="status">Statut</span></h6>
-        <p>
-          <label>
-            <input type="checkbox" name="status" value="unapproved" checked="checked" />
-            <span data-i18n="status-unapproved">Non modéré</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="unresolved" checked="checked" />
-            <span data-i18n="status-unresolved">Non résolu</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="taked" checked="checked" />
-            <span data-i18n="status-taked">Pris en compte</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="inprogress" checked="checked" />
-            <span data-i18n="status-inprogress">En cours de résolution</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="done" checked="checked" />
-            <span data-i18n="status-done">Indiqué résolu</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="status" value="resolved" checked="checked" />
-            <span data-i18n="status-resolved">Résolu</span>
-          </label>
-        </p>
-      </div>
-      <div class="col s6 m6 l2">
-
-        <h6 class="valign-wrapper" data-i18n="age">Age</h6>
-        <p>
-          <label>
-            <input type="radio" name="age" value="1" />
-            <span data-i18n="age-24h">24 h</span>
-          </label>
-          <br>
-          <label>
-            <input type="radio" name="age" value="3" />
-            <span data-i18n="age-3d"">3 j</span>
-          </label>
-          <br>
-          <label>
-            <input type="radio" name="age" value="7" />
-            <span data-i18n="age-7d">7 j</span>
-          </label>
-          <br>
-          <label>
-            <input type="radio" name="age" value="30" />
-            <span data-i18n="age-30d">30 j</span>
-          </label>
-          <br>
-          <label>
-            <input type="radio" name="age" value="inf" checked="checked" />
-            <span data-i18n="age-all">Tous</span>
-          </label>
-        </p>
-
-      </div>
-      <div id="city-select" class="col s12 l8">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> <span data-i18n="cities">Communes</span></h6>
-        <p></p>
-      </div>
-      <div class="col s6 m6 l2">
-        <h6 class="valign-wrapper"><i class="material-icons">check_box</i> <span data-i18n="all-hours">Toutes les heures</span></h6>
-        <p>
-          <label>
-            <input type="checkbox" name="hour" value="morning" checked="checked" />
-            <span data-i18n="morning">Matin</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="hour" value="afternoon" checked="checked" />
-            <span data-i18n="afternoon">Après-midi</span>
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="hour" value="night" checked="checked" />
-            <span data-i18n="night">Soirée-Nuit</span>
-          </label>
-        </p>
-
-      </div>
-      <div class="col s6 m6 l2">
-        <div>
-          <h6 class="valign-wrapper"><i class="material-icons">check_box</i> <span data-i18n="all-days">Tous les jours</span></h6>
-          <p>
-            <label>
-              <input type="checkbox" name="dow" value="worked" checked="checked" />
-              <span data-i18n="week">En semaine</span>
-            </label>
-            <br>
-            <label>
-              <input type="checkbox" name="dow" value="weekend" checked="checked" />
-              <span data-i18n="week-end">Week-end</span>
-            </label>
-          </p>
+    <div class="filters-grid">
+      <section class="filter-group filter-group-wide">
+        <h6 data-i18n="period">Période</h6>
+        <div class="filter-chips">
+          <label><input type="radio" name="age" value="1d" /><span><span data-i18n="age-24h">24 h</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="7d" /><span><span data-i18n="age-7d">7 jours</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="1m" /><span><span data-i18n="age-1m">1 mois</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="2m" /><span><span data-i18n="age-2m">2 mois</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="3m" /><span><span data-i18n="age-3m">3 mois</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="6m" /><span><span data-i18n="age-6m">6 mois</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="1y" /><span><span data-i18n="age-1y">1 an</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="2y" /><span><span data-i18n="age-2y">2 ans</span><small class="chip-count"></small></span></label>
+          <label><input type="radio" name="age" value="all" checked="checked" /><span><span data-i18n="age-all">Tout</span><small class="chip-count"></small></span></label>
         </div>
-        <div>
-          <h6 class="valign-wrapper" data-i18n="my-reports">Mes signalements</h6>
-          <p>
-            <div class="switch">
-              <label>
-                Off
-                <input type="checkbox" name="owner" value="me">
-                <span class="lever"></span>
-                On
-              </label>
-            </div>
-          </p>
+      </section>
+
+      <section class="filter-group filter-group-wide" data-toggle-group>
+        <h6><span data-i18n="status">Statut</span><a href="#!" class="filter-toggle"></a></h6>
+        <div class="filter-chips">
+          <label><input type="checkbox" name="status" value="unapproved" checked="checked" /><span><span data-i18n="status-unapproved">Non modéré</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="status" value="unresolved" checked="checked" /><span><span data-i18n="status-unresolved">Non résolu</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="status" value="taked" checked="checked" /><span><span data-i18n="status-taked">Pris en compte</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="status" value="inprogress" checked="checked" /><span><span data-i18n="status-inprogress">En cours de résolution</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="status" value="done" checked="checked" /><span><span data-i18n="status-done">Indiqué résolu</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="status" value="resolved" checked="checked" /><span><span data-i18n="status-resolved">Résolu</span><small class="chip-count"></small></span></label>
         </div>
-      </div>
+      </section>
 
-      <div class="col s12 m12 l6">
-        <h6 class="valign-wrapper" data-i18n="comment">Commentaire</h6>
-        <p>
-          <label>
-            <input type="text" name="comment" data-i18n-attr='{"placeholder": "filter-keyword"}' placeholder="Filtrer par mot clé : scooter" value="" minlength="1"/>
-          </label>
-        </p>
-      </div>
+      <section id="categories-select" class="filter-group filter-group-wide" data-toggle-group>
+        <h6><span data-i18n="categories">Catégories</span><a href="#!" class="filter-toggle"></a></h6>
+        <div class="filter-chips"></div>
+      </section>
 
+      <section id="city-select" class="filter-group filter-group-wide" data-toggle-group>
+        <h6><span data-i18n="cities">Communes</span><a href="#!" class="filter-toggle"></a></h6>
+        <div class="filter-chips"></div>
+      </section>
+
+      <section class="filter-group" data-toggle-group>
+        <h6><span data-i18n="hours">Heure</span><a href="#!" class="filter-toggle"></a></h6>
+        <div class="filter-chips">
+          <label><input type="checkbox" name="hour" value="morning" checked="checked" /><span><span data-i18n="morning">Matin</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="hour" value="afternoon" checked="checked" /><span><span data-i18n="afternoon">Après-midi</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="hour" value="night" checked="checked" /><span><span data-i18n="night">Soirée-Nuit</span><small class="chip-count"></small></span></label>
+        </div>
+      </section>
+
+      <section class="filter-group" data-toggle-group>
+        <h6><span data-i18n="days">Jours</span><a href="#!" class="filter-toggle"></a></h6>
+        <div class="filter-chips">
+          <label><input type="checkbox" name="dow" value="worked" checked="checked" /><span><span data-i18n="week">En semaine</span><small class="chip-count"></small></span></label>
+          <label><input type="checkbox" name="dow" value="weekend" checked="checked" /><span><span data-i18n="week-end">Week-end</span><small class="chip-count"></small></span></label>
+        </div>
+      </section>
+
+      <section class="filter-group">
+        <h6 data-i18n="comment">Commentaire</h6>
+        <div class="filter-search">
+          <i class="material-icons">search</i>
+          <input type="search" name="comment" data-i18n-attr='{"placeholder": "filter-keyword"}' placeholder="Filtrer par mot clé : scooter" value="" />
+        </div>
+      </section>
+
+      <section class="filter-group">
+        <h6 data-i18n="my-reports">Mes signalements</h6>
+        <div class="filter-chips">
+          <label><input type="checkbox" name="owner" value="me" /><span><span data-i18n="only-my-reports">Seulement les miens</span><small class="chip-count"></small></span></label>
+        </div>
+      </section>
     </div>
   </div>
   <div class="modal-footer">
-    <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons">check</i></a>
+    <span class="filters-summary" id="filters-summary"></span>
+    <a href="#!" class="modal-close waves-effect waves-light btn"><i class="material-icons left">check</i><span data-i18n="filters-apply">Afficher</span></a>
   </div>
 </div>

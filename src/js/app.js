@@ -63,7 +63,7 @@ export default class VigiloApp {
         /**
          * TITLE
          */
-        $("title").append(" " + vigiloconfig.getInstance().name)
+        document.title = "Vigilo – " + vigiloconfig.getInstance().name
         $("nav .brand-logo").append(" " + vigiloconfig.getInstance().name)
 
 

@@ -160,9 +160,122 @@ nav.nav-extended {
 }
 
 #modal-filters {
-  h6 {
-    cursor: pointer;
+  max-height: 85%;
+
+  .filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    h5 { margin: 0; }
   }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: .5rem 1.5rem;
+    margin-top: 1rem;
+  }
+  .filter-group-wide { grid-column: 1 / -1; }
+
+  .filter-group h6 {
+    display: flex;
+    align-items: baseline;
+    gap: .75rem;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: $vigilo-ink-soft;
+    margin: .75rem 0 .5rem;
+  }
+  .filter-toggle {
+    font-size: .8rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  // Checkboxes and radios shown as toggle chips
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+
+    label { display: inline-flex; }
+    input[type="checkbox"], input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    input + span {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      height: auto;
+      line-height: 1.2;
+      padding: .45rem .8rem;
+      border: 1px solid $vigilo-border;
+      border-radius: 999px;
+      background: #fff;
+      color: $vigilo-ink;
+      font-size: .9rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color .15s, border-color .15s;
+      &::before, &::after { display: none; }
+    }
+    input + span:hover { border-color: $vigilo-ink-soft; }
+    input:checked + span {
+      background: $vigilo-ink;
+      border-color: $vigilo-ink;
+      color: #fff;
+      .chip-count { background: rgba(255, 255, 255, .2); color: #fff; }
+    }
+    input:focus-visible + span { outline: 2px solid $vigilo-link; outline-offset: 2px; }
+  }
+  .chip-count {
+    min-width: 1.5rem;
+    padding: 0 .4rem;
+    border-radius: 999px;
+    background: $vigilo-bg;
+    color: $vigilo-ink-soft;
+    font-size: .75rem;
+    text-align: center;
+    &:empty { display: none; }
+  }
+  .chip-dot {
+    width: .7rem;
+    height: .7rem;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, .15);
+    flex: none;
+  }
+
+  .filter-search {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: 0 .75rem;
+    border: 1px solid $vigilo-border;
+    border-radius: 999px;
+    i { color: $vigilo-ink-soft; }
+    input[type="search"] {
+      border: 0;
+      box-shadow: none;
+      margin: 0;
+      height: 2.4rem;
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 4px 1.5rem;
+  }
+  .filters-summary { color: $vigilo-ink-soft; }
 }
 
 .row {

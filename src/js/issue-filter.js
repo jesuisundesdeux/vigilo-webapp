@@ -1,106 +1,116 @@
 import * as vigiloconfig from './vigilo-config';
 import * as vigilo from './vigilo-api';
 import errorCard from '../html/error';
-import dataManager from './dataManager';
+import dataManager, { filterIssues, issueStatus, periodStart } from './dataManager';
 import LocalDataManager from './localDataManager';
 import i18next from 'i18next';
 import { escapeHtml } from './utils';
 
+const MODAL = "#modal-filters";
+
+function chip(name, value, label, color, checked) {
+	var dot = color ? `<i class="chip-dot" style="background:${escapeHtml(color)}"></i>` : "";
+	return `<label><input type="checkbox" name="${name}" value="${escapeHtml(value)}"${checked ? ' checked="checked"' : ''} />`
+		+ `<span>${dot}<span${label.i18n ? ` data-i18n="${label.i18n}"` : ''}>${escapeHtml(label.text)}</span><small class="chip-count"></small></span></label>`;
+}
+
 export async function init() {
 	try {
-		// Fill category select + count
 		var cats = await vigiloconfig.getCategories();
 		var issues = await vigilo.getIssues();
-		for (var i in cats) {
-			$("#modal-filters #categories-select")
-				.append(`<div class="col s12 m6"><label>
-                  <input type="checkbox" checked="checked" data-i18n="category-name-${i}" name="categories" value="${i}" />
-                  <span>${i18next.t("category-name-"+i)}</span>
-                </label>
-              </div`)
-		}
-		addBadge("categories", countIssue(issues, "categorie", Object.keys(cats)));
 
-		// Fill city select + count
+		// Categories (the disabled ones only if observations use them)
+		var used = countIssue(issues, "categorie", Object.keys(cats));
+		for (var i in cats) {
+			if (cats[i].disable && !used[i]) {
+				continue;
+			}
+			$(MODAL + " #categories-select .filter-chips")
+				.append(chip("categories", i, { i18n: "category-name-" + i, text: i18next.t("category-name-" + i) }, cats[i].color, true));
+		}
+		addCount("categories", used);
+
+		// Cities of the scope
 		var scope = await vigilo.getScope();
 		var cities = (scope.cities || []).sort((a, b) => parseInt(b.population) - parseInt(a.population))
 		if (cities && cities.length > 0 && issues.length && issues[0].cityname !== undefined) {
 			for (var i in cities) {
-				$("#modal-filters #city-select")
-					.append(`<div class="col s12 m6 l4">
-								<label>
-									<input type="checkbox" name="city" value="${escapeHtml(cities[i].name)}" checked="checked" />
-									<span>${escapeHtml(cities[i].name)}</span>
-				  				</label>
-				  			</div>`);
+				$(MODAL + " #city-select .filter-chips").append(chip("city", cities[i].name, { text: cities[i].name }, null, true));
 			}
-			addBadge("city", countIssue(issues, "cityname", cities.map(c => c.name)));
+			addCount("city", countIssue(issues, "cityname", cities.map(c => c.name)));
 		} else {
-			$("#modal-filters #city-select").remove()
+			$(MODAL + " #city-select").remove()
 		}
 
-		// Status count
-		addBadge("status", countIssueStatus(issues));
+		addCount("status", countBy(issues, issueStatus));
+		addCount("age", countIssueAge(issues));
+		addCount("hour", countBy(issues, (issue) => {
+			var hour = issue.date_obj.getHours();
+			return (hour >= 6 && hour <= 12) ? "morning" : ((hour >= 13 && hour <= 19) ? "afternoon" : "night");
+		}));
+		addCount("dow", countBy(issues, (issue) => [0, 6].indexOf(issue.date_obj.getDay()) == -1 ? "worked" : "weekend"));
+		addCount("owner", { me: issues.filter((item) => LocalDataManager.getTokenSecretId(item.token) != undefined).length });
 
-		// Age count
-		addBadge("age", countIssueAge(issues));
+		$(MODAL + " input[name=comment]").val(dataManager.comment);
 
-		// Hour count
-		addBadge("hour", countIssueHour(issues));
-
-		// Day count
-		addBadge("dow", countIssueDay(issues));
-
-		// My issue count
-		$("input[name=owner]").parent().parent().parent().find("h6").append(' (' + countIssueFromMe(issues) + ')');
-
-		M.Modal.init($("#modal-filters"));
-		M.Modal.getInstance($("#modal-filters")).options.onCloseStart = function () {
-			dataManager.setFilter({
+		function readFilters() {
+			return {
 				categories: checkedValues("categories"),
-				dow: $.map($("#modal-filters input[name=dow]:checked"), (i) => $(i).val()),
-				hour: $.map($("#modal-filters input[name=hour]:checked"), (i) => $(i).val()),
-				onlyme: ($.map($("#modal-filters input[name=owner]:checked"), (i) => $(i).val()).indexOf('me') != -1),
-				comment: $("#modal-filters input[name=comment]").val(),
-				status: $.map($("#modal-filters input[name=status]:checked"), (i) => $(i).val()),
-				age: parseInt($.map($("#modal-filters input[name=age]:checked"), (i) => $(i).val())[0]),
+				dow: checkedValues("dow"),
+				hour: checkedValues("hour"),
+				onlyme: $(MODAL + " input[name=owner]").is(":checked"),
+				comment: $(MODAL + " input[name=comment]").val(),
+				status: checkedValues("status"),
+				age: $(MODAL + " input[name=age]:checked").val() || "all",
 				cities: checkedValues("city"),
-			})
+			};
 		}
 
-		function updateCheckbox() {
-			if ($(this).parent().parent().find('input:checked').length == 0) {
-				$(this).parent().parent().find('h6 i').html('check_box_outline_blank');
-			} else if ($(this).parent().parent().find('input:checked').length != $(this).parent().parent().find('input').length) {
-				$(this).parent().parent().find('h6 i').html('indeterminate_check_box');
-			} else {
-				$(this).parent().parent().find('h6 i').html('check_box');
-			}
+		// "All / none" link of each group, and the number of matching observations
+		function refresh() {
+			$(MODAL + " [data-toggle-group]").each(function () {
+				var all = $(this).find("input[type=checkbox]");
+				var allChecked = all.filter(":checked").length == all.length;
+				$(this).find(".filter-toggle").text(i18next.t(allChecked ? "filters-none" : "filters-all"));
+			});
+			var n = filterIssues(issues, readFilters()).length;
+			$("#filters-summary").text(i18next.t("filters-count", { count: n }));
 		}
 
-		$('#modal-filters h6').click(function () {
-			if ($(this).find('i').html() == "check_box") {
-				$(this).parent().find('input').prop('checked', false)
-			} else {
-				$(this).parent().find('input').prop('checked', true)
-			}
-			updateCheckbox.call($(this).parent().find('label').first())
+		$(MODAL).on("change", "input", refresh);
+		$(MODAL + " input[name=comment]").on("input", refresh);
+		$(MODAL + " .filter-toggle").on("click", function (e) {
+			e.preventDefault();
+			var all = $(this).closest("[data-toggle-group]").find("input[type=checkbox]");
+			all.prop("checked", all.filter(":checked").length != all.length);
+			refresh();
+		});
+		$("#filters-reset").on("click", function (e) {
+			e.preventDefault();
+			$(MODAL + " [data-toggle-group] input[type=checkbox]").prop("checked", true);
+			$(MODAL + " input[name=owner]").prop("checked", false);
+			$(MODAL + " input[name=age][value=all]").prop("checked", true);
+			$(MODAL + " input[name=comment]").val("");
+			refresh();
 		});
 
-		$('#modal-filters label').click(updateCheckbox);
+		M.Modal.init($(MODAL));
+		M.Modal.getInstance($(MODAL)).options.onOpenStart = refresh;
+		M.Modal.getInstance($(MODAL)).options.onCloseStart = function () {
+			dataManager.setFilter(readFilters());
+		}
 
 		// Moderators: by default only the observations waiting for moderation are listed
 		// (can be changed in the filters)
 		if (LocalDataManager.isAdmin()) {
-			$("#modal-filters input[name=status]").each(function () {
+			$(MODAL + " input[name=status]").each(function () {
 				$(this).prop('checked', $(this).val() == 'unapproved');
 			});
-			updateCheckbox.call($("#modal-filters input[name=status]").first().closest('label'));
 			// set before the first display, without triggering a re-render
 			dataManager.status = ['unapproved'];
 			M.toast({ html: i18next.t("moderator-default-filter"), displayLength: 6000 });
 		}
-
+		refresh();
 
 	} catch (e) {
 		$("#issues .cards-container").empty().append(errorCard(e));
@@ -110,12 +120,17 @@ export async function init() {
 /**
  * Checked values of a filter group, or [] (= no filtering) when every box is checked,
  * so that issues whose city/category is missing from the instance configuration stay visible.
+ * The dow / hour values are expanded by the data manager ("-" matches nothing).
  */
 function checkedValues(name) {
-	var all = $("#modal-filters input[name=" + name + "]");
+	var all = $(MODAL + " input[name=" + name + "]");
 	var checked = all.filter(":checked");
 	if (checked.length == all.length) {
 		return [];
+	}
+	if (checked.length == 0) {
+		// nothing checked: nothing matches
+		return ["-"];
 	}
 	return $.map(checked, (i) => $(i).val());
 }
@@ -125,113 +140,35 @@ function countIssue(issues, attr, keys) {
 	keys.forEach(element => {
 		count[element] = 0;
 	});
-	issues.reduce(function (accumulator, currentIssue) {
-		accumulator[currentIssue[attr]]++
-		return accumulator
-	}, count);
-	return count;
-}
-
-function countIssueStatus(issues) {
-	var count = {
-		"unknow": 0,
-		"unapproved": 0,
-		"unresolved": 0,
-		"taked": 0,
-		"inprogress": 0,
-		"done": 0,
-		"resolved": 0,
-	};
-	issues.reduce(function (accumulator, currentIssue) {
-		var issue_status = "unknow";
-		if (currentIssue.approved == 0) {
-			issue_status = "unapproved"
-		} else if (currentIssue.approved == 1 && currentIssue.status == 0) {
-			issue_status = "unresolved"
-		} else if (currentIssue.approved == 1 && currentIssue.status == 2) {
-			issue_status = "taked"
-		} else if (currentIssue.approved == 1 && currentIssue.status == 3) {
-			issue_status = "inprogress"
-		} else if (currentIssue.approved == 1 && currentIssue.status == 4) {
-			issue_status = "done"
-		} else if (currentIssue.approved == 1 && currentIssue.status == 1) {
-			issue_status = "resolved"
+	issues.forEach((issue) => {
+		if (count[issue[attr]] !== undefined) {
+			count[issue[attr]]++;
 		}
-
-		accumulator[issue_status]++
-		return accumulator
-	}, count);
+	});
 	return count;
 }
+
+function countBy(issues, key) {
+	var count = {};
+	issues.forEach((issue) => {
+		var k = key(issue);
+		count[k] = (count[k] || 0) + 1;
+	});
+	return count;
+}
+
 function countIssueAge(issues) {
-	var count = {
-		1: 0,
-		3: 0,
-		7: 0,
-		30: 0
-	}
-	var date_now = Date.now();
-	issues.reduce(function (accumulator, currentIssue) {
-		var issue_age = (date_now - currentIssue.date_obj) / (1000 * 60 * 60 * 24);
-		for (var i in accumulator) {
-			if (i > issue_age) {
-				accumulator[i]++
-			}
-		}
-		return accumulator
-	}, count);
-	return count;
-}
-function countIssueHour(issues) {
-	var count = {
-		"morning": 0,
-		"afternoon": 0,
-		"night": 0,
-	}
-	var morning = [6, 7, 8, 9, 10, 11, 12];
-	var afternoon = [13, 14, 15, 16, 17, 18, 19];
-	issues.reduce(function (accumulator, currentIssue) {
-		var hour = currentIssue.date_obj.getHours();
-		if (morning.indexOf(hour) != -1) {
-			accumulator.morning++
-		} else if (afternoon.indexOf(hour) != -1) {
-			accumulator.afternoon++
-		} else {
-			accumulator.night++
-		}
-
-		return accumulator
-	}, count);
-	return count;
-}
-function countIssueDay(issues) {
-	var count = {
-		"worked": 0,
-		"weekend": 0,
-	}
-	var worked = [1, 2, 3, 4, 5];
-
-	issues.reduce(function (accumulator, currentIssue) {
-		var day = currentIssue.date_obj.getDay();
-		if (worked.indexOf(day) != -1) {
-			accumulator.worked++
-		} else {
-			accumulator.weekend++
-		}
-
-		return accumulator
-	}, count);
+	var count = {};
+	$(MODAL + " input[name=age]").each(function () {
+		var start = periodStart($(this).val());
+		count[$(this).val()] = issues.filter((issue) => start === null || issue.date_obj >= start).length;
+	});
 	return count;
 }
 
-function countIssueFromMe(issues) {
-	return issues.filter((item) => {
-		return LocalDataManager.getTokenSecretId(item.token) != undefined
-	}).length
-}
-
-function addBadge(name, count) {
-	for (let [key, value] of Object.entries(count)) {
-		$("#modal-filters input[name='" + name + "']").filter(function () { return $(this).val() == key; }).parent().find('span').append(' (' + value + ')');
-	}
+function addCount(name, count) {
+	$(MODAL + " input[name='" + name + "']").each(function () {
+		var value = count[$(this).val()] || 0;
+		$(this).parent().find(".chip-count").text(value);
+	});
 }
