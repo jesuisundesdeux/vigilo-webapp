@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 import dataManager from './dataManager';
+import * as vigilo from './vigilo-api';
 import errorCard from '../html/error';
 import issueCard from '../html/issue-card';
 import issueDetail from '../html/issue-detail';
@@ -38,8 +39,14 @@ export async function displayIssues(count) {
 
 export async function viewIssue(token) {
 	var modal = M.Modal.getInstance($("#modal-issue")[0]);
-	var issues = await dataManager.getData();
+	// every observation, even one hidden by the filters (e.g. the one just posted)
+	var issues = await vigilo.getIssues();
 	var issue = issues.filter(item => item.token == token);
+	if (issue.length == 0) {
+		// not in the list (yet): ask the backend for this one
+		issue = await vigilo.getIssues({ token: token }).catch(() => []);
+		issue = issue.filter(item => item.token == token);
+	}
 	if (issue.length > 0) {
 		$("#modal-issue").empty().append(await issueDetail(issue[0]));
 		M.Materialbox.init($("#modal-issue .materialboxed"));

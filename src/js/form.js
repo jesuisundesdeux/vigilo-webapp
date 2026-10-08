@@ -586,6 +586,7 @@ $("#modal-form form").submit((e) => {
     firstStep = vigilo.createIssue(data, key);
   }
   
+  var createdToken = null;
   firstStep
     .then((createResponse) => {
       if (createResponse.status != 0 && createResponse.token == undefined) {
@@ -597,14 +598,26 @@ $("#modal-form form").submit((e) => {
         LocalDataManager.setTokenSecretId(createResponse.token, createResponse.secretid);
       }
 
+      createdToken = createResponse.token;
       $("#modal-form-loader .determinate").css("width", "50%");
       var jpegb64 = $("#picture-preview canvas")[0].toDataURL("image/jpeg", JPEG_QUALITY).split(",")[1];
       return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64, isResolution)
     })
     .then(() => {
       $("#modal-form-loader .determinate").css("width", "100%");
+      // Open the observation just posted (the URL may still carry the token of the
+      // observation viewed before)
+      var url = new URL(window.location.href);
+      url.searchParams.delete('token');
+      if (!isResolution && createdToken) {
+        url.searchParams.set('token', createdToken);
+      }
       setTimeout(function () {
-        window.location.reload()
+        if (url.href == window.location.href) {
+          window.location.reload()
+        } else {
+          window.location.href = url.href
+        }
       }, 1000)
     })
     .catch((e) => {
