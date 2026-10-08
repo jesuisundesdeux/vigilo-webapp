@@ -5,22 +5,20 @@
   <meta charset="utf-8">
   <title>Vigilo – statistiques</title>
   <style type="text/css">
+    /* embedded in other sites (vigilo.city): transparent, no scrollbar, the parent page
+       gets the height of the content (postMessage "vigilo-stats-height") */
     html,
     body {
-      padding: 0;
       margin: 0;
-      height: 100%;
+      padding: 0;
       width: 100%;
-    }
-    body {
-      background: #f4f5f7;
-      padding: 16px;
-      box-sizing: border-box;
+      background: transparent !important;
+      overflow: hidden;
     }
   </style>
 </head>
 
-<body>
+<body class="stats-embed">
   ${require('./stats.html')}
 </body>
 

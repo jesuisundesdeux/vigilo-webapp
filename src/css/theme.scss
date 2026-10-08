@@ -288,6 +288,12 @@ nav {
 #stats {
   padding-top: 16px;
 }
+.stats-embed .stats-page {
+  padding: 2px 2px 0;
+  .stats-head { justify-content: flex-end; }
+  .stats-head h5 { display: none; }
+  .stats-card:last-of-type { margin-bottom: 0; }
+}
 .stats-page {
   --stats-accent: #2a78d6;
   --stats-track: #cde2fb;
@@ -388,7 +394,7 @@ nav {
     height: 6px;
     span { display: block; height: 100%; min-width: 2px; background: var(--stats-accent); border-radius: 0 4px 4px 0; }
   }
-  .stats-empty { color: $vigilo-ink-soft; }
+  .stats-empty { color: $vigilo-ink-soft; display: block !important; }
 
   // status: one stacked bar (2px surface gaps), then the legend
   .stats-stack {

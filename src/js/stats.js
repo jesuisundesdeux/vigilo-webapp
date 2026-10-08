@@ -65,6 +65,24 @@ export async function init() {
     initTooltip();
     renderKpis();
     renderPeriod();
+    reportHeight();
+}
+
+/* Embedded (stats-iframe.html in another site): give the parent page the height of the
+   content, so that the iframe has no scrollbar */
+function reportHeight() {
+    if (window.parent === window || !window.ResizeObserver) {
+        return;
+    }
+    var page = document.querySelector('.stats-page');
+    var last = 0;
+    new ResizeObserver(() => {
+        var height = Math.ceil(page.getBoundingClientRect().height);
+        if (height != last) {
+            last = height;
+            window.parent.postMessage({ type: 'vigilo-stats-height', height: height }, '*');
+        }
+    }).observe(page);
 }
 
 /* ---- Headline numbers (whole history) */
@@ -227,7 +245,10 @@ function renderStatus(selected) {
         li.append($('<span class="stats-legend-pct"></span>').text(pct(counts[s], selected.length)));
         legend.append(li);
     });
-    stack.attr('aria-label', described.join(', '));
+    stack.attr('aria-label', described.join(', ')).prop('hidden', described.length == 0);
+    if (!described.length) {
+        legend.append($('<li class="stats-empty"></li>').text(i18next.t('no-issue')));
+    }
 }
 
 function renderHeatmap(selected) {
