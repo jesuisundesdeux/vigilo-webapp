@@ -1,6 +1,101 @@
 import * as vigilo from './vigilo-api';
 import LocalDataManager from './localDataManager';
 
+const DAYS = {
+  worked: [1, 2, 3, 4, 5],
+  weekend: [6, 0],
+};
+const HOURS = {
+  morning: [6, 7, 8, 9, 10, 11, 12],
+  afternoon: [13, 14, 15, 16, 17, 18, 19],
+  night: [20, 21, 22, 23, 0, 1, 2, 3, 4, 5],
+};
+
+/**
+ * Oldest date of a period ("1d", "7d", "1m", "6m", "1y", "2y"...), or null for "all".
+ * Months and years are calendar ones (same day of the month).
+ */
+export function periodStart(period, now) {
+  var m = /^(\d+)([dmy])$/.exec(String(period || ""));
+  if (!m) {
+    return null;
+  }
+  var n = parseInt(m[1]);
+  var start = new Date(now === undefined ? Date.now() : now);
+  if (m[2] == "d") {
+    start.setTime(start.getTime() - n * 24 * 60 * 60 * 1000);
+  } else if (m[2] == "m") {
+    start.setMonth(start.getMonth() - n);
+  } else {
+    start.setFullYear(start.getFullYear() - n);
+  }
+  return start;
+}
+
+export function issueStatus(issue) {
+  if (issue.approved == 0) {
+    return "unapproved";
+  } else if (issue.approved == 1 && issue.status == 0) {
+    return "unresolved";
+  } else if (issue.approved == 1 && issue.status == 2) {
+    return "taked";
+  } else if (issue.approved == 1 && issue.status == 3) {
+    return "inprogress";
+  } else if (issue.approved == 1 && issue.status == 4) {
+    return "done";
+  } else if (issue.approved == 1 && issue.status == 1) {
+    return "resolved";
+  }
+  return "unknow";
+}
+
+function expand(values, map) {
+  var out = [];
+  values.forEach((v) => { out = out.concat(map[v] || []); });
+  return out;
+}
+
+/**
+ * Issues matching the filters ({dow, hour, categories, status, age, onlyme, cities, comment}).
+ * An empty list means "no filtering" for the list filters.
+ */
+export function filterIssues(issues, filters) {
+  var days = expand(filters.dow || [], DAYS);
+  var hours = expand(filters.hour || [], HOURS);
+  var cities = (filters.cities || []).map(i => i.toLowerCase());
+  var comment = (filters.comment || "").toLowerCase();
+  var start = periodStart(filters.age);
+  return issues.filter((issue) => {
+    if ((filters.dow || []).length > 0 && days.indexOf(issue.date_obj.getDay()) == -1) {
+      return false;
+    }
+    if ((filters.hour || []).length > 0 && hours.indexOf(issue.date_obj.getHours()) == -1) {
+      return false;
+    }
+    if ((filters.categories || []).length > 0 && filters.categories.indexOf(String(issue.categorie)) == -1) {
+      return false;
+    }
+    if (cities.length > 0 && (issue.cityname == undefined || cities.indexOf(issue.cityname.toLowerCase()) == -1)) {
+      return false;
+    }
+    if (filters.onlyme && LocalDataManager.getTokenSecretId(issue.token) == undefined) {
+      return false;
+    }
+    if ((filters.status || []).length > 0 && filters.status.indexOf(issueStatus(issue)) == -1) {
+      return false;
+    }
+    if (comment != "" && (issue.comment || "").toLowerCase().indexOf(comment) == -1) {
+      return false;
+    }
+    if (start !== null && issue.date_obj < start) {
+      return false;
+    }
+    return true;
+  });
+}
+
+const KEYS = ['dow', 'hour', 'categories', 'status', 'age', 'onlyme', 'cities', 'comment'];
+
 class DataManager {
   constructor() {
     let parsedUrl = new URL(window.location.href);
@@ -9,131 +104,28 @@ class DataManager {
     this.hour = [];
     this.categories = [];
     this.status = [];
-    this.age = 0;
+    this.age = "all";
     this.onlyme = false;
     this.cities = [];
     this.comment = parsedUrl.searchParams.get("comment") || ""; //HTML get parameter to share URL
   }
+  filters() {
+    var out = {};
+    KEYS.forEach((k) => { out[k] = this[k]; });
+    return out;
+  }
   async getData() {
     var data = await vigilo.getIssues();
-    var date_now = Date.now();
-    data = data.filter((issue) => {
-      if (this.dow.length > 0) {
-        if (this.days.indexOf(issue.date_obj.getDay()) == -1) {
-          return false;
-        }
-      }
-      if (this.hour.length > 0) {
-        if (this.hours.indexOf(issue.date_obj.getHours()) == -1) {
-          return false;
-        }
-      }
-      if (this.categories.length > 0) {
-        if (this.categories.indexOf(String(issue.categorie)) == -1) {
-          return false;
-        }
-      }
-      if (this.cities.length > 0) {
-        if (issue.cityname == undefined){
-          return false;
-        }
-        if (this.cities.indexOf(issue.cityname.toLowerCase()) == -1) {
-          return false;
-        }
-      }
-      if (this.onlyme) {
-        if (LocalDataManager.getTokenSecretId(issue.token) == undefined) {
-          return false;
-        }
-      }
-      if (this.status.length > 0) {
-        var issue_status = "unknow";
-        if (issue.approved == 0) {
-          issue_status = "unapproved"
-        } else if (issue.approved == 1 && issue.status == 0) {
-          issue_status = "unresolved"
-        } else if (issue.approved == 1 && issue.status == 2) {
-          issue_status = "taked"
-        } else if (issue.approved == 1 && issue.status == 3) {
-          issue_status = "inprogress"
-        } else if (issue.approved == 1 && issue.status == 4) {
-          issue_status = "done"
-        } else if (issue.approved == 1 && issue.status == 1) {
-          issue_status = "resolved"
-        }
-        if (this.status.indexOf(issue_status) == -1) {
-          return false;
-        }
-      }
-      if (this.comment != "") {
-        if ((issue.comment || "").toLowerCase().indexOf(this.comment.toLowerCase()) == -1) {
-          return false;
-        }
-      }
-
-      if (this.age != 0) {
-        var issue_age = (date_now - issue.date_obj) / (1000 * 60 * 60 * 24);
-        if (issue_age > this.age) {
-          return false;
-        }
-      }
-      return true;
-    });
-    return data;
+    return filterIssues(data, this.filters());
   }
   setFilter(filters) {
     var change = false;
-    if (filters.dow && filters.dow != this.dow) {
-      this.dow = filters.dow;
-      this.days = [];
-      if (this.dow.indexOf('worked') != -1) {
-        this.days.push(1, 2, 3, 4, 5)
+    KEYS.forEach((k) => {
+      if (filters[k] !== undefined && JSON.stringify(filters[k]) != JSON.stringify(this[k])) {
+        this[k] = filters[k];
+        change = true;
       }
-      if (this.dow.indexOf('weekend') != -1) {
-        this.days.push(6, 0)
-      }
-      change = true;
-    }
-    if (filters.hour && filters.hour != this.hour) {
-      this.hour = filters.hour;
-      this.hours = [];
-      if (this.hour.indexOf('morning') != -1) {
-        this.hours.push(6, 7, 8, 9, 10, 11, 12);
-      }
-      if (this.hour.indexOf('afternoon') != -1) {
-        this.hours.push(13, 14, 15, 16, 17, 18, 19);
-      }
-      if (this.hour.indexOf('night') != -1) {
-        this.hours.push(20, 21, 22, 23, 0, 1, 2, 3, 4, 5);
-      }
-      change = true;
-    }
-    if (filters.categories !== undefined && filters.categories != this.categories) {
-      this.categories = filters.categories;
-      change = true;
-    }
-    if (filters.status !== undefined && filters.status != this.status) {
-      this.status = filters.status;
-      change = true;
-    }
-    if (filters.age !== undefined && filters.age != this.age) {
-      this.age = filters.age;
-      change = true;
-    }
-    if (filters.onlyme !== undefined && filters.onlyme != this.onlyme) {
-      this.onlyme = filters.onlyme;
-      change = true;
-    }
-    if (filters.cities !== undefined && filters.cities != this.cities) {
-      this.cities = filters.cities.map(i => i.toLowerCase());
-      change = true;
-    }
-
-    if (filters.comment !== undefined && filters.comment != this.comment) {
-      this.comment = filters.comment;
-      change = true;
-    }
-
+    });
     if (change) {
       $(this).trigger('filterchange');
     }
