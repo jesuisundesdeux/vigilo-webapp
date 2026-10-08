@@ -34,6 +34,8 @@ modérer quand on a une clé admin/modérateur. Elle parle à l'API de l'**insta
 | `src/css/` | SCSS : Materialize personnalisé, `theme-variables.scss` (couleurs), `theme.scss`, `main.scss` |
 | `src/i18n/fr_FR.json`, `en_US.json` | Traductions (clés identiques dans les deux fichiers) |
 
+Guide détaillé du code (modules, flux de données, pièges connus) : `doc/GUIDE_CODE.md`.
+
 Bibliothèques : jQuery, Materialize (`@materializecss/materialize`), Leaflet, Chart.js, i18next, piexifjs. Pas de
 framework (pas de React/Vue).
 

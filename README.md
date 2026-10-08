@@ -3,6 +3,11 @@
 [![Build & deploy](https://github.com/jesuisundesdeux/vigilo-webapp/actions/workflows/deploy.yml/badge.svg)](https://github.com/jesuisundesdeux/vigilo-webapp/actions/workflows/deploy.yml)
 
 
+## Documentation développeur
+
+Le guide du code ([doc/GUIDE_CODE.md](./doc/GUIDE_CODE.md)) décrit l'architecture, chaque module, le flux des
+données, le formulaire, la modération, les statistiques, les traductions et les pièges connus.
+
 ## Let's go!
 
 ```
