@@ -37,18 +37,20 @@ body {
 @import "spinner.scss";
 @import "image-drawable.scss";
 
+// Side menu: versions at the bottom when there is room, after the other items otherwise
+// (they used to be absolutely positioned and covered the last items on short screens)
 .sidenav {
+  display: flex;
+  flex-direction: column;
   ul.tabs {
     height: 100%;
   }
+  > li { flex: none; }
   #version {
-    position: absolute;
-    bottom: (56px + 48px);
+    margin-top: auto;
     width: 100%;
   }
   #version-server {
-    position: absolute;
-    bottom: 56px;
     width: 100%;
   }
 }

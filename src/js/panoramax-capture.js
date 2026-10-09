@@ -32,7 +32,8 @@ var state = {
 	pixels: null,       // ImageData of the SD image (360° pictures)
 	view: null,         // 360°: {yaw, pitch, fov} in degrees; flat: {cx, cy, zoom}
 	onCapture: null,
-	bounds: null,
+	scopeView: null,
+	dates: { from: null, to: null },  // date filter of the pictures    // default view of the instance: {center, zoom} and/or {bounds}
 	loadId: 0
 };
 var dirty = false;
@@ -237,7 +238,57 @@ function initInteractions() {
 	modal.find(".pnx-prev").on("click", () => goSequence("prev"));
 	modal.find(".pnx-next").on("click", () => goSequence("next"));
 	modal.find(".pnx-capture").on("click", capture);
+	initDateFilter();
 	$(window).on("resize", () => { if (modal.hasClass("open")) resizeCanvas(); });
+}
+
+// ---- Date filter
+
+function dateInput(name) {
+	var value = modal.find(".pnx-date-" + name).val();
+	if (!value) {
+		return null;
+	}
+	// whole days, in local time
+	var date = new Date(value + (name == "to" ? "T23:59:59" : "T00:00:00"));
+	return isNaN(date.getTime()) ? null : date;
+}
+
+function isoDay(date) {
+	return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+}
+
+function applyDateFilter() {
+	state.dates = { from: dateInput("from"), to: dateInput("to") };
+	var years = modal.find(".pnx-date-from").data("years");
+	modal.find(".pnx-dates a").each(function () {
+		$(this).toggleClass("active", String($(this).data("years")) == String(years));
+	});
+	if (state.location) {
+		searchAround(state.location);
+	}
+}
+
+function initDateFilter() {
+	// shortcuts: last N years (0 = all dates)
+	modal.find(".pnx-dates").on("click", "a", function (e) {
+		e.preventDefault();
+		var years = $(this).data("years");
+		var from = null;
+		if (years > 0) {
+			from = new Date();
+			from.setFullYear(from.getFullYear() - years);
+		}
+		modal.find(".pnx-date-from").val(from ? isoDay(from) : "").data("years", years);
+		modal.find(".pnx-date-to").val("");
+		applyDateFilter();
+	});
+	modal.find(".pnx-date-from, .pnx-date-to").on("change", function () {
+		modal.find(".pnx-date-from").data("years", "custom");
+		applyDateFilter();
+	});
+	modal.find(".pnx-date-from").data("years", 0);
+	modal.find(".pnx-dates a[data-years=0]").addClass("active");
 }
 
 // ---- Map of the pictures around
@@ -261,10 +312,14 @@ function drawViewDirection() {
 	L.circleMarker([p.lat, p.lon], { radius: 8, color: "#fff", weight: 2, fillColor: "#e53935", fillOpacity: 1, interactive: false }).addTo(viewLayer);
 }
 
+function pictureDate(picture) {
+	return picture.datetime ? picture.datetime.toLocaleDateString(i18next.language.replace("_", "-")) : "?";
+}
+
 function addPictureMarker(picture) {
 	L.circleMarker([picture.lat, picture.lon], {
 		radius: 6, color: "#1f2328", weight: 1, fillColor: "#fdd835", fillOpacity: 0.95
-	}).on("click", (e) => {
+	}).bindTooltip(pictureDate(picture)).on("click", (e) => {
 		L.DomEvent.stopPropagation(e);
 		showPicture(picture);
 	}).addTo(picturesLayer);
@@ -289,14 +344,20 @@ function searchAround(location) {
 	picturesLayer.clearLayers();
 	setStatus("panoramax-capture-searching");
 	var loadId = ++state.loadId;
-	return findPicturesAround(location[0], location[1]).then((pictures) => {
+	var filtered = state.dates.from || state.dates.to;
+	return findPicturesAround(location[0], location[1], state.dates).then((pictures) => {
 		if (loadId != state.loadId) {
 			return;
 		}
 		state.pictures = pictures;
 		pictures.forEach(addPictureMarker);
 		if (pictures.length == 0) {
-			setStatus("panoramax-capture-none");
+			state.picture = null;
+			state.image = null;
+			viewLayer.clearLayers();
+			modal.find(".pnx-credits").empty();
+			updateButtons();
+			setStatus(filtered ? "panoramax-capture-none-dates" : "panoramax-capture-none");
 			return;
 		}
 		return showPicture(pictures[0]);
@@ -316,7 +377,7 @@ function creditText(picture) {
 	return i18next.t("panoramax-capture-credit", {
 		producer: picture.producer || "?",
 		license: picture.license || "?",
-		date: picture.datetime ? picture.datetime.toLocaleDateString(i18next.language.replace("_", "-")) : "?",
+		date: pictureDate(picture),
 		// drawn on the picture or inserted with .text(): no HTML escaping
 		interpolation: { escapeValue: false }
 	});
@@ -451,6 +512,10 @@ function init() {
 	M.Modal.init(modal[0], {
 		onOpenEnd: () => {
 			map.invalidateSize();
+			// the map had no size while the window was opening
+			if (!state.location) {
+				showScopeView();
+			}
 			resizeCanvas();
 		}
 	});
@@ -458,30 +523,46 @@ function init() {
 	initInteractions();
 }
 
+/** Default view of the instance (center and zoom of the scope, else its bounds) */
+function showScopeView() {
+	var view = state.scopeView;
+	if (!view) {
+		return;
+	}
+	map.invalidateSize();
+	if (view.center) {
+		map.setView(view.center, view.zoom || 13);
+	} else if (view.bounds) {
+		map.fitBounds(view.bounds);
+	}
+}
+
 /**
  * Open the capture window.
  * location: [lat, lon] of the observation, or null to ask the device's position
- * bounds: [[lat, lon], [lat, lon]] of the instance's zone, shown if there is no position
+ * scopeView: default view of the instance, shown if there is no position:
+ *   {center: [lat, lon], zoom, bounds: [[lat, lon], [lat, lon]]} (center or bounds)
  * onCapture(dataUrl, picture, location): called with the captured JPEG
  */
-export function openPanoramaxCapture(location, bounds, onCapture) {
+export function openPanoramaxCapture(location, scopeView, onCapture) {
 	if (!modal) {
 		init();
 	}
 	state.onCapture = onCapture;
+	state.scopeView = scopeView;
 	M.Modal.getInstance(modal[0]).open();
 	if (location) {
 		searchAround(location);
 		return;
 	}
-	if (bounds) {
-		map.fitBounds(bounds);
-	}
+	state.location = null;
+	showScopeView();
 	setStatus("panoramax-capture-locating");
 	currentPosition().then((position) => {
 		if (position) {
 			searchAround(position);
 		} else {
+			showScopeView();
 			setStatus("panoramax-capture-click-map");
 		}
 	});
