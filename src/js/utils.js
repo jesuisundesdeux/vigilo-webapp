@@ -91,6 +91,17 @@ export function distance(lat1, lng1, lat2, lng2) {
 }
 
 /** Address reduced to lowercase letters and digits, without accents (to compare two addresses) */
+/**
+ * Page of an instance on vigilo.city: /fr/instance/<slug of the instance name>/ redirects to the page of the
+ * territory (vigilo-website, scripts/fetch_instances.py). Same slug rules as the site: lower case, no accents,
+ * quotes, slashes, dots and spaces as "-".
+ */
+export function instancePageUrl(name) {
+    var slug = String(name).toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/['"/.]/g, "-").trim().split(/\s+/).join("-").replace(/-{2,}/g, "-").replace(/^-+|-+$/g, "");
+    return "https://vigilo.city/fr/instance/" + encodeURIComponent(slug) + "/";
+}
+
 export function flatString(value) {
     return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }

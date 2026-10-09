@@ -75,12 +75,19 @@ function setStatus(key, options) {
  * Perspective view of an equirectangular picture: yaw/pitch/fov in degrees,
  * yaw 0 being the center of the panorama (the picture's azimuth).
  */
-function renderEquirect(src, out, view, bilinear) {
+function renderEquirect(src, out, view, bilinear, correction) {
 	var W = src.width, H = src.height, sd = src.data, od = out.data;
 	var w = out.width, h = out.height;
 	var t = Math.tan(view.fov * Math.PI / 360);
 	var yaw = view.yaw * Math.PI / 180, pitch = view.pitch * Math.PI / 180;
 	var cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+	// Orientation correction of the picture, as photo-sphere-viewer applies a sphereCorrection: the panorama is
+	// rotated by Euler(tilt, pan, roll, "YXZ"), so the texture is read through the inverse rotation
+	// Rz(-roll) Rx(-tilt) Ry(-pan), in its axes (x = -right, y = up, z = forward)
+	var c = correction;
+	var cpan = c ? Math.cos(c.pan) : 1, span = c ? Math.sin(c.pan) : 0;
+	var ctilt = c ? Math.cos(c.tilt) : 1, stilt = c ? Math.sin(c.tilt) : 0;
+	var croll = c ? Math.cos(c.roll) : 1, sroll = c ? Math.sin(c.roll) : 0;
 	var o = 0;
 	for (var j = 0; j < h; j++) {
 		var y = (1 - 2 * (j + 0.5) / h) * t * h / w;
@@ -90,8 +97,17 @@ function renderEquirect(src, out, view, bilinear) {
 			var x = (2 * (i + 0.5) / w - 1) * t;
 			var x2 = x * cy + z1 * sy;
 			var z2 = -x * sy + z1 * cy;
+			var y2 = y1;
+			if (c) {
+				// photo-sphere-viewer vector (-x2, y1, z2), inverse rotation, back to (x right, y up, z forward)
+				var X = -x2, Y = y1, Z = z2, T;
+				T = X * cpan - Z * span; Z = X * span + Z * cpan; X = T;        // Ry(-pan)
+				T = Y * ctilt + Z * stilt; Z = -Y * stilt + Z * ctilt; Y = T;  // Rx(-tilt)
+				T = X * croll + Y * sroll; Y = -X * sroll + Y * croll; X = T;  // Rz(-roll)
+				x2 = -X; y2 = Y; z2 = Z;
+			}
 			var u = (Math.atan2(x2, z2) / (2 * Math.PI) + 0.5) * W - 0.5;
-			var v = (0.5 - Math.atan2(y1, Math.sqrt(x2 * x2 + z2 * z2)) / Math.PI) * H - 0.5;
+			var v = (0.5 - Math.atan2(y2, Math.sqrt(x2 * x2 + z2 * z2)) / Math.PI) * H - 0.5;
 			if (v < 0) v = 0;
 			if (v > H - 1) v = H - 1;
 			if (bilinear) {
@@ -142,6 +158,27 @@ function clampView() {
 	}
 }
 
+/**
+ * Flat picture in a w x h canvas, straightened by its roll (orientation correction of the picture, see
+ * sphereCorrection() of panoramax.js): the frame is rotated and enlarged to keep the corners covered
+ */
+function drawFlat(c2d, image, view, w, h, correction) {
+	var r = flatRegion(image, view);
+	var roll = correction ? correction.roll : 0;
+	if (!roll) {
+		c2d.drawImage(image, r.sx, r.sy, r.sw, r.sh, 0, 0, w, h);
+		return;
+	}
+	var cos = Math.abs(Math.cos(roll)), sin = Math.abs(Math.sin(roll));
+	var f = Math.max((w * cos + h * sin) / w, (w * sin + h * cos) / h);
+	c2d.save();
+	c2d.translate(w / 2, h / 2);
+	c2d.rotate(roll);
+	c2d.drawImage(image, r.sx + r.sw / 2 - r.sw * f / 2, r.sy + r.sh / 2 - r.sh * f / 2, r.sw * f, r.sh * f,
+		-w * f / 2, -h * f / 2, w * f, h * f);
+	c2d.restore();
+}
+
 function draw() {
 	dirty = false;
 	if (!state.image) {
@@ -149,11 +186,10 @@ function draw() {
 	}
 	if (state.picture.is360) {
 		var out = ctx.createImageData(canvas.width, canvas.height);
-		renderEquirect(state.pixels, out, state.view, false);
+		renderEquirect(state.pixels, out, state.view, false, state.picture.correction);
 		ctx.putImageData(out, 0, 0);
 	} else {
-		var r = flatRegion(state.image, state.view);
-		ctx.drawImage(state.image, r.sx, r.sy, r.sw, r.sh, 0, 0, canvas.width, canvas.height);
+		drawFlat(ctx, state.image, state.view, canvas.width, canvas.height, state.picture.correction);
 	}
 	drawViewDirection();
 }
@@ -459,14 +495,14 @@ function capture() {
 			out.height = Math.round(IMAGE_MAX_SIZE / ASPECT);
 			var pixels = image === state.image ? state.pixels : imagePixels(image);
 			var data = octx.createImageData(out.width, out.height);
-			renderEquirect(pixels, data, view, true);
+			renderEquirect(pixels, data, view, true, picture.correction);
 			octx.putImageData(data, 0, 0);
 		} else {
 			var r = flatRegion(image, view);
 			var scale = Math.min(1, IMAGE_MAX_SIZE / r.sw);
 			out.width = Math.round(r.sw * scale);
 			out.height = Math.round(r.sh * scale);
-			octx.drawImage(image, r.sx, r.sy, r.sw, r.sh, 0, 0, out.width, out.height);
+			drawFlat(octx, image, view, out.width, out.height, picture.correction);
 		}
 		// credits band at the bottom of the picture
 		var band = Math.max(20, Math.round(out.width * 0.03));

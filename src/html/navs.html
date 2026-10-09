@@ -2,12 +2,17 @@
   <nav class="nav-extended yellow darken-1">
     <div class="nav-wrapper">
       <a href="#modal-zone" class="brand-logo center black-text modal-trigger">Vǐgǐlo</a>
-      <a href="#" data-target="mobile-menu" class="sidenav-trigger show-on-medium-and-up black-text"><i
+      <a href="#" data-target="mobile-menu" class="sidenav-trigger show-on-medium-and-up black-text" data-i18n-attr='{"title": "menu"}' title="Menu"><i
           class="material-icons">menu</i></a>
     </div>
     <div class="nav-content">
     </div>
   </nav>
+</div>
+<!-- Moderation mode, shown by js/admin.js -->
+<div id="admin-banner" class="admin-banner" role="status" hidden>
+  <i class="material-icons" aria-hidden="true">stars</i><span data-i18n="moderator-banner">Mode modération activé</span>
+  <a href="#!" class="admin-banner-off" data-i18n="moderator-disable">Désactiver mode admin</a>
 </div>
 <ul class="sidenav" id="mobile-menu">
   <li>
@@ -32,6 +37,8 @@
     </ul>
   </li>
   <li><a id="theme-toggle" class="waves-effect" href="#!"><i class="material-icons">brightness_auto</i><span class="theme-label" data-i18n="theme-auto">Thème : automatique</span></a></li>
+  <li class="hide"><a id="instance-page" class="waves-effect" href="https://vigilo.city/fr/villes/" target="_blank" rel="noopener"><i
+        class="material-icons">public</i><span data-i18n="instance-page">Ce territoire sur vigilo.city</span></a></li>
   <li id="install-app" class="hide"><a class="waves-effect" href="#!"><i
         class="material-icons">add_to_home_screen</i><span data-i18n="install-app">Installer l'appli</span></a></li>
   <li><a class="waves-effect grey-text" target="_blank" href="http://www.jesuisundesdeux.org"><i

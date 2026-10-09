@@ -77,6 +77,42 @@ nav.nav-extended {
   }
 }
 
+// Moderation mode: banner under the top bar, the tabs and the map move down (see js/admin.js)
+$admin-banner-h: 32px;
+.admin-banner {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  height: $admin-banner-h;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: 0 12px;
+  background: #283593;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  i { font-size: 1.1rem; }
+  a { color: #fff; text-decoration: underline; margin-left: .75rem; }
+  &[hidden] { display: none; }
+  @media #{$small-and-down} { top: 56px; }
+}
+html.admin-mode {
+  #content {
+    ul.tabs { top: 64px + $admin-banner-h; }
+    @media #{$small-and-down} {
+      ul.tabs { top: 56px + $admin-banner-h; }
+    }
+    & > div { margin-top: 48px + $admin-banner-h; }
+  }
+  #issues #issues-map { height: calc(100vh - 113px - #{$admin-banner-h}); }
+}
+
 #issues {
   .spinner {
     display: none;
