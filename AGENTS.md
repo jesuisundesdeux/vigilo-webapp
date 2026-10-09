@@ -28,7 +28,8 @@ modérer quand on a une clé admin/modérateur. Elle parle à l'API de l'**insta
 | `src/js/vigilo-config.js` | Instances et catégories (vigilo-conf / instance), version, instance courante |
 | `src/js/vigilo-api.js` | Appels à l'API du backend (`get_issues.php`, `create_issue.php`, `add_image.php`, `approve.php`…) |
 | `src/js/dataManager.js` | Filtres appliqués aux observations (`filterIssues`, `periodStart`, `issueStatus`) |
-| `src/js/issue-filter.js`, `issue-list.js`, `issue-map.js`, `form.js`, `stats.js`, `admin.js` | Filtres, liste, carte, formulaire d'envoi, statistiques, modération |
+| `src/js/issue-filter.js`, `issue-list.js`, `issue-map.js`, `form.js`, `stats.js`, `admin.js` | Filtres, liste, carte, formulaire d'envoi (observation, ou résolution depuis la fiche d'une observation), statistiques, modération |
+| `src/js/similar-issues.js`, `related-issues.js` | Observations similaires (fiche) et observations proposées dans une résolution |
 | `src/js/image-drawable.js`, `panoramax.js`, `panoramax-capture.js` | Éditeur de photo du formulaire ; vues Panoramax (fiche, photo prise dans une vue) |
 | `src/js/localDataManager.js` | Stockage local : jetons/secretid des observations envoyées, clé admin, langue, modes beta/dev |
 | `src/html/` | Gabarits HTML (inclus avec `${require('./x.html')}`, voir `webpack/html-interpolate-loader.js`) et composants JS (`issue-card.js`…) |

@@ -32,6 +32,15 @@ export default async function (issue) {
     
   }
 
+  // Resolution of a published, unresolved observation of a resolvable category (backend >= 0.0.14)
+  var btn_resolve = "";
+  if (issue.approved == 1 && issue.status != 1 && issue.resolvable) {
+    var scopeForResolution = await vigilo.getScope();
+    if (semver.gte(scopeForResolution.backend_version, "0.0.14")) {
+      btn_resolve = `<a href="#!" class="btn waves-effect waves-light resolve-btn" onclick="startResolution('${token}'); return false;"><i class="material-icons left">done_all</i><span>${i18next.t("resolve-issue")}</span></a>\n`;
+    }
+  }
+
   return `
 <div class="modal-content">
   <div class="row">
@@ -83,7 +92,7 @@ export default async function (issue) {
   <div class="similar-issues"></div>
 </div>
 <div class="modal-footer">
-${btns}
+${btn_resolve}${btns}
 <a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" class="waves-effect waves-light btn-floating" href="#!" onclick="document.querySelector('#modal-issue .similar-issues').scrollIntoView({behavior: 'smooth'}); return false;"><i class="material-icons center">view_module</i></a>
 <a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.permLink)}" onclick="return shareIssue(this)"><i class="material-icons center">share</i></a>
 <a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${token}')"><i class="material-icons center">map</i></a>

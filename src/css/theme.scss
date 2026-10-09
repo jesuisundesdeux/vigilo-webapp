@@ -805,3 +805,12 @@ nav {
     .pnx-map { flex: none; min-height: 0; height: 220px; }
   }
 }
+
+// "Resolve" button of the observation window: first of the footer, on the left
+#modal-issue .modal-footer .resolve-btn {
+  float: left;
+  margin: 6px 0 0 8px;
+  border-radius: 999px;
+  background-color: #2e7d32;
+  color: #fff;
+}
