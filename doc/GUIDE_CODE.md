@@ -402,7 +402,8 @@ fenêtres (`modal-trigger`).
 #### `panoramax.js`
 
 - `findPanoramaxPicture(lat, lon)` : interroge le catalogue fédéré `https://explore.panoramax.fr/api` (lien `search`
-  de la page STAC, sinon `/api/search`) avec une boîte de ±0,0005° (~50 m), garde la photo la plus proche. Résout
+  de la page STAC, sinon `/api/search`) avec une boîte de ±0,0005° (~50 m, 100 résultats au plus), garde la photo la **plus récente** (jour de
+  `properties.datetime`), et parmi celles de ce jour la plus proche. Résout
   `{id, url, embedUrl}` ou `null` (aussi en cas d'erreur). Résultats en cache par coordonnées.
 - `openPanoramaxViewer(picture)` : ouvre `#modal-panoramax` avec la visionneuse en iframe ; l'iframe repasse à
   `about:blank` à la fermeture.

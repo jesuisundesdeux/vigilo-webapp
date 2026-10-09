@@ -26,7 +26,7 @@ function getSearchEndpoint() {
 }
 
 /**
- * Nearest Panoramax picture around (lat, lon), or null.
+ * Most recent Panoramax picture around (lat, lon) (the nearest of that day), or null.
  * Resolves to { id, url } where url opens the picture in the Panoramax viewer.
  */
 export function findPanoramaxPicture(lat, lon) {
@@ -36,7 +36,7 @@ export function findPanoramaxPicture(lat, lon) {
 			.then((endpoint) => {
 				var bbox = [lon - SEARCH_RADIUS_DEG, lat - SEARCH_RADIUS_DEG, lon + SEARCH_RADIUS_DEG, lat + SEARCH_RADIUS_DEG]
 					.map((d) => d.toFixed(7)).join(",");
-				return fetch(endpoint + "?bbox=" + bbox + "&limit=20");
+				return fetch(endpoint + "?bbox=" + bbox + "&limit=100");
 			})
 			.then((r) => r.ok ? r.json() : { features: [] })
 			.then((result) => {
@@ -44,15 +44,20 @@ export function findPanoramaxPicture(lat, lon) {
 				if (features.length == 0) {
 					return null;
 				}
+				// the most recent picture around (same day: the nearest), so that the view shows the place as it is now
 				var dist = (f) => Math.pow(f.geometry.coordinates[0] - lon, 2) + Math.pow(f.geometry.coordinates[1] - lat, 2);
-				var nearest = features.reduce((a, b) => dist(b) < dist(a) ? b : a);
+				var day = (f) => {
+					var d = f.properties && f.properties.datetime ? new Date(f.properties.datetime) : null;
+					return d && !isNaN(d) ? d.toISOString().slice(0, 10) : "";
+				};
+				var picked = features.reduce((a, b) => day(b) > day(a) || (day(b) == day(a) && dist(b) < dist(a)) ? b : a);
 				return {
-					id: nearest.id,
+					id: picked.id,
 					// same link as the "open on Panoramax" one of the Panoramax viewer
-					url: PANORAMAX_URL + "/?pic=" + encodeURIComponent(nearest.id),
+					url: PANORAMAX_URL + "/?pic=" + encodeURIComponent(picked.id),
 					// viewer focused on the picture, with the map around (embeddable in an iframe,
 					// as offered by the share menu of Panoramax)
-					embedUrl: PANORAMAX_URL + "/#focus=pic&pic=" + encodeURIComponent(nearest.id) + "&map=18/" + lat + "/" + lon
+					embedUrl: PANORAMAX_URL + "/#focus=pic&pic=" + encodeURIComponent(picked.id) + "&map=18/" + lat + "/" + lon
 				};
 			})
 			.catch(() => null);
