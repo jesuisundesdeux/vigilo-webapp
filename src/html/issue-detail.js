@@ -32,9 +32,11 @@ export default async function (issue) {
     
   }
 
-  // Resolution of a published, unresolved observation of a resolvable category (backend >= 0.0.14)
+  // Resolution of a published observation of a resolvable category, in no resolution yet (status 0: one
+  // resolution per observation, the backend refuses to validate a resolution whose observations are in another one)
+  // (backend >= 0.0.14)
   var btn_resolve = "";
-  if (issue.approved == 1 && issue.status != 1 && issue.resolvable) {
+  if (issue.approved == 1 && issue.status == 0 && issue.resolvable) {
     var scopeForResolution = await vigilo.getScope();
     if (semver.gte(scopeForResolution.backend_version, "0.0.14")) {
       btn_resolve = `<a href="#!" class="btn waves-effect waves-light resolve-btn" onclick="startResolution('${token}'); return false;"><i class="material-icons left">done_all</i><span>${i18next.t("resolve-issue")}</span></a>\n`;
