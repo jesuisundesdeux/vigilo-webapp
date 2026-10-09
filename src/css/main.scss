@@ -152,9 +152,13 @@ html.admin-mode {
   #form-map {
     min-height: 200px;
   }
-  canvas {
-    max-height: 200px;
+  // picture of the form (click: editor), large enough to check it on a phone
+  #picture-preview canvas {
+    display: block;
+    margin: 8px auto 0;
     max-width: 100%;
+    max-height: min(55vh, 420px);
+    border-radius: 8px;
   }
 
   // Observations offered for a resolution (see js/related-issues.js)

@@ -230,7 +230,7 @@ Toutes les URL partent de `decodeURIComponent(getInstance().api_path)`.
 | `getIssues(options)` | `GET get_issues.php?<options>&scope=<scope>` | enrichit chaque observation (§3.3) ; une seule entrée par jeton (`uniqueIssues()` : avant le backend 0.0.27, une observation liée à plusieurs résolutions revenait une fois par résolution ; le statut le plus avancé est gardé, résolue > indiquée résolue > en cours > prise en compte) ; cache par URL (`issue_cache`) |
 | `createIssue(data, key)` | `POST create_issue.php[?key=]` | formulaire urlencodé ; génère `data.token` (8 caractères) si absent |
 | `createResolution(data)` | `POST create_resolution.php` | idem, sans clé |
-| `addImage(token, secretId, data, isResolution)` | `POST add_image.php` | `data` = JPEG en base64 ; choisit la méthode selon `backend_version` (§4.6) |
+| `addImage(token, secretId, data, isResolution, key)` | `POST add_image.php` | `data` = JPEG en base64 ; choisit la méthode selon `backend_version` (§4.6) ; `key` = clé de modération (`&key=`), nécessaire pour remplacer la photo d'une observation approuvée (sinon 403 `ALREADYAPPROVED`) |
 | `acl(key)` | `GET acl.php?key=` | rôle de la clé |
 | `approve(key, token, status)` | `GET approve.php?key=&token=&approved=` | jamais mis en cache (`nocache`) |
 | `deleteIssue(token, secretId)` | `GET delete.php?secretid=&token=` | |
@@ -356,7 +356,16 @@ Le dessin (événements `pointer*`, souris et tactile) s'applique directement su
 au serveur : c'est l'outil qui permet à l'auteur de masquer un visage ou une plaque. Les formes sont prévisualisées en
 repartant de l'image d'avant le geste ; un geste trop court ne dessine rien. Historique : `backHistory` / `upHistory`
 (images `ImageData` + rotation, 10 étapes), la rotation compte comme une étape. Les gestionnaires sont dans l'espace
-de noms `.drawable` : une nouvelle photo remplace l'éditeur de la précédente.
+de noms `.drawable` (et `.drawable-edit` en plein écran) : une nouvelle photo remplace l'éditeur de la précédente.
+
+**Zoom** : en plein écran, un doigt dessine, deux doigts zooment et déplacent la photo (jusqu'à ×8, `MAX_ZOOM`) ; un
+trait commencé par le premier doigt est annulé quand le second se pose (`cancelDraw`). Molette sur ordinateur. Le
+zoom est une transformation CSS du canvas (`translate` + `scale`, `view`) : `point()` lit la position transformée,
+le dessin reste donc exact. Les événements sont écoutés sur l'éditeur (`div`, `touch-action: none`), le dessin ne
+commence que sur le canvas. Le zoom revient à 1 à la fermeture et après une rotation.
+
+Aperçu dans le formulaire : `#picture-preview canvas` sur toute la largeur de la carte, hauteur au plus
+`min(55vh, 420px)`.
 
 #### `admin.js`
 
@@ -565,8 +574,9 @@ Une liste vide signifie « pas de filtre ». Le flux complet :
                               list.displayIssues(30), map.displayIssues(true)
 ```
 
-Les statistiques ne tiennent **pas** compte des filtres. La mini-carte, `centerOnIssue` et `startForm` utilisent les
-observations filtrées (`dataManager.getData()`), `viewIssue` et le formulaire de résolution toutes les observations.
+Les statistiques ne tiennent **pas** compte des filtres. La mini-carte et `centerOnIssue` utilisent les
+observations filtrées (`dataManager.getData()`), `viewIssue`, `startForm` et le formulaire de résolution toutes les
+observations (`vigilo.getIssues()`).
 
 ### 3.5 Images et replis
 
@@ -706,7 +716,8 @@ Au `submit` du formulaire (validation HTML5 des champs `required` d'abord) :
    (`setTokenSecretId`) : c'est ce qui permet ensuite le filtre « Seulement les miens », l'icône « je l'ai fait » et
    la suppression ;
 7. le canvas est exporté en JPEG (qualité `JPEG_QUALITY = 0.9`) et envoyé par `addImage()` :
-   - backend ≥ 0.0.16 : `add_image.php?token=&secretid=&method=base64[&type=resolution]`, champ `imagebin64` ;
+   - backend ≥ 0.0.16 : `add_image.php?token=&secretid=&method=base64[&type=resolution][&key=]`, champ `imagebin64`
+     (la clé en mode modération : sans elle, le backend refuse de remplacer la photo d'une observation approuvée) ;
    - plus ancien : corps binaire brut ;
 8. après 1 s, la page se recharge sur `?token=<nouveau jeton>` (fiche de l'observation ouverte) ; pour une
    résolution, sur la fiche de l'observation de départ.
@@ -720,7 +731,9 @@ formulaire » qui la referme sans perdre la saisie.
 le canvas depuis `issue.img`, avec `crossOrigin = "Anonymous"`), point et adresse, date et heure, catégorie, commentaire
 et explication ; la photo n'est plus obligatoire. L'envoi suit le même
 chemin : `create_issue.php?key=` avec le `token` existant (le backend modifie l'observation), puis la photo du canvas
-est de nouveau envoyée par `add_image.php` avec le `secretid` renvoyé.
+est de nouveau envoyée par `add_image.php` avec le `secretid` renvoyé **et la clé** (`&key=`) : pour une observation
+déjà approuvée, le backend répond sinon 403 `ALREADYAPPROVED`. L'observation est cherchée dans toutes les observations
+(`vigilo.getIssues()`), pas seulement celles qui passent les filtres.
 
 ---
 
@@ -1063,7 +1076,7 @@ documenter la version minimale dans un commentaire.
 | Ordre des catégories | l'objet des catégories est itéré par `catid` croissant : l'ordre de la liste source est perdu (formulaire, filtres), les catégories propres (≥ 1000) se placent après « Autre » |
 | Orientation de la photo | `renderImage` ne lit l'orientation EXIF que si `src` n'est pas une chaîne, ce qui n'arrive jamais : le code de rotation est mort (le navigateur applique déjà l'orientation) |
 | Historique du dessin | `saveImage` appelle `slice(-queue_length)` sans garder le résultat : l'historique d'annulation n'est pas limité ; `startDraw` calcule l'échelle sur `$("canvas").last()` (dernier canvas de la page) au lieu du canvas de l'outil ; des `console.log` restent ; classe `disbabled` (faute de frappe) |
-| Éléments filtrés | `centerOnIssue` et `startForm(token)` cherchent l'observation dans les données **filtrées** : `TypeError` si elle est masquée par les filtres (par exemple ouverte par `?token=`) |
+| Éléments filtrés | `centerOnIssue` cherche l'observation dans les données **filtrées** : `TypeError` si elle est masquée par les filtres (par exemple ouverte par `?token=`) |
 | Erreur de la liste | une erreur dans `displayIssues` vide tout `#issues` (onglets, carte et boutons compris) |
 | Liste vide | à chaque arrivée en bas de page avec une liste filtrée vide, un nouveau message « Aucun signalement » est ajouté |
 | Textes non traduits | `alert` « La localisation doit se trouver dans la zone géographique choisie. » (`form.js`), noms des fonds de carte (`map-layers.js`), attributs `title` « Filtrer » et « Ajouter une observation » (`issues.html`), textes initiaux de l'écran de chargement |
