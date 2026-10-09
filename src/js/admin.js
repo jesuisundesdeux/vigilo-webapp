@@ -37,6 +37,9 @@ export async function init() {
     $("#modal-admin input").val(key);
     count_expected = 0; // No need to wait 10 clicks to open admin modal
   } else {
+    // No key in this browser: discreet entry to enter or generate one
+    $("#admin-status").empty().append('<a class="waves-effect grey-text"><i class="material-icons">vpn_key</i> <span data-i18n="moderator-access">'+i18next.t("moderator-access")+'</span></a>');
+    $("#admin-status a").click(()=>{M.Modal.getInstance($("#modal-admin")).open();})
     return
   }
 
