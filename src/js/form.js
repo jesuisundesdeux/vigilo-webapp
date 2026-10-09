@@ -8,7 +8,7 @@ import piexif from 'piexifjs';
 
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
-import relatedIssueCard from '../html/related-issue-card';
+import { initRelatedIssues, setRelatedReference, resetRelatedIssues, selectedRelatedTokens } from './related-issues';
 import { distance } from './utils';
 import errorCard from '../html/error';
 import ImageDrawable from './image-drawable';
@@ -16,23 +16,30 @@ import { openPanoramaxCapture } from './panoramax-capture';
 import LocalDataManager from './localDataManager';
 import dataManager from './dataManager';
 
-import * as semver from 'semver';
 import i18next from 'i18next';
+
+// Observation the resolution being written was started from (resolution mode), or null
+var resolutionIssue = null;
+
+/** Show the fields of an observation or of a resolution */
+function setFormMode(resolution) {
+  $("#modal-form .onissueonly").toggle(!resolution);
+  $("#modal-form .onresolutiononly").toggle(resolution);
+  // hidden fields must not block the browser's validation
+  $("#issue-cat, #issue-address").prop("required", !resolution);
+}
 
 window.startForm = async function (token) {
   clearForm()
+  setFormMode(false);
   var modal = M.Modal.getInstance($("#modal-form")[0]);
   modal.open();
   await initFormMap();
 
-  $("#issue-cat option[value=resolution]").removeProp("disabled");
-  $(".onissueonly").show();
-  $(".onresolutiononly").hide();
   // "Clear all" only for a new observation
   $("#form-clear").toggle(token === undefined);
 
   if (token !== undefined) {
-    $("#issue-cat option[value=resolution]").prop("disabled", "true");
     var issues = await dataManager.getData();
     var issue = issues.filter(item => item.token == token)[0];
 
@@ -56,7 +63,34 @@ window.startForm = async function (token) {
   }
 }
 
+/**
+ * Resolution of an observation (button of the observation window): picture, date, comment
+ * and the observations it resolves (similar ones offered, see related-issues.js)
+ */
+window.startResolution = async function (token) {
+  var issues = await vigilo.getIssues();
+  var issue = issues.find((i) => i.token == token);
+  if (issue === undefined) {
+    return;
+  }
+  clearForm();
+  resolutionIssue = issue;
+  setFormMode(true);
+  $("#form-clear").hide();
+  var now = new Date();
+  setDate(now);
+  setTime(now.getHours(), now.getMinutes());
+  M.updateTextFields();
+  var issueModal = M.Modal.getInstance($("#modal-issue")[0]);
+  if (issueModal && issueModal.isOpen) {
+    issueModal.close();
+  }
+  M.Modal.getInstance($("#modal-form")[0]).open();
+  await setRelatedReference(issue);
+}
+
 function clearForm() {
+  resolutionIssue = null;
   $('#modal-form form').trigger("reset");
   // hidden inputs are not reset by the form
   $("#issue-token").val("");
@@ -70,9 +104,8 @@ function clearForm() {
   }
   $("#modal-form-loader .determinate").css("width", "10%");
 
-  $("#related-issues").removeClass("invalid").empty().text(i18next.t("related-issues-placeholder"));
-  $(".onissueonly").show();
-  $(".onresolutiononly").hide();
+  $("#related-issues").removeClass("invalid");
+  resetRelatedIssues();
   if (!WE_ARE_ON_A_MOBILE && M.FormSelect.getInstance($("#issue-cat")[0])) {
     M.FormSelect.init($("#issue-cat"));
   }
@@ -144,12 +177,13 @@ $("#panoramax-picture").on("click", async function (e) {
   e.preventDefault();
   var scope = await vigilo.getScope();
   var located = formmap !== undefined && formmap.hasLayer(mapmarker);
-  var location = located ? [mapmarker.getLatLng().lat, mapmarker.getLatLng().lng] : null;
+  var location = resolutionIssue ? [resolutionIssue.lat_float, resolutionIssue.lon_float]
+    : located ? [mapmarker.getLatLng().lat, mapmarker.getLatLng().lng] : null;
   openPanoramaxCapture(location, scopeBounds(scope), (dataUrl, picture, searchLocation) => {
     $("#issue-picture").prop("required", false);
     $("#modal-form .file-path").val(i18next.t("panoramax-capture-file"));
     renderImage(dataUrl);
-    if (formmap === undefined || !formmap.hasLayer(mapmarker)) {
+    if (!resolutionIssue && (formmap === undefined || !formmap.hasLayer(mapmarker))) {
       setFormMapPoint(searchLocation || [picture.lat, picture.lon]);
     }
     // date and time of the Panoramax picture (now if unknown)
@@ -256,7 +290,7 @@ function loadPicture(file, fromCamera, notFromMainInput) {
       }
     }
 
-    if (!located) {
+    if (!located && !resolutionIssue) {
       // No GPS position in the photo: the phone's current position is only
       // relevant if the photo was just taken (issue #128)
       var recent = fromCamera || (photoDate !== null && Math.abs(Date.now() - photoDate.getTime()) < RECENT_PHOTO_MS);
@@ -452,9 +486,8 @@ async function initFormMap() {
 
 
 async function setFormMapPoint(latlng, address) {
-  await findNearestIssue(latlng);
-
-  if (formmap === undefined) {
+  // a resolution has no position of its own
+  if (formmap === undefined || resolutionIssue) {
     return
   }
   var scope = await vigilo.getScope();
@@ -483,32 +516,6 @@ async function setFormMapPoint(latlng, address) {
 }
 
 
-
-function isResolvable(i){
-  return i.approved == 1 && i.status !=1 && i.resolvable;
-}
-
-async function findNearestIssue(latlng){
-  latlng = L.latLng(latlng); // accept [lat, lon] arrays as well as LatLng objects
-  var issue = await vigilo.getIssues();
-  var related_issues = issue.filter(isResolvable).filter((i) => distance(latlng.lat, latlng.lng, i.lat_float, i.lon_float) < 500);
-  related_issues.sort((a,b)=>distance(latlng.lat, latlng.lng, a.lat_float, a.lon_float) - distance(latlng.lat, latlng.lng, b.lat_float, b.lon_float))
-  $("#related-issues").empty();
-  related_issues.forEach((i)=>$("#related-issues").append(relatedIssueCard(i)))
-  M.Materialbox.init($("#related-issues .materialboxed"));
-  $(".related-issue a.btn-floating").click(function(){
-    var icon = $(this).find("i");
-    var div = $(this).parent();
-    var isChecked = div.hasClass("checked");
-    if (isChecked){
-      div.removeClass("checked");
-      icon.empty().append("add")
-    } else {
-      div.addClass("checked");
-      icon.empty().append("remove")
-    }
-  })
-}
 
 function addressFormat(address) {
   if (typeof address == "object") {
@@ -560,16 +567,6 @@ function setTime(hours, minutes) {
   }
 }
 
-$("#modal-form #issue-cat").change(function(){
-  if ($("#issue-cat").val() == "resolution"){
-    $(".onissueonly").hide();
-    $(".onresolutiononly").show();
-  } else {
-    $(".onissueonly").show();
-    $(".onresolutiononly").hide();
-  }
-})
-
 /**
  * On submit, prepare data and send
  */
@@ -591,10 +588,11 @@ $("#modal-form form").submit((e) => {
   data.time.setMinutes(time[1])
   data.time = data.time.getTime()
 
-  var isResolution = $("#issue-cat").val()=="resolution";
+  var isResolution = resolutionIssue !== null;
+  var resolvedToken = isResolution ? resolutionIssue.token : null;
 
   if (isResolution){
-    data.tokenlist = $(".related-issue.checked").map(function(){return $(this).data('token')}).toArray().join(',');
+    data.tokenlist = selectedRelatedTokens().join(',');
     if (data.tokenlist.length == 0){
       M.toast({html: i18next.t('solved-reports-required'), classes: "red"})
       $("#related-issues").addClass("invalid");
@@ -654,7 +652,10 @@ $("#modal-form form").submit((e) => {
       // observation viewed before)
       var url = new URL(window.location.href);
       url.searchParams.delete('token');
-      if (!isResolution && createdToken) {
+      if (isResolution) {
+        // back to the resolved observation
+        url.searchParams.set('token', resolvedToken);
+      } else if (createdToken) {
         url.searchParams.set('token', createdToken);
       }
       setTimeout(function () {
@@ -695,14 +696,7 @@ export async function init() {
       }
     }
 
-    //Resolution as a category
-    var scope = await vigilo.getScope();
-    if (semver.gte( scope.backend_version ,"0.0.14")) {
-      var otherCat = $("#issue-cat option").last().remove();
-      $("#issue-cat").append(`<option value="resolution" data-i18n="category-name-resolution">${i18next.t("category-name-resolution")}</option>`);
-      $("#issue-cat").append(otherCat);
-    }
-
+    initRelatedIssues();
     M.Modal.init($("#modal-form"));
     M.Modal.init($("#modal-form-loader"))
 

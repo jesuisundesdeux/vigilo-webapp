@@ -10,16 +10,23 @@ export const SIMILAR_DISTANCE = 300;
  * nearest first. Each result gets a `similar_distance` (meters).
  */
 export function findSimilarIssues(issue, issues) {
-  var address = flatString(issue.address);
-  var city = flatString(issue.cityname);
   return issues
     .filter((other) => other.token != issue.token && other.categorie == issue.categorie)
     .map((other) => Object.assign({}, other, {
       similar_distance: distance(issue.lat_float, issue.lon_float, other.lat_float, other.lon_float)
     }))
-    .filter((other) => other.similar_distance < SIMILAR_DISTANCE
-      || (address !== "" && flatString(other.address) == address && flatString(other.cityname) == city))
+    .filter((other) => other.similar_distance < SIMILAR_DISTANCE || samePlace(issue.address, issue.cityname, other))
     .sort((a, b) => a.similar_distance - b.similar_distance);
+}
+
+/**
+ * Is `other` at the same address (accents, case and punctuation ignored)?
+ * cityname: also compared when given (the form only knows the address, which includes the city).
+ */
+export function samePlace(address, cityname, other) {
+  var flat = flatString(address);
+  return flat !== "" && flatString(other.address) == flat
+    && (cityname === undefined || flatString(other.cityname) == flatString(cityname));
 }
 
 /** Section of the observation window listing the similar observations */

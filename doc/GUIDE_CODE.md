@@ -81,7 +81,7 @@ stats-iframe.html
 └── stats.html
 ```
 
-Les fichiers JS de `src/html/` (`issue-card.js`, `issue-detail.js`, `related-issue-card.js`, `error.js`,
+Les fichiers JS de `src/html/` (`issue-card.js`, `issue-detail.js`, `error.js`,
 `github_issue.js`) sont des **composants** : des fonctions qui renvoient une chaîne HTML (littéraux de gabarit
 exécutés dans le navigateur, donc toute donnée externe doit y passer par `escapeHtml`).
 
@@ -154,6 +154,7 @@ exécutés dans le navigateur, donc toute donnée externe doit y passer par `esc
 | `vigilo-api.js` | appels à l'API du backend |
 | `utils.js` | requêtes HTTP avec cache, échappement, jetons aléatoires, distance, adresse aplatie |
 | `similar-issues.js` | observations similaires de la fiche d'une observation |
+| `related-issues.js` | observations proposées dans une résolution (filtres, sélection) |
 | `theme.js` | mode sombre : choix automatique / clair / sombre, bouton du menu |
 | `dataManager.js` | état des filtres et filtrage des observations |
 | `localDataManager.js` | stockage local (jetons, clé, langue, modes) |
@@ -432,7 +433,6 @@ retirée après 3 s).
 |---|---|---|
 | `issue-card.js` | `(issue) => string` : carte de la liste, `onclick="viewIssue('<token>')"`, icônes d'état, pastille de catégorie, adresse, date (`data-i18n-date`) | `issue-list.js` |
 | `issue-detail.js` | `async (issue) => string` : contenu de `#modal-issue` (photo, mini-carte, état, référence, catégorie, date, commentaire, explication, adresse + lien OSM, ligne Panoramax, boutons) | `issue-list.js` |
-| `related-issue-card.js` | `(issue) => string` : vignette sélectionnable d'une observation proche (mode résolution) | `form.js` |
 | `error.js` | `(e) => string` : carte d'erreur, détail échappé | liste, filtres, formulaire, fiche |
 | `github_issue.js` | `async () => string` : corps pré-rempli (URL-encodé) d'un ticket GitHub (navigateur, territoire, versions) | `app.js` |
 
@@ -450,6 +450,7 @@ Boutons du pied de la fiche selon le cas :
 | mode modération, `approved == 1` | remettre à modérer (`'0'`) |
 | mode modération, `approved == 2` | approuver, remettre à modérer |
 | auteur (`userCanEdit`) et backend ≥ 0.0.17 | supprimer (`deleteIssue`) |
+| observation publiée, non résolue, catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) |
 | toujours | observations similaires (fait défiler jusqu'à la section `.similar-issues`), partager, voir sur la carte, fermer |
 
 ---
@@ -566,8 +567,7 @@ Gabarit : `src/html/form.html`, dans `#modal-form` (fenêtre plein écran). Code
 ### 4.1 Initialisation (`form.init()`)
 
 - Remplit `#issue-cat` avec les catégories non désactivées (toutes en mode modération), dans l'ordre des `catid`.
-- Si `backend_version >= 0.0.14` : ajoute l'option `resolution` (« Un problème a été corrigé ! ») avant la dernière
-  option (prévue pour « Autre », `catid` 100).
+- `initRelatedIssues()` : boutons de distance et filtres des observations proposées dans une résolution (§4.5).
 - Ordinateur (`!WE_ARE_ON_A_MOBILE`) : `M.Timepicker` sur `#issue-time`, `M.FormSelect` sur `#issue-cat`, affichage
   de l'indication « coller une image ». Mobile : bouton « Prendre une photo » (`<input capture="environment">`),
   `<select>` natif, champs `type="date"` et `type="time"` natifs.
@@ -619,9 +619,7 @@ Panoramax**.
   résultat de géocodage appellent `setFormMapPoint`.
 - Une adresse saisie à la main dans `#issue-address` lance un géocodage tant qu'aucun point n'est placé.
 - `setFormMapPoint(latlng, address)` :
-  1. `findNearestIssue(latlng)` : remplit `#related-issues` avec les observations approuvées, non résolues et de
-     catégorie « résoluble » à moins de 500 m (distance haversine), triées par distance ; un clic sur le bouton d'une
-     vignette la (dé)sélectionne (classe `checked`) ;
+  1. ne fait rien en mode résolution (une résolution n'a pas de position propre) ;
   2. refuse un point hors des bornes du scope (`alert`) ;
   3. place le marqueur (zoom 18) ;
   4. remplit l'adresse : celle du géocodeur si fournie, sinon géocodage inverse ; `addressFormat()` produit
@@ -629,9 +627,32 @@ Panoramax**.
 
 ### 4.5 Mode résolution
 
-Choisir l'option `resolution` masque `.onissueonly` (champ « Commentaire ») et affiche `.onresolutiononly` (vignettes
-des observations proches). À l'envoi, au moins une vignette doit être sélectionnée ; `data.tokenlist` contient leurs
-jetons séparés par des virgules.
+Une résolution se crée **depuis une observation** : le bouton **Résoudre** de sa fiche (`issue-detail.js`, observation
+publiée, non résolue, de catégorie « résoluble », backend ≥ 0.0.14) appelle `window.startResolution(token)`, qui ferme
+la fiche et ouvre le formulaire en mode résolution (`resolutionIssue` = l'observation) :
+
+- `setFormMode(true)` : titre « Nouvelle résolution », `.onissueonly` masqués (position, catégorie, explication),
+  `.onresolutiononly` affichés (carte « Observations résolues »), `#issue-cat` et `#issue-address` plus obligatoires ;
+- photo (mêmes sources et même éditeur, Panoramax autour de l'observation), date et heure (maintenant), commentaire ;
+- `setRelatedReference(issue)` (`related-issues.js`) propose les observations à résoudre.
+
+#### `related-issues.js`
+
+Même logique que les observations similaires (`samePlace()` de `similar-issues.js`) : observations publiées, non
+résolues, de catégorie « résoluble », à moins de la distance choisie **ou** à la même adresse, autour de l'observation de
+départ, qui est sélectionnée (« cette observation »). Filtres modifiables : **catégorie** (celle de l'observation par
+défaut, liste des catégories présentes avec leur nombre), **distance** (`RELATED_DISTANCES` : 50 m à 1 km, 300 m par
+défaut comme `SIMILAR_DISTANCE`), **inclure la même adresse**. Les observations sélectionnées restent affichées quels
+que soient les filtres ; une vignette se (dé)sélectionne au clic (ou Espace / Entrée), l'œil ouvre sa fiche.
+
+| Export | Description |
+|---|---|
+| `initRelatedIssues()` | branche les filtres et les vignettes (appelée par `form.init()`) |
+| `setRelatedReference(issue)` | observation de départ : calcule les candidates (jusqu'à 1 km ou même adresse) |
+| `resetRelatedIssues()` | vide la sélection (`clearForm()`) |
+| `selectedRelatedTokens()` | jetons sélectionnés, envoyés dans `tokenlist` |
+
+À l'envoi, au moins une observation doit être sélectionnée (`solved-reports-required`).
 
 ### 4.6 Validation et envoi
 
@@ -650,7 +671,7 @@ Au `submit` du formulaire (validation HTML5 des champs `required` d'abord) :
    - backend ≥ 0.0.16 : `add_image.php?token=&secretid=&method=base64[&type=resolution]`, champ `imagebin64` ;
    - plus ancien : corps binaire brut ;
 8. après 1 s, la page se recharge sur `?token=<nouveau jeton>` (fiche de l'observation ouverte) ; pour une
-   résolution, sans `token`.
+   résolution, sur la fiche de l'observation de départ.
 
 En cas d'erreur à l'une des étapes, la fenêtre de progression affiche `errorCard(e)` et un bouton « Retour au
 formulaire » qui la referme sans perdre la saisie.
@@ -659,7 +680,7 @@ formulaire » qui la referme sans perdre la saisie.
 
 `startForm(token)` pré-remplit le formulaire depuis l'observation : jeton caché `#issue-token`, photo (rechargée dans
 le canvas depuis `issue.img`, avec `crossOrigin = "Anonymous"`), point et adresse, date et heure, catégorie, commentaire
-et explication ; la photo n'est plus obligatoire et l'option `resolution` est désactivée. L'envoi suit le même
+et explication ; la photo n'est plus obligatoire. L'envoi suit le même
 chemin : `create_issue.php?key=` avec le `token` existant (le backend modifie l'observation), puis la photo du canvas
 est de nouveau envoyée par `add_image.php` avec le `secretid` renvoyé.
 
@@ -937,7 +958,7 @@ Deux motifs existent dans le code :
   return nouvelle.catch(() => ancienComportement());
   ```
 
-- **Selon la version** (comme `addImage`, l'option de résolution, le bouton de suppression) :
+- **Selon la version** (comme `addImage`, le bouton Résoudre, le bouton de suppression) :
 
   ```js
   var scope = await vigilo.getScope();
@@ -981,9 +1002,9 @@ documenter la version minimale dans un commentaire.
 ### 12.3 Compatibilité avec les anciens backends
 
 - Points de repli existants : `get_categories.php` (0.0.23), `catresolvable` (liste en dur), `add_image.php` binaire
-  avant 0.0.16, option de résolution (0.0.14), suppression par l'auteur (0.0.17), filtre des communes (seulement si
+  avant 0.0.16, bouton Résoudre (0.0.14), suppression par l'auteur (0.0.17), filtre des communes (seulement si
   `cityname` et `scope.cities` existent).
-- `semver.gte(scope.backend_version, ...)` dans `form.init()`, `issue-detail.js` et `addImage()` lève une exception si
+- `semver.gte(scope.backend_version, ...)` dans `issue-detail.js` et `addImage()` lève une exception si
   la version est absente ou mal formée (`form.init()` affiche alors une carte d'erreur en tête de la liste).
 
 ### 12.4 Bogues et incohérences relevés (non corrigés)
@@ -993,7 +1014,7 @@ documenter la version minimale dans un commentaire.
 | Catégories avec `?instance=` | `i18n.init()` appelle `getCategories()` **avant** le traitement de `?instance=` ; la promesse mise en cache est celle de l'instance précédente (ou la liste nationale s'il n'y en avait pas). Avec un lien `?instance=` vers un autre territoire, et dans `stats-iframe.html` sur vigilo.city, les catégories propres (≥ 1000) de l'instance n'ont ni nom ni couleur, et les catégories désactivées/ajoutées sont fausses jusqu'au rechargement suivant |
 | Modérateurs et `get_issues.php` | `getIssues` n'envoie jamais la clé : sans le réglage « Afficher les observations non modérées » de l'instance, un modérateur ne voit pas les observations à modérer (son filtre par défaut donne une liste vide), et les observations refusées (approved 2) ne sont jamais listées (les boutons prévus pour elles dans `issue-detail.js` sont inaccessibles) |
 | Permalien | `permLink` utilise `location.host` + `/` : sous `/develop` (ou avec `PATH_PREFIX`), le lien de partage pointe vers la racine |
-| Ordre des catégories | l'objet des catégories est itéré par `catid` croissant : l'ordre de la liste source est perdu (formulaire, filtres), les catégories propres (≥ 1000) se placent après « Autre », et l'option « résolution » est insérée avant la dernière option, qui n'est « Autre » que sans catégorie propre |
+| Ordre des catégories | l'objet des catégories est itéré par `catid` croissant : l'ordre de la liste source est perdu (formulaire, filtres), les catégories propres (≥ 1000) se placent après « Autre » |
 | Orientation de la photo | `renderImage` ne lit l'orientation EXIF que si `src` n'est pas une chaîne, ce qui n'arrive jamais : le code de rotation est mort (le navigateur applique déjà l'orientation) |
 | Historique du dessin | `saveImage` appelle `slice(-queue_length)` sans garder le résultat : l'historique d'annulation n'est pas limité ; `startDraw` calcule l'échelle sur `$("canvas").last()` (dernier canvas de la page) au lieu du canvas de l'outil ; des `console.log` restent ; classe `disbabled` (faute de frappe) |
 | Éléments filtrés | `centerOnIssue` et `startForm(token)` cherchent l'observation dans les données **filtrées** : `TypeError` si elle est masquée par les filtres (par exemple ouverte par `?token=`) |

@@ -148,4 +148,20 @@ html[data-theme="dark"] {
   // Picture from a Panoramax view
   #modal-panoramax-capture, #modal-panoramax-capture .modal-content { background: $dark-bg; }
   #modal-panoramax-capture .pnx-hint, #modal-panoramax-capture .pnx-credits { color: $dark-ink-soft; }
+
+  // Observations offered for a resolution
+  #modal-form #related-panel {
+    .related-filter { color: $dark-ink-soft; }
+    .related-filter select { border-color: $dark-border; background: $dark-surface; color: $dark-ink; }
+    .related-distance a { border-color: $dark-border; color: $dark-ink; }
+    .related-distance a.active { background: #fdd835; border-color: #fdd835; color: #1f2328; }
+    .related-summary { color: $dark-ink-soft; }
+  }
+  #modal-form #related-issues .related-issue {
+    background: $dark-surface-2;
+    border-color: $dark-border;
+    .related-issue-meta, .related-issue-address, .related-issue-view { color: $dark-ink-soft; }
+    .related-issue-check { border-color: $dark-border; }
+    &.checked { border-color: #fdd835; box-shadow: inset 0 0 0 1px #fdd835; }
+  }
 }
