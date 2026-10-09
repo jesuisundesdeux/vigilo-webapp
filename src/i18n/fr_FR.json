@@ -207,6 +207,7 @@
         "cancel": "Annuler"
     },
     "moderator-become": "Devenir modérateur",
+    "moderator-access": "Accès modérateur",
     "moderator-text": "Avant toute chose, vous devez prendre contact avec l'association gérant votre zone géographique dans Vigilo. Pour devenir modérateur, vous devez posséder une clé d'accès. Insérez la clé fournie par un modérateur dans le champs ci-dessous ou cliquez sur \"générer\" et transmettez cette clé à un modérateur. Votre autorisation d'accès au rôle de modérateur doit être validée par un modérateur.",
     "your-access-key": "Votre clé d'accès",
     "generate-key": "Générer une clé",

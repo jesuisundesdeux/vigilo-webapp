@@ -696,8 +696,11 @@ est de nouveau envoyée par `add_image.php` avec le `secretid` renvoyé.
 ### 5.1 Clé et rôle (`admin.js`)
 
 - La fenêtre `#modal-admin` (titre `moderator-become`, texte `moderator-text`, champ `#role_key`, boutons
-  `#generate-key` et `#save-key`) s'ouvre après **10 clics** sur l'avatar Vigilo du menu latéral
-  (`#mobile-menu a[href='#user']`), ou au premier clic si une clé est déjà enregistrée.
+  `#generate-key` et `#save-key`) s'ouvre par l'entrée de menu **« Accès modérateur »** (`#admin-status`,
+  `moderator-access`, affichée quand aucune clé n'est enregistrée dans ce navigateur), ou après **10 clics** sur
+  l'avatar Vigilo du menu latéral (`#mobile-menu a[href='#user']`, au premier clic si une clé est déjà enregistrée).
+  La clé est propre au navigateur et au site (`localStorage`) : un autre appareil, un autre navigateur ou des données
+  effacées n'en ont pas.
 - « Enregistrer » stocke la clé (`localDataManager.setAdminKey`) et recharge la page. « Générer une clé » remplit le
   champ avec 40 caractères aléatoires (voir §12 : ce bouton n'a plus de sens avec les backends actuels).
 - Au démarrage, s'il y a une clé : `acl.php?key=` donne le rôle.

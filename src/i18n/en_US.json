@@ -197,6 +197,7 @@
     "stats-busiest": "Busiest time: {{what}}",
     "issues-count": "reports received",
     "moderator-become": "Become moderator",
+    "moderator-access": "Moderator access",
     "moderator-text": "First of all, you must contact the association managing your geographical area in Vigilo. To become a moderator, you must have an access key. Insert the key provided by a moderator in the field below or click on \"generate\" and pass this key to a moderator. Your authorization to access the role of moderator must be validated by a moderator.",
     "your-access-key": "Your access key",
     "generate-key": "Generate a key",
