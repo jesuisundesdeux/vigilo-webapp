@@ -8,6 +8,7 @@ import * as navs from './navs';
 import * as stats from './stats';
 import * as admin from './admin';
 import * as i18n from './i18n';
+import { initTheme } from './theme';
 import github_issue from '../html/github_issue';
 import M from '@materializecss/materialize';
 import { refreshIssueMiniMap } from './issue-minimap';
@@ -20,6 +21,8 @@ import localDataManager from './localDataManager';
 export default class VigiloApp {
     async init() {
         await i18n.init();
+        // light / dark theme (side menu item)
+        initTheme();
 
         /**
         * SELECT ZONE MODAL

@@ -31,7 +31,7 @@ modérer quand on a une clé admin/modérateur. Elle parle à l'API de l'**insta
 | `src/js/issue-filter.js`, `issue-list.js`, `issue-map.js`, `form.js`, `stats.js`, `admin.js` | Filtres, liste, carte, formulaire d'envoi, statistiques, modération |
 | `src/js/localDataManager.js` | Stockage local : jetons/secretid des observations envoyées, clé admin, langue, modes beta/dev |
 | `src/html/` | Gabarits HTML (inclus avec `${require('./x.html')}`, voir `webpack/html-interpolate-loader.js`) et composants JS (`issue-card.js`…) |
-| `src/css/` | SCSS : Materialize personnalisé, `theme-variables.scss` (couleurs), `theme.scss`, `main.scss` |
+| `src/css/` | SCSS : Materialize personnalisé, `theme-variables.scss` (couleurs), `theme.scss`, `dark.scss` (mode sombre), `main.scss` |
 | `src/i18n/fr_FR.json`, `en_US.json` | Traductions (clés identiques dans les deux fichiers) |
 
 Guide détaillé du code (modules, flux de données, pièges connus) : `doc/GUIDE_CODE.md`.
@@ -54,7 +54,7 @@ framework (pas de React/Vue).
   clés `_one` / `_other`. Éditer ces JSON en insérant des lignes (ne pas reformater tout le fichier).
 - **Images** : une image en erreur passe sur `data-fallback`, puis sur l'image par défaut
   (`src/img/photo-missing.svg`) — voir `main.js`.
-- **Mobile d'abord** : vérifier l'affichage à 390 px de large.
+- **Mobile d'abord** : vérifier l'affichage à 390 px de large, en thème clair et sombre (`dark.scss`).
 - **Langue** : interface et messages de commit en **français** ; commentaires du code en anglais, courts.
 
 ## Construire et tester
