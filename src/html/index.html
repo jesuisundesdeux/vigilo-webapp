@@ -8,6 +8,15 @@
   <link rel="icon" type="image/png" href="${require('../img/favicon.png')}">
   <link rel="apple-touch-icon" type="image/png" href="${require('../img/icon.png')}">
   <meta name="theme-color" content="#fdd835">
+  <script>
+    // Light / dark theme before the first paint (choice in the side menu, see js/theme.js)
+    (function () {
+      var pref = 'auto';
+      try { pref = localStorage.getItem('vigilo-theme') || 'auto'; } catch (e) {}
+      var dark = pref === 'dark' || (pref === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
   <!-- Loading screen styles: inline so that it is complete at the first paint, in the same
        yellow as the launch screen of the installed app (manifest background_color) -->
   <style>

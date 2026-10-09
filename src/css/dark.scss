@@ -1,0 +1,147 @@
+// Dark theme: html[data-theme="dark"], set by the inline script of index.html and js/theme.js
+// (choice "auto" follows the system setting). Overrides the light theme of theme.scss / Materialize.
+
+$dark-bg: #121417;
+$dark-surface: #1c1f24;
+$dark-surface-2: #262a31;
+$dark-border: #343a43;
+$dark-ink: #e6e8eb;
+$dark-ink-soft: #a0aab6;
+$dark-link: #7ab3ff;
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  body { background: $dark-bg; color: $dark-ink; }
+  a { color: $dark-link; }
+  .grey-text { color: $dark-ink-soft !important; }
+  .black-text { color: $dark-ink !important; }
+  h1, h2, h3, h4, h5, h6, label, .card-title { color: $dark-ink; }
+  blockquote { color: $dark-ink; }
+
+  // Top bar: stays yellow (brand), darker shade
+  nav.yellow { background-color: #c9a400 !important; }
+  nav .brand-logo, nav .sidenav-trigger i { color: #111 !important; }
+
+  // List / Map tabs
+  #content ul.tabs {
+    background: rgba($dark-surface, 0.92);
+    box-shadow: 0 1px 0 $dark-border;
+    .tab a { color: $dark-ink-soft !important; &.active { color: $dark-ink !important; } }
+  }
+
+  // Cards
+  .card, .card-panel, .card .card-content, .card .card-action {
+    background-color: $dark-surface;
+    color: $dark-ink;
+    border-color: $dark-border !important;
+  }
+  .card .card-action { border-top-color: $dark-border; }
+  .cards-container .card.horizontal { border-color: $dark-border; }
+  .skeleton-card { background: $dark-surface; border-color: $dark-border; }
+  .skeleton-card * { background: linear-gradient(90deg, #262a31 0%, #30353d 40%, #262a31 80%) 0 0 / 300% 100% !important; }
+
+  // Modals
+  .modal, .modal .modal-footer, .modal.modal-fixed-footer .modal-footer {
+    background-color: $dark-surface;
+    color: $dark-ink;
+  }
+  .modal .modal-footer { border-top-color: $dark-border; }
+  #modal-form, #modal-form .modal-content { background: $dark-bg; }
+  #modal-issue .modal-content {
+    h6 { background: rgba(#fdd835, 0.16); color: $dark-ink; }
+    p b { color: $dark-ink-soft; }
+    img.issue-photo { background: $dark-surface-2; }
+  }
+  .similar-issues {
+    border-top-color: $dark-border;
+    .similar-issue { border-color: $dark-border; color: $dark-ink; background: $dark-surface-2; }
+    .similar-issue-caption { color: $dark-ink-soft; }
+  }
+
+  // Floating buttons
+  .btn-floating, .btn, .btn-small, .btn-large { background-color: $dark-surface-2; color: $dark-ink; }
+  .btn-floating i, .btn i { color: $dark-ink; }
+  .btn-floating.grey { background-color: #4a515b !important; }
+  .btn-floating.yellow, .btn-floating.yellow i, .btn.yellow, .btn.yellow i { color: #111 !important; }
+  #issues > .fixed-action-btn a.btn-floating.blue { background-color: $dark-surface-2 !important; i { color: $dark-ink; } }
+  .btn-flat { color: $dark-ink; }
+
+  // Side menu
+  .sidenav { background-color: $dark-surface; }
+  .sidenav li > a, .sidenav ul.tabs .tab a, .sidenav ul.tabs { color: $dark-ink !important; background-color: transparent; }
+  .sidenav li > a > i.material-icons, .sidenav ul.tabs .tab a i.material-icons { color: $dark-ink-soft; }
+  .sidenav ul.tabs .tab a.active { background: rgba(#fdd835, 0.22); i.material-icons { color: $dark-ink; } }
+  .sidenav #version a, .sidenav #version-server a { color: $dark-ink-soft !important; }
+  .sidenav .divider, .divider { background-color: $dark-border; }
+
+  // Collections (zone / language pickers)
+  .collection { border-color: $dark-border; }
+  .collection .collection-item {
+    background-color: $dark-surface;
+    color: $dark-ink;
+    border-bottom-color: $dark-border;
+    &.active { background-color: #fdd835; color: #111; }
+  }
+  a.collection-item:not(.active):hover { background-color: $dark-surface-2; }
+
+  // Forms
+  input:not([type]), input[type=text]:not(.browser-default), input[type=email]:not(.browser-default),
+  input[type=number]:not(.browser-default), input[type=date]:not(.browser-default),
+  input[type=time]:not(.browser-default), input[type=search]:not(.browser-default),
+  input[type=password]:not(.browser-default), textarea.materialize-textarea {
+    color: $dark-ink;
+    border-bottom-color: $dark-ink-soft;
+  }
+  .input-field > label, .input-field .prefix, .helper-text { color: $dark-ink-soft; }
+  .select-wrapper input.select-dropdown { color: $dark-ink; }
+  .select-wrapper .caret { fill: $dark-ink; }
+  .dropdown-content { background-color: $dark-surface-2; li > a, li > span { color: $dark-ink; } li:hover, li.selected { background-color: #30353d; } }
+  [type="checkbox"] + span:not(.lever), [type="radio"] + span { color: $dark-ink; }
+  [type="checkbox"]:not(:checked) + span:not(.lever):before { border-color: $dark-ink-soft; }
+  .switch label { color: $dark-ink-soft; }
+
+  // Filters (chips)
+  #modal-filters .filter-chips input + span {
+    background: $dark-surface-2;
+    color: $dark-ink;
+    border-color: $dark-border;
+  }
+  #modal-filters .filter-chips input:checked + span {
+    background: #fdd835; color: #111; border-color: #fdd835;
+    .chip-count { background: rgba(0, 0, 0, .15); color: #111; }
+  }
+  #modal-filters .chip-count { background: $dark-bg; color: $dark-ink-soft; }
+  #modal-filters .filter-search { border-color: $dark-border; }
+  .filters-summary { color: $dark-ink-soft; }
+
+  // Stats
+  .stats-page {
+    --stats-track: #253447;
+    .stats-tile, .stats-card, .stats-periods { background: $dark-surface; border-color: $dark-border; }
+    .stats-periods button { color: $dark-ink-soft; &.active { background: $dark-ink; color: $dark-bg; } }
+    .stats-tile-label, .stats-tile-sub, .stats-card-sub, .stats-legend-pct, .stats-empty { color: $dark-ink-soft; }
+    .stats-tile-value, .stats-card h6, .stats-rank-name, .stats-rank-value { color: $dark-ink; }
+    .stats-rank:hover, .stats-rank:focus-visible { background: $dark-surface-2; }
+  }
+
+  // Install banner, toasts
+  .install-banner { background: $dark-surface; color: $dark-ink; border-color: $dark-border; }
+  .toast { background-color: $dark-surface-2; color: $dark-ink; }
+
+  // Maps: darker tiles, dark controls and popups
+  .leaflet-container { background: #1a1d21; }
+  .leaflet-tile-pane { filter: brightness(0.72) contrast(1.12) saturate(0.85); }
+  .leaflet-bar a, .leaflet-control-layers, .leaflet-control-geocoder, .leaflet-control-geocoder-form input {
+    background-color: $dark-surface;
+    color: $dark-ink;
+    border-color: $dark-border;
+  }
+  .leaflet-control-layers-expanded { color: $dark-ink; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: $dark-surface; color: $dark-ink; }
+  .leaflet-control-attribution { background: rgba($dark-surface, 0.8) !important; color: $dark-ink-soft; a { color: $dark-link; } }
+  .issue-minimap-wrapper .issue-minimap { border-color: $dark-border; }
+
+  // Pictures: slightly dimmed, not the photos themselves
+  .user-view .background img { filter: brightness(0.55); }
+}

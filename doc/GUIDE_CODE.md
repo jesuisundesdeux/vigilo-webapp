@@ -89,7 +89,8 @@ exécutés dans le navigateur, donc toute donnée externe doit y passer par `esc
 
 1. Le navigateur affiche `index.html` : l'écran de chargement `#app-splash` (styles en ligne, fond jaune `#fdd835`,
    classe `splash` sur `<html>`). Un petit script en ligne affiche sous le logo le nom de l'instance mémorisée
-   (`localStorage['vigilo-instance']`).
+   (`localStorage['vigilo-instance']`). Un autre, dans `<head>`, applique le thème (`data-theme="light|dark"` sur
+   `<html>`, d'après `localStorage['vigilo-theme']` et `prefers-color-scheme`) avant l'affichage, sans flash clair.
 2. Le bundle s'exécute. Les `import` ES étant remontés, **tous les modules sont évalués avant le corps de
    `main.js`**. Plusieurs ont des effets de bord à l'évaluation :
    - `vigilo-config.js` : `window.setInstance` ;
@@ -153,6 +154,7 @@ exécutés dans le navigateur, donc toute donnée externe doit y passer par `esc
 | `vigilo-api.js` | appels à l'API du backend |
 | `utils.js` | requêtes HTTP avec cache, échappement, jetons aléatoires, distance, adresse aplatie |
 | `similar-issues.js` | observations similaires de la fiche d'une observation |
+| `theme.js` | mode sombre : choix automatique / clair / sombre, bouton du menu |
 | `dataManager.js` | état des filtres et filtrage des observations |
 | `localDataManager.js` | stockage local (jetons, clé, langue, modes) |
 | `issue-list.js` | liste paginée, fiche d'une observation |
@@ -279,6 +281,20 @@ chargée (`getIssues()` sans paramètre, donc les observations que l'instance re
 |---|---|
 | `findSimilarIssues(issue, issues)` | observations similaires, la plus proche d'abord, avec `similar_distance` (m) |
 | `similarIssuesHtml(similar)` | section de la fiche : titre avec le nombre, règle appliquée, grille de vignettes (`img_thumb`, repli `img_thumb_panel`) qui ouvrent la fiche (`viewIssue`), distance et date |
+
+#### `theme.js`
+
+Choix mémorisé dans `localStorage['vigilo-theme']` : `auto` (défaut, suit `prefers-color-scheme`), `light` ou
+`dark`. Le thème effectif est l'attribut `data-theme` de `<html>` (posé d'abord par le script en ligne de
+`index.html`, voir §1.3), sur lequel s'appuient les styles de `dark.scss`.
+
+| Export | Description |
+|---|---|
+| `getThemeChoice()` | choix mémorisé (`auto` si absent ou illisible) |
+| `isDark(choice)` | thème sombre effectif pour ce choix |
+| `applyTheme(choice)` | pose `data-theme`, met à jour l'icône et le libellé de `#theme-toggle` (clés `theme-auto`, `theme-light`, `theme-dark`) |
+| `setThemeChoice(choice)` | mémorise puis applique |
+| `initTheme()` | appelée par `app.js` après `i18n.init()` : applique le choix, suit les changements du système en mode `auto`, fait tourner auto → clair → sombre au clic sur `#theme-toggle` (menu latéral) |
 
 #### `issue-map.js`
 
@@ -735,6 +751,7 @@ Le HTML généré en JS doit donc **à la fois** contenir le texte traduit (`i18
 | `theme-variables.scss` | variables `$vigilo-*` (jaune `#fdd835`, encre `#1f2328`, rayons, ombres) et surcharges des variables Materialize (`$primary-color`, `$button-raised-background`, `$font-stack`...) — importé **avant** Materialize |
 | `materialize-custom.scss` | tailles des fenêtres `.modal.big` et `.modal.fullscreen`, `.row` en flex, `z-index` du menu |
 | `theme.scss` | habillage de tous les composants, par sections commentées : barre du haut, onglets Liste/Carte, cartes, boutons flottants, fenêtres, fiche, filtres, formulaire, menu, statistiques (`.stats-*`, mode `.stats-embed`), toasts, contrôles Leaflet, mini-carte, bannière d'installation, Panoramax, squelettes de chargement |
+| `dark.scss` | mode sombre : toutes les règles sous `html[data-theme="dark"]` (palette `$dark-*`), importé **après** `theme.scss` ; fonds de carte assombris par un `filter` sur `.leaflet-tile-pane` |
 | `image-drawable.scss` | outil de dessin plein écran |
 | `spinner.scss` | ancienne animation de chargement `.spinner` (n'est plus utilisée dans les gabarits) |
 | `timedout-marker.scss` | transition d'opacité du viseur |
@@ -744,7 +761,8 @@ Le HTML généré en JS doit donc **à la fois** contenir le texte traduit (`i18
   les variables CSS `--stats-accent` / `--stats-track` de `theme.scss`.
 - Les avertissements de dépréciation de Sass dus à Materialize sont masqués (`quietDeps`, `silenceDeprecations` dans
   `webpack.config.js`).
-- Vérifier tout changement à 1280 px et à 390 px de large.
+- Vérifier tout changement à 1280 px et à 390 px de large, en thème clair **et** sombre : un nouveau composant
+  aux couleurs fixes (`#fff`, `$vigilo-ink`...) a besoin de sa règle dans `dark.scss`.
 
 ---
 
@@ -757,6 +775,7 @@ Le HTML généré en JS doit donc **à la fois** contenir le texte traduit (`i18
 | `vigilo-instance` | `localStorage` | JSON de l'instance choisie (`api_path`, `scope`, `prod`, `country`, `name`) | `setInstance` (`vigilo-config.js`) ; lu aussi par le script en ligne de `index.html` |
 | `vigilo-localdata` | `localStorage` | `{tokens: {<token>: <secretid>}, lang, adminKey}` | `localDataManager` |
 | `vigilo-version` | `localStorage` | version de l'application | `localDataManager.setVersion`, jamais appelée |
+| `vigilo-theme` | `localStorage` | `auto`, `light` ou `dark` | `theme.js` ; lu aussi par le script en ligne de `index.html` |
 | `vigilo-install-dismissed` | `localStorage` | `"1"` si la bannière d'installation a été fermée ou l'application installée | `install.js` |
 | `vigilo-isAdmin` | `sessionStorage` | `"true"` / `"false"` : mode modération actif | `localDataManager.setIsAdmin` |
 | `vigilo-beta` | `sessionStorage` | `"true"` : instances de test visibles | `?beta` |
