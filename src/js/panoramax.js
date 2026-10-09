@@ -82,6 +82,34 @@ const NEARBY_RADIUS_DEG = 0.001;
 /**
  * Normalize a STAC item of the Panoramax API into a picture usable by the capture viewer
  */
+/**
+ * Orientation correction of a picture, as the official Panoramax viewer computes it
+ * (web-viewer, utils/picture.js getSphereCorrection): pers:yaw / pers:pitch / pers:roll, else the
+ * EXIF / XMP tags, in degrees. Applied to flat pictures with a pitch or a roll, to 360° pictures with
+ * both. Returns {pan, tilt, roll} in radians (photo-sphere-viewer sphereCorrection), or null.
+ */
+function sphereCorrection(props, is360) {
+	var exif = props.exif || {};
+	var angle = (name, fallbacks) => {
+		var values = [props[name]].concat(fallbacks.map((tag) => exif[tag]));
+		for (var i = 0; i < values.length; i++) {
+			var v = parseFloat(values[i]);
+			if (!isNaN(v)) {
+				return v;
+			}
+		}
+		return 0;
+	};
+	var yaw = angle("pers:yaw", ["Xmp.GPano.PoseHeadingDegrees", "Xmp.Camera.Yaw", "Exif.MpfInfo.MPFYawAngle"]);
+	var pitch = angle("pers:pitch", ["Xmp.GPano.PosePitchDegrees", "Xmp.Camera.Pitch", "Exif.MpfInfo.MPFPitchAngle"]);
+	var roll = angle("pers:roll", ["Xmp.GPano.PoseRollDegrees", "Xmp.Camera.Roll", "Exif.MpfInfo.MPFRollAngle"]);
+	if ((!is360 && (pitch !== 0 || roll !== 0)) || (pitch !== 0 && roll !== 0)) {
+		var rad = Math.PI / 180;
+		return { pan: yaw * rad, tilt: -pitch * rad, roll: roll * rad };
+	}
+	return null;
+}
+
 export function pictureFromItem(item) {
 	if (!item || !item.id || !item.geometry || !item.geometry.coordinates) {
 		return null;
@@ -102,6 +130,7 @@ export function pictureFromItem(item) {
 		azimuth: parseFloat(props["view:azimuth"]) || 0,
 		// 360° pictures are equirectangular panoramas
 		is360: parseFloat(orientation.field_of_view) >= 360,
+		correction: sphereCorrection(props, parseFloat(orientation.field_of_view) >= 360),
 		sd: href("sd") || href("hd"),
 		hd: href("hd") || href("sd"),
 		thumb: href("thumb") || href("sd"),

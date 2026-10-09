@@ -52,7 +52,14 @@ export async function init() {
   if (acl.role == "admin" || acl.role == "moderator"){
     // Is admin mode ?
     if (localDataManager.isAdmin()){
-      document.body.style.backgroundColor="red";
+      // Banner under the top bar (the whole page used to turn red)
+      document.documentElement.classList.add('admin-mode');
+      $("#admin-banner").prop("hidden", false);
+      $("#admin-banner .admin-banner-off").click((e)=>{
+        e.preventDefault();
+        localDataManager.setIsAdmin(false);
+        window.location.reload()
+      })
       $("#admin-status").empty().append('<li><a class="waves-effect grey-text"><i class="material-icons">stars</i> <span data-i18n="moderator-disable">'+i18next.t("moderator-disable")+'</span></a></li>');
       $("#admin-status a").click(()=>{
         localDataManager.setIsAdmin(false);

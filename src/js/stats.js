@@ -63,7 +63,6 @@ export async function init() {
     });
     $('.stats-periods button.active').attr('aria-pressed', 'true');
     initTooltip();
-    renderKpis();
     renderPeriod();
     reportHeight();
 }
@@ -85,22 +84,36 @@ function reportHeight() {
     }).observe(page);
 }
 
-/* ---- Headline numbers (whole history) */
-function renderKpis() {
+/* ---- Headline numbers of the chosen period (same period as the charts) */
+function renderKpis(selected, start) {
     var now = new Date();
-    var d30 = startOfDay(now); d30.setDate(d30.getDate() - 30);
-    var d60 = startOfDay(now); d60.setDate(d60.getDate() - 60);
-    var last30 = issues.filter((i) => i.date_obj >= d30).length;
-    var prev30 = issues.filter((i) => i.date_obj >= d60 && i.date_obj < d30).length;
-    var year = issues.filter((i) => i.date_obj.getFullYear() == now.getFullYear()).length;
-    var approved = issues.filter((i) => i.approved == 1);
+    var approved = selected.filter((i) => i.approved == 1);
     var resolved = approved.filter((i) => issueStatus(i) == 'resolved').length;
 
+    // Observations of the period
     var first = issues.reduce((min, i) => (min === null || i.date_obj < min ? i.date_obj : min), null);
-    tile('#stats-kpi-total', fmt(issues.length), first ? i18next.t('stats-since', { date: first.toLocaleDateString(locale(), { month: 'long', year: 'numeric' }) }) : '');
-    var delta = last30 - prev30;
-    tile('#stats-kpi-30d', fmt(last30), (delta > 0 ? '▲ +' : delta < 0 ? '▼ ' : '') + fmt(delta) + ' ' + i18next.t('stats-vs-previous-30d'));
-    tile('#stats-kpi-year', fmt(year), String(now.getFullYear()));
+    var sub = period == '30d' ? i18next.t('stats-in-30d') : period == '12m' ? i18next.t('stats-in-12m')
+        : (first ? i18next.t('stats-since', { date: first.toLocaleDateString(locale(), { month: 'long', year: 'numeric' }) }) : '');
+    tile('#stats-kpi-total', fmt(selected.length), sub);
+
+    // Change against the previous period of the same length (average per month for the whole history)
+    if (start === null) {
+        var months = first ? Math.max(1, (now.getFullYear() - first.getFullYear()) * 12 + now.getMonth() - first.getMonth() + 1) : 1;
+        tile('#stats-kpi-trend', fmt(Math.round(selected.length / months)), i18next.t('stats-per-month-avg'));
+    } else {
+        var prevStart = new Date(start);
+        if (period == '30d') prevStart.setDate(prevStart.getDate() - 30);
+        else prevStart.setMonth(prevStart.getMonth() - 12);
+        var previous = issues.filter((i) => i.date_obj >= startOfDay(prevStart) && i.date_obj < startOfDay(start)).length;
+        var delta = selected.length - previous;
+        tile('#stats-kpi-trend', (delta > 0 ? '▲ +' : delta < 0 ? '▼ ' : '') + fmt(delta),
+            i18next.t(period == '30d' ? 'stats-vs-previous-30d' : 'stats-vs-previous-12m', { n: fmt(previous) }));
+    }
+
+    // Published (approved) observations of the period
+    tile('#stats-kpi-published', fmt(approved.length), i18next.t('stats-published-of', { pct: pct(approved.length, selected.length) }));
+
+    // Resolved among the published ones of the period
     tile('#stats-kpi-resolved', pct(resolved, approved.length), i18next.t('stats-resolved-of', { count: resolved, total: fmt(approved.length) }));
     $('#stats-kpi-resolved .stats-meter span').css('width', (approved.length ? resolved * 100 / approved.length : 0) + '%');
 }
@@ -119,6 +132,7 @@ function renderPeriod() {
     var selected = start === null ? issues : issues.filter((i) => i.date_obj >= startOfDay(start));
     var label = i18next.t('stats-count', { count: selected.length, n: fmt(selected.length) });
     $('#stats-categories .stats-card-sub, #stats-status .stats-card-sub, #stats-heatmap .stats-card-sub').text(label);
+    renderKpis(selected, start);
     renderTrend(selected, start);
     renderCategories(selected);
     renderStatus(selected);

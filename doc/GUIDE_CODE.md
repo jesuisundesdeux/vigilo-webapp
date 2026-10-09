@@ -210,6 +210,7 @@ Constante interne `RESOLVABLE_CATEGORIES = [2,3,4,5,6,7,8,11,100]` : repli quand
 | `randomToken(alphabet, length)` | chaîne aléatoire (`crypto.getRandomValues`) |
 | `distance(lat1, lng1, lat2, lng2)` | distance en mètres (haversine, rayon 6 378 137 m) ; utilisée par `form.js` et `similar-issues.js` |
 | `flatString(value)` | minuscules, sans accents ni caractères autres que `a-z0-9` : comparaison d'adresses |
+| `instancePageUrl(name)` | page du territoire sur vigilo.city : `https://vigilo.city/fr/instance/<slug du nom de l'instance>/`, alias stable créé par vigilo-website (mêmes règles de slug que `slugify()` de `scripts/fetch_instances.py`) qui redirige vers la page de l'instance |
 
 `request` rejette (avec une chaîne `HTTP Code: ...` contenant le corps de la réponse) si le code HTTP n'est pas 200,
 si le corps n'est pas du JSON, ou si le JSON contient un `status` différent de `0` (comparaison souple : `"0"`
@@ -367,7 +368,9 @@ Voir [§7](#7-traductions-i18n). Export : `init()`. Global : `window.setLang(lan
 #### `navs.js`
 
 `init()` : `M.Sidenav` sur `#mobile-menu`, `M.Tabs` sur ses onglets (le menu se ferme au changement d'onglet),
-`install.init()`, puis ajoute `backend_version` (de `get_scope.php`) au texte et au lien de `#version-server`.
+`install.init()`, affiche l'entrée « Ce territoire sur vigilo.city » (`#instance-page`, lien `instancePageUrl()` du
+nom de l'instance courante), puis ajoute `backend_version` (de `get_scope.php`) au texte et au lien de
+`#version-server`.
 
 Les onglets du menu (`navs.html`) sont des onglets Materialize : `href="#issues"` et `href="#stats"` affichent l'un
 ou l'autre des blocs de `#content` dans `index.html`. Les entrées « Zone géographique » et « Langue » ouvrent des
@@ -394,7 +397,11 @@ fenêtres (`modal-trigger`).
   l'API (nouvelle requête sans lui si elle le refuse) et date de chaque photo vérifiée dans le navigateur ; `fetchPicture(href)` : photo d'un item STAC (suivante / précédente d'une séquence).
 - `pictureFromItem(item)` : normalise un item STAC : `id`, `lat`, `lon`, `datetime`, `azimuth` (`view:azimuth`),
   `is360` (`pers:interior_orientation.field_of_view` ≥ 360), images `sd` / `hd` / `thumb` (assets), `producer`
-  (`geovisio:producer`, sinon fournisseur `producer`), `license`, `next` / `prev` (liens de la séquence), `url`.
+  (`geovisio:producer`, sinon fournisseur `producer`), `license`, `next` / `prev` (liens de la séquence), `url`,
+  `correction` : correction d'orientation calculée comme la visionneuse officielle (`getSphereCorrection` du
+  web-viewer Panoramax) depuis `pers:yaw` / `pers:pitch` / `pers:roll` (sinon les balises EXIF / XMP
+  `GPano.Pose*Degrees`, `Camera.*`, `MPF*Angle`), appliquée aux photos plates qui ont un pitch ou un roll et aux 360°
+  qui ont les deux : `{pan: yaw, tilt: -pitch, roll}` en radians, sinon `null`.
 
 #### `panoramax-capture.js`
 
@@ -409,7 +416,9 @@ fenêtres (`modal-trigger`).
    d'un an, moins de 3 ans, ou période « du … au … » en jours entiers) qui relance la recherche
    (`panoramax-capture-none-dates` si aucune vue) ; la vue courante est en rouge avec sa direction ; boutons
    précédente / suivante de la séquence (le cap regardé est conservé d'une photo 360° à l'autre) ;
-3. **cadrage** dans un canvas 4:3 (glisser, molette, pincement, boutons de zoom) : une photo 360°
+3. **cadrage** (avec la `correction` d'orientation de la photo : en 360°, `renderEquirect` lit la texture à travers
+   l'inverse de la rotation `Euler(tilt, pan, roll, "YXZ")` de photo-sphere-viewer ; une photo plate est redressée de
+   son roll par `drawFlat`) dans un canvas 4:3 (glisser, molette, pincement, boutons de zoom) : une photo 360°
    (équirectangulaire) est reprojetée en perspective (`renderEquirect`, cap `yaw`, inclinaison `pitch`, champ `fov`) ;
    une photo plate est recadrée (`flatRegion`, centre et zoom) ;
 4. **capture** à partir de l'image `hd` (`IMAGE_MAX_SIZE` de large au plus, interpolation bilinéaire en 360°) avec une
@@ -452,11 +461,14 @@ Boutons du pied de la fiche selon le cas :
 | Cas | Boutons ajoutés |
 |---|---|
 | mode modération, `approved == 0` | approuver (`adminApprove(t,'1')`), refuser (`'2'`), modifier (`startForm(t)`) |
-| mode modération, `approved == 1` | remettre à modérer (`'0'`) |
+| mode modération, `approved == 1` | remettre à modérer (`'0'`), modifier (`startForm(t)` ; `create_issue.php` garde l'état de modération) |
 | mode modération, `approved == 2` | approuver, remettre à modérer |
 | auteur (`userCanEdit`) et backend ≥ 0.0.17 | supprimer (`deleteIssue`) |
 | observation publiée, dans aucune résolution (`status == 0`), catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) |
-| toujours | observations similaires (fait défiler jusqu'à la section `.similar-issues`), partager, voir sur la carte, fermer |
+| toujours | **signaler** (`.report-btn`, lien `mailto:` vers `contact_email` de `get_scope.php`, objet `report-issue-subject`, corps `report-issue-body` : référence, catégorie, adresse, date, commentaire, lien, motif à compléter), observations similaires (fait défiler jusqu'à la section `.similar-issues`), partager, voir sur la carte, fermer |
+
+Les boutons sans texte ont une description (`title`, et `aria-label` pour les lecteurs d'écran) traduite par
+`data-i18n-attr`, affichée au survol : à garder pour tout nouveau bouton à icône seule.
 
 ---
 
@@ -510,7 +522,7 @@ Chaque observation reçue (valeurs texte, voir `REST_API.md`) est complétée :
 | `resolvable` | `resolvable` de la catégorie, sinon `false` |
 | `date_obj` | `new Date(time * 1000)` |
 | `img_thumb_panel`, `img_panel` | `generate_panel.php?s=150&token=` et `s=800` : photo pixelisée tant que non approuvée |
-| `img`, `img_thumb` | mode modération : `get_photo.php?token=&key=<clé>` ; observation approuvée : `get_photo.php?token=` ; sinon `img_panel` / `img_thumb_panel` |
+| `img`, `img_thumb` | clé de modérateur enregistrée (en mode modération ou non) : `get_photo.php?token=&key=<clé>` (une clé refusée retombe sur le panneau pixelisé, `data-fallback`) ; observation approuvée : `get_photo.php?token=` ; observation de l'auteur (son `secretid` connu) : `img_panel` / `img_thumb_panel` avec `&secretid=` (non pixelisée par `generate_panel.php`) ; sinon `img_panel` / `img_thumb_panel` |
 | `permLink` | `<protocole>//<hôte>/?token=<token>&instance=<nom>` |
 
 ### 3.4 Filtres (`dataManager.filterIssues`)
@@ -717,8 +729,8 @@ est de nouveau envoyée par `add_image.php` avec le `secretid` renvoyé.
 
 | Où | Effet |
 |---|---|
-| `admin.js` | fond de page rouge ; `window.adminApprove` défini |
-| `vigilo-api.getIssues` | `img` / `img_thumb` = photo originale `get_photo.php?...&key=` |
+| `admin.js` | bannière `#admin-banner` sous la barre du haut (« Mode modération activé », lien pour le désactiver) et classe `admin-mode` sur `<html>` (onglets et carte décalés de la hauteur de la bannière, `main.scss`) ; `window.adminApprove` défini |
+| `vigilo-api.getIssues` | `img` / `img_thumb` = photo originale `get_photo.php?...&key=` (dès qu'une clé est enregistrée) |
 | `issue-filter.js` | filtre par défaut `status = ['unapproved']` + toast |
 | `issue-detail.js` | boutons approuver / refuser / remettre à modérer / modifier |
 | `form.js` | catégories désactivées proposées ; `create_issue.php?key=` (pas de limite anti-spam, modification possible) ; `secretid` non mémorisé |
@@ -736,14 +748,16 @@ En cas d'échec : toast `moderation-failed`.
 
 ### 6.1 Contenu (`stats.html`, `stats.js`)
 
-Calculées sur **toutes** les observations reçues (`vigilo.getIssues()`), sans les filtres de la liste.
+Calculées sur **toutes** les observations reçues (`vigilo.getIssues()`), sans les filtres de la liste, sur la
+**période choisie** (`.stats-periods` : 30 jours, 12 mois, tout) : les chiffres clés comme les graphiques
+(`renderPeriod()` appelle `renderKpis(selected, start)`).
 
 | Bloc | Calcul |
 |---|---|
-| `#stats-kpi-total` | nombre total, « depuis <mois année> » de la plus ancienne |
-| `#stats-kpi-30d` | observations depuis 30 jours (à minuit), écart avec les 30 jours précédents (▲ / ▼) |
-| `#stats-kpi-year` | observations de l'année civile en cours |
-| `#stats-kpi-resolved` | part des observations approuvées dont l'état est `resolved` (status 1), avec une jauge |
+| `#stats-kpi-total` | observations de la période (« sur les 30 derniers jours », « sur les 12 derniers mois », ou « depuis <mois année> » de la plus ancienne) |
+| `#stats-kpi-trend` | écart avec la période précédente de même durée (▲ / ▼, nombre de la période précédente entre parenthèses) ; pour « Tout », moyenne par mois |
+| `#stats-kpi-published` | observations approuvées de la période et leur part |
+| `#stats-kpi-resolved` | part des observations approuvées de la période dont l'état est `resolved` (status 1), avec une jauge |
 | `#stats-trend` | histogramme Chart.js (`type: 'bar'`, axe `timeseries`, adaptateur date-fns) : par jour (30 jours), par mois (12 mois), par mois ou par année (« Tout », par année si la plus ancienne observation a plus de 4 ans d'écart d'année civile) ; les périodes vides valent 0 |
 | `#stats-categories` | classement des catégories (barres HTML), catégories inconnues sous la clé `stats-other` (« Autre ») |
 | `#stats-status` | barre empilée et légende dans l'ordre `STATUS_ORDER` (les refusées, `unknow`, n'apparaissent pas) |
