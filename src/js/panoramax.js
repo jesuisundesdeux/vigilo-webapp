@@ -73,3 +73,71 @@ export function openPanoramaxViewer(picture) {
 	modal.find(".panoramax-open").attr("href", picture.url);
 	instance.open();
 }
+
+// ---- Pictures around a point, for the form (see panoramax-capture.js)
+
+// Search box half-size for the form, in degrees (~100 m)
+const NEARBY_RADIUS_DEG = 0.001;
+
+/**
+ * Normalize a STAC item of the Panoramax API into a picture usable by the capture viewer
+ */
+export function pictureFromItem(item) {
+	if (!item || !item.id || !item.geometry || !item.geometry.coordinates) {
+		return null;
+	}
+	var props = item.properties || {};
+	var assets = item.assets || {};
+	var href = (name) => assets[name] && assets[name].href;
+	var orientation = props["pers:interior_orientation"] || {};
+	var link = (rel) => (item.links || []).find((l) => l.rel == rel && l.href);
+	var producer = props["geovisio:producer"]
+		|| ((item.providers || []).find((p) => (p.roles || []).indexOf("producer") >= 0) || {}).name
+		|| "";
+	return {
+		id: item.id,
+		lon: item.geometry.coordinates[0],
+		lat: item.geometry.coordinates[1],
+		datetime: props.datetime ? new Date(props.datetime) : null,
+		azimuth: parseFloat(props["view:azimuth"]) || 0,
+		// 360° pictures are equirectangular panoramas
+		is360: parseFloat(orientation.field_of_view) >= 360,
+		sd: href("sd") || href("hd"),
+		hd: href("hd") || href("sd"),
+		thumb: href("thumb") || href("sd"),
+		producer: producer,
+		license: props.license || "",
+		next: link("next") ? link("next").href : null,
+		prev: link("prev") ? link("prev").href : null,
+		url: PANORAMAX_URL + "/?pic=" + encodeURIComponent(item.id)
+	};
+}
+
+/**
+ * Pictures around (lat, lon), nearest first (empty array on error)
+ */
+export function findPicturesAround(lat, lon) {
+	return getSearchEndpoint()
+		.then((endpoint) => {
+			var bbox = [lon - NEARBY_RADIUS_DEG, lat - NEARBY_RADIUS_DEG, lon + NEARBY_RADIUS_DEG, lat + NEARBY_RADIUS_DEG]
+				.map((d) => d.toFixed(7)).join(",");
+			return fetch(endpoint + "?bbox=" + bbox + "&limit=100");
+		})
+		.then((r) => r.ok ? r.json() : { features: [] })
+		.then((result) => {
+			var dist = (p) => Math.pow(p.lon - lon, 2) + Math.pow(p.lat - lat, 2);
+			return (result.features || []).map(pictureFromItem).filter((p) => p && p.sd)
+				.sort((a, b) => dist(a) - dist(b));
+		})
+		.catch(() => []);
+}
+
+/**
+ * Picture of a STAC item URL (next / previous one of a sequence), or null
+ */
+export function fetchPicture(href) {
+	return fetch(href)
+		.then((r) => r.ok ? r.json() : null)
+		.then(pictureFromItem)
+		.catch(() => null);
+}
