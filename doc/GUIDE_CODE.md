@@ -639,6 +639,12 @@ Trois sources, toutes vers `loadPicture(file, fromCamera, notFromMainInput)` :
 | bouton « Prendre une photo » (mobile, attribut `capture`) | oui | rendu facultatif |
 | collage (`paste` sur `document`, fenêtre ouverte, desktop) | non | rendu facultatif |
 
+**Android** (issue #128) : la galerie (sélecteur de photos d'Android, ouvert pour `accept="image/*"`) retire la
+position GPS des photos remises au navigateur. Sur Android, `init()` retire donc l'attribut `accept` de
+`#issue-picture` : c'est l'explorateur de fichiers qui s'ouvre, et le fichier original choisi dans `DCIM/Camera`
+garde sa position. Comme tout type de fichier peut alors être choisi, le gestionnaire `change` refuse ce qui n'est pas
+une image (`isImageFile`, type `image/*` ou extension, toast `file-not-image`).
+
 Quatrième source, sans `loadPicture` : le bouton **Photo depuis une vue Panoramax** (`#panoramax-picture`) ouvre
 `openPanoramaxCapture()` (voir `panoramax-capture.js`) autour de la position du formulaire si elle est placée. La photo
 capturée passe par `renderImage()` (donc modifiable dans l'éditeur), le champ obligatoire devient facultatif, la
