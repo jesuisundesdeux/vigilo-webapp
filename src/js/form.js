@@ -209,10 +209,6 @@ $("#panoramax-picture").on("click", async function (e) {
   });
 })
 
-function isImageFile(file) {
-  return (file.type || "").indexOf("image/") == 0 || /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(file.name || "");
-}
-
 function longToast(key, options) {
   M.toast({ html: i18next.t(key, options), displayLength: 8000 });
 }
@@ -221,12 +217,6 @@ function longToast(key, options) {
  * On file change, load image, read date, time and position and generate a rotated image
  */
 $("#modal-form input[type=file]").change(function () {
-  if (this.files && this.files[0] && !isImageFile(this.files[0])) {
-    // possible on Android, where the photo is chosen in the file manager (any file type)
-    M.toast({ html: i18next.t("file-not-image") });
-    this.value = "";
-    return;
-  }
   if (this.files && this.files[0]) {
     // Taken right now with the camera button: the phone's position is the photo's position
     loadPicture(this.files[0], this.hasAttribute("capture"), this.id != "issue-picture");
@@ -744,12 +734,6 @@ export async function init() {
     } else {
       // Use browser default inputs on mobile
       $(".camera-capture").removeClass('hide')
-      if (/Android/i.test(navigator.userAgent)) {
-        // Android removes the GPS position of photos chosen in the gallery (photo picker,
-        // opened for accept="image/*"): without "accept", the file manager opens instead
-        // and gives the original file of DCIM/Camera, position included (issue #128)
-        $("#issue-picture").removeAttr("accept");
-      }
       $("#issue-cat").addClass('browser-default')
       $("#issue-date").attr('type', 'date');
       $("#issue-time").attr('type', 'time');

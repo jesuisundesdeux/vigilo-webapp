@@ -145,7 +145,6 @@
     "photo-location-estimated": "Position estimée d'après votre téléphone (± {{accuracy}} m) : vérifiez-la sur la carte.",
     "photo-location-removed": "Votre téléphone a retiré la position de cette photo : placez le point sur la carte, recherchez l'adresse, ou prenez la photo directement depuis l'appli.",
     "photo-no-location": "Cette photo ne contient pas de position : placez le point sur la carte ou recherchez l'adresse.",
-    "file-not-image": "Ce fichier n'est pas une image.",
     "geolocation-failed": "Impossible de vous localiser : placez le point sur la carte ou recherchez l'adresse.",
     "related-hint": "Observations à résoudre autour de cette observation : même catégorie par défaut, à moins de la distance choisie ou à la même adresse.",
     "new-resolution": "Nouvelle résolution",
