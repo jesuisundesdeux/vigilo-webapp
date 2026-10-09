@@ -38,6 +38,7 @@ html[data-theme="dark"] {
   }
   .card .card-action { border-top-color: $dark-border; }
   .cards-container .card.horizontal { border-color: $dark-border; }
+  .cards-container .card.horizontal .card-content p.card-comment { color: $dark-ink; }
   .skeleton-card { background: $dark-surface; border-color: $dark-border; }
   .skeleton-card * { background: linear-gradient(90deg, #262a31 0%, #30353d 40%, #262a31 80%) 0 0 / 300% 100% !important; }
 
@@ -57,6 +58,8 @@ html[data-theme="dark"] {
     .issue-chip-done, .issue-chip-resolved { background: rgba(#43a047, .22); color: #98dba5; }
     .issue-chip-mine { background: rgba(#fdd835, .14); }
     .issue-state-note, .issue-fact dt, .issue-label { color: $dark-ink-soft; }
+    .issue-quote { background: rgba(#fdd835, .08); }
+    .issue-quote .issue-explanation { color: $dark-ink-soft; }
     .issue-facts, .issue-fact + .issue-fact { border-color: $dark-border; }
     .issue-icon-btn, .issue-icon-btn i { color: $dark-ink; }
     .issue-primary, .issue-primary i { color: #fff; }

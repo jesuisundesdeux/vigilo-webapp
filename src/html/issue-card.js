@@ -19,6 +19,7 @@ export default function (issue) {
             ${(LocalDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons" data-i18n-attr=\'{"title": "i-make-it"}\' title="'+i18next.t("i-make-it")+'">person</i>' : ''}
             <span class="cat-dot" style="background-color: ${escapeHtml(issue.color)}"></span><span data-i18n="category-name-${escapeHtml(issue.categorie)}">${i18next.t("category-name-"+issue.categorie)}</span>
           </h5>
+          ${issue.comment ? `<p class="card-comment">${escapeHtml(issue.comment)}</p>` : ""}
           <p class="grey-text">${escapeHtml(issue.address)}</p>
           <p class="grey-text" data-i18n-date="${issue.date_obj.toString()}">${issue.date_obj.toLocaleString(i18next.language.split("_")[0])}</p>
       </div>
