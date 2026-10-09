@@ -53,7 +53,7 @@ export default async function (issue) {
             ${(issue.status == 4) ? '<i class="material-icons">done</i> <span data-i18n="status-done-long">'+i18next.t("status-done-long")+'</span>' : ''}
             ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> <span data-i18n="i-make-it">'+i18next.t("i-make-it")+'</span>' : ''}
           </h6>
-          <p><b>${i18next.t("issue-id")} :</b> <a href="${escapeHtml(issue.permLink)}">${token}</a> | <a data-i18n="issues-similar" data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" href="${escapeHtml(issue.mosaic)}">${i18next.t("issues-similar")}</a></p>
+          <p><b>${i18next.t("issue-id")} :</b> <a href="${escapeHtml(issue.permLink)}">${token}</a> | <a href="#!" onclick="document.querySelector('#modal-issue .similar-issues').scrollIntoView({behavior: 'smooth'}); return false;" data-i18n="issues-similar">${i18next.t("issues-similar")}</a></p>
 
           <p>
               <b><span data-i18n="category">${i18next.t("category")}</span></b><br>
@@ -79,10 +79,12 @@ export default async function (issue) {
           </p>
       </div>
   </div>
+  <!-- filled by js/similar-issues.js once the window is open -->
+  <div class="similar-issues"></div>
 </div>
 <div class="modal-footer">
 ${btns}
-<a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" target="_blank" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.mosaic)}"><i class="material-icons center">view_list</i></a>
+<a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" class="waves-effect waves-light btn-floating" href="#!" onclick="document.querySelector('#modal-issue .similar-issues').scrollIntoView({behavior: 'smooth'}); return false;"><i class="material-icons center">view_module</i></a>
 <a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.permLink)}" onclick="return shareIssue(this)"><i class="material-icons center">share</i></a>
 <a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${token}')"><i class="material-icons center">map</i></a>
 <a href="#!" data-i18n-attr='{"title": "close"}' title="${i18next.t("close")}" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>

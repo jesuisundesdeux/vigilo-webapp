@@ -9,6 +9,7 @@ import piexif from 'piexifjs';
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
 import relatedIssueCard from '../html/related-issue-card';
+import { distance } from './utils';
 import errorCard from '../html/error';
 import ImageDrawable from './image-drawable';
 import LocalDataManager from './localDataManager';
@@ -421,23 +422,7 @@ async function setFormMapPoint(latlng, address) {
   }
 }
 
-function deg2rad(val){return val * Math.PI / 180}
 
-// https://numa-bord.com/miniblog/php-calcul-de-distance-entre-2-coordonnees-gps-latitude-longitude/
-function distance(lat1, lng1, lat2, lng2)
-{
-    var earth_radius = 6378137; // Terre = sphère de 6378km de rayon
-    var rlo1         = deg2rad(lng1);
-    var rla1         = deg2rad(lat1);
-    var rlo2         = deg2rad(lng2);
-    var rla2         = deg2rad(lat2);
-    var dlo          = (rlo2 - rlo1) / 2;
-    var dla          = (rla2 - rla1) / 2;
-    var a            = (Math.sin(dla) * Math.sin(dla)) + Math.cos(rla1) * Math.cos(rla2) * (Math.sin(dlo) * Math.sin(dlo));
-    var d            = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    
-    return earth_radius * d;
-}
 
 function isResolvable(i){
   return i.approved == 1 && i.status !=1 && i.resolvable;

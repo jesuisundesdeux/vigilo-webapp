@@ -7,6 +7,7 @@ import issueDetail from '../html/issue-detail';
 import { showIssueMiniMap } from './issue-minimap';
 import { safeToken } from './utils';
 import { findPanoramaxPicture, openPanoramaxViewer } from './panoramax';
+import { findSimilarIssues, similarIssuesHtml } from './similar-issues';
 /**
  * Functions for issues list
  */
@@ -53,6 +54,9 @@ export async function viewIssue(token) {
 		window.history.replaceState({}, '', issue[0].permLink)
 		modal.open()
 		showIssueMiniMap($("#modal-issue .issue-minimap")[0], $("#modal-issue .issue-minimap-caption")[0], issue[0]);
+		// Similar observations (same category, nearby or same address), computed from the loaded list
+		$("#modal-issue .similar-issues").html(similarIssuesHtml(findSimilarIssues(issue[0], issues)));
+		$("#modal-issue .modal-content").scrollTop(0);
 		// "See with Panoramax" button, only if a street-level picture exists there
 		var row = $("#modal-issue .panoramax-row");
 		findPanoramaxPicture(issue[0].lat_float, issue[0].lon_float).then((picture) => {

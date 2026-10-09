@@ -1,0 +1,42 @@
+import i18next from 'i18next';
+import { distance, escapeHtml, flatString, safeToken } from './utils';
+
+// Same rules as the "Similaires" search of the backend admin (sameas()): same category, and
+// closer than SIMILAR_DISTANCE meters or at the same address in the same city.
+export const SIMILAR_DISTANCE = 300;
+
+/**
+ * Observations similar to `issue` among `issues` (the list already loaded from get_issues.php),
+ * nearest first. Each result gets a `similar_distance` (meters).
+ */
+export function findSimilarIssues(issue, issues) {
+  var address = flatString(issue.address);
+  var city = flatString(issue.cityname);
+  return issues
+    .filter((other) => other.token != issue.token && other.categorie == issue.categorie)
+    .map((other) => Object.assign({}, other, {
+      similar_distance: distance(issue.lat_float, issue.lon_float, other.lat_float, other.lon_float)
+    }))
+    .filter((other) => other.similar_distance < SIMILAR_DISTANCE
+      || (address !== "" && flatString(other.address) == address && flatString(other.cityname) == city))
+    .sort((a, b) => a.similar_distance - b.similar_distance);
+}
+
+/** Section of the observation window listing the similar observations */
+export function similarIssuesHtml(similar) {
+  var title = `<h6><i class="material-icons left">view_module</i><span>${escapeHtml(i18next.t("issues-similar"))}</span>`
+    + ` <span class="similar-issues-count">${similar.length}</span></h6>`
+    + `<p class="similar-issues-hint grey-text">${escapeHtml(i18next.t("issues-similar-hint", { distance: SIMILAR_DISTANCE }))}</p>`;
+  if (similar.length == 0) {
+    return title + `<p class="grey-text">${escapeHtml(i18next.t("issues-similar-none"))}</p>`;
+  }
+  var lang = i18next.language.split("_")[0];
+  return title + '<div class="similar-issues-grid">' + similar.map((other) => {
+    var token = safeToken(other.token);
+    var meters = Math.round(other.similar_distance);
+    return `<a href="#!" class="similar-issue" onclick="viewIssue('${token}'); return false;" title="${escapeHtml(other.address)}">`
+      + `<img src="${escapeHtml(other.img_thumb)}" data-fallback="${escapeHtml(other.img_thumb_panel)}" loading="lazy" alt="${token}">`
+      + `<span class="similar-issue-caption">${meters} m · ${escapeHtml(other.date_obj.toLocaleDateString(lang))}</span>`
+      + `</a>`;
+  }).join("") + '</div>';
+}

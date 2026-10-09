@@ -151,7 +151,8 @@ exécutés dans le navigateur, donc toute donnée externe doit y passer par `esc
 | `app.js` | classe `VigiloApp`, méthode `init()` : orchestration du démarrage |
 | `vigilo-config.js` | instances, catégories, instance courante, constantes de version |
 | `vigilo-api.js` | appels à l'API du backend |
-| `utils.js` | requêtes HTTP avec cache, échappement, jetons aléatoires |
+| `utils.js` | requêtes HTTP avec cache, échappement, jetons aléatoires, distance, adresse aplatie |
+| `similar-issues.js` | observations similaires de la fiche d'une observation |
 | `dataManager.js` | état des filtres et filtrage des observations |
 | `localDataManager.js` | stockage local (jetons, clé, langue, modes) |
 | `issue-list.js` | liste paginée, fiche d'une observation |
@@ -203,6 +204,8 @@ Constante interne `RESOLVABLE_CATEGORIES = [2,3,4,5,6,7,8,11,100]` : repli quand
 | `escapeHtml(value)` | échappe `& < > " '` ; `null`/`undefined` → `""` |
 | `safeToken(token)` | ne garde que `[A-Za-z0-9_-]` : pour insérer un jeton dans un `onclick="viewIssue('...')"` |
 | `randomToken(alphabet, length)` | chaîne aléatoire (`crypto.getRandomValues`) |
+| `distance(lat1, lng1, lat2, lng2)` | distance en mètres (haversine, rayon 6 378 137 m) ; utilisée par `form.js` et `similar-issues.js` |
+| `flatString(value)` | minuscules, sans accents ni caractères autres que `a-z0-9` : comparaison d'adresses |
 
 `request` rejette (avec une chaîne `HTTP Code: ...` contenant le corps de la réponse) si le code HTTP n'est pas 200,
 si le corps n'est pas du JSON, ou si le JSON contient un `status` différent de `0` (comparaison souple : `"0"`
@@ -259,11 +262,23 @@ adminKey}`) et drapeaux de session :
 |---|---|
 | `cleanIssues()` | vide `#issues .cards-container`, remet `offset` à 0 |
 | `displayIssues(count)` | ajoute les `count` observations filtrées suivantes (`offset` interne) avec `issueCard()` ; retire les cartes squelettes ; message `no-issue` si aucune ; en erreur, remplace **tout `#issues`** par `errorCard(e)` |
-| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, active `Materialbox`, réécrit l'URL avec `permLink` (`history.replaceState`), ouvre `#modal-issue`, lance la mini-carte et la recherche Panoramax |
+| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, active `Materialbox`, réécrit l'URL avec `permLink` (`history.replaceState`), ouvre `#modal-issue`, lance la mini-carte et la recherche Panoramax, remplit `.similar-issues` avec `findSimilarIssues()` sur toutes les observations chargées |
 | `refreshIssueCard(issue)` | réaffiche une carte en place après une action de modération ; si elle ne correspond plus aux filtres, la retire et charge l'observation suivante |
 
 `refreshIssueCard` retrouve la carte par le sélecteur `.card[onclick="viewIssue('<token>')"]` : ne pas changer
 l'attribut `onclick` de `issue-card.js` sans adapter ce sélecteur.
+
+#### `similar-issues.js`
+
+Remplace la page `mosaic.php` du backend (supprimée en 0.0.26). Mêmes règles que la recherche « Similaires » de
+l'admin (`sameas()` du backend) : **même catégorie**, et **à moins de `SIMILAR_DISTANCE` (300) m** ou **à la même
+adresse dans la même ville** (`flatString` de `address` et `cityname`). Calculé dans le navigateur sur la liste déjà
+chargée (`getIssues()` sans paramètre, donc les observations que l'instance rend publiques), sans appel au backend.
+
+| Export | Description |
+|---|---|
+| `findSimilarIssues(issue, issues)` | observations similaires, la plus proche d'abord, avec `similar_distance` (m) |
+| `similarIssuesHtml(similar)` | section de la fiche : titre avec le nombre, règle appliquée, grille de vignettes (`img_thumb`, repli `img_thumb_panel`) qui ouvrent la fiche (`viewIssue`), distance et date |
 
 #### `issue-map.js`
 
@@ -386,7 +401,7 @@ Boutons du pied de la fiche selon le cas :
 | mode modération, `approved == 1` | remettre à modérer (`'0'`) |
 | mode modération, `approved == 2` | approuver, remettre à modérer |
 | auteur (`userCanEdit`) et backend ≥ 0.0.17 | supprimer (`deleteIssue`) |
-| toujours | observations similaires (`mosaic.php`), partager, voir sur la carte, fermer |
+| toujours | observations similaires (fait défiler jusqu'à la section `.similar-issues`), partager, voir sur la carte, fermer |
 
 ---
 
@@ -439,7 +454,6 @@ Chaque observation reçue (valeurs texte, voir `REST_API.md`) est complétée :
 | `color` | `catcolor` de la catégorie, sinon `#9e9e9e` |
 | `resolvable` | `resolvable` de la catégorie, sinon `false` |
 | `date_obj` | `new Date(time * 1000)` |
-| `mosaic` | `mosaic.php?t=<token>` (observations similaires) |
 | `img_thumb_panel`, `img_panel` | `generate_panel.php?s=150&token=` et `s=800` : photo pixelisée tant que non approuvée |
 | `img`, `img_thumb` | mode modération : `get_photo.php?token=&key=<clé>` ; observation approuvée : `get_photo.php?token=` ; sinon `img_panel` / `img_thumb_panel` |
 | `permLink` | `<protocole>//<hôte>/?token=<token>&instance=<nom>` |
