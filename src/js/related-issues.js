@@ -27,8 +27,9 @@ function newState() {
   };
 }
 
+// Published, in no resolution yet (status 0), of a resolvable category
 function isResolvable(i) {
-  return i.approved == 1 && i.status != 1 && i.resolvable;
+  return i.approved == 1 && i.status == 0 && i.resolvable;
 }
 
 function address() {

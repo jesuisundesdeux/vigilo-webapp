@@ -221,7 +221,7 @@ Toutes les URL partent de `decodeURIComponent(getInstance().api_path)`.
 
 | Export | Route | Remarques |
 |---|---|---|
-| `getIssues(options)` | `GET get_issues.php?<options>&scope=<scope>` | enrichit chaque observation (§3.3) ; cache par URL (`issue_cache`) |
+| `getIssues(options)` | `GET get_issues.php?<options>&scope=<scope>` | enrichit chaque observation (§3.3) ; une seule entrée par jeton (`uniqueIssues()` : avant le backend 0.0.26, une observation liée à plusieurs résolutions revenait une fois par résolution ; le statut le plus avancé est gardé, résolue > indiquée résolue > en cours > prise en compte) ; cache par URL (`issue_cache`) |
 | `createIssue(data, key)` | `POST create_issue.php[?key=]` | formulaire urlencodé ; génère `data.token` (8 caractères) si absent |
 | `createResolution(data)` | `POST create_resolution.php` | idem, sans clé |
 | `addImage(token, secretId, data, isResolution)` | `POST add_image.php` | `data` = JPEG en base64 ; choisit la méthode selon `backend_version` (§4.6) |
@@ -455,7 +455,7 @@ Boutons du pied de la fiche selon le cas :
 | mode modération, `approved == 1` | remettre à modérer (`'0'`) |
 | mode modération, `approved == 2` | approuver, remettre à modérer |
 | auteur (`userCanEdit`) et backend ≥ 0.0.17 | supprimer (`deleteIssue`) |
-| observation publiée, non résolue, catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) |
+| observation publiée, dans aucune résolution (`status == 0`), catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) |
 | toujours | observations similaires (fait défiler jusqu'à la section `.similar-issues`), partager, voir sur la carte, fermer |
 
 ---
@@ -633,7 +633,9 @@ Panoramax**.
 ### 4.5 Mode résolution
 
 Une résolution se crée **depuis une observation** : le bouton **Résoudre** de sa fiche (`issue-detail.js`, observation
-publiée, non résolue, de catégorie « résoluble », backend ≥ 0.0.14) appelle `window.startResolution(token)`, qui ferme
+publiée, **dans aucune résolution** (`status == 0` : le backend n'accepte qu'une résolution par observation et refuse
+de valider une résolution dont une observation figure dans une autre), de catégorie « résoluble », backend ≥ 0.0.14)
+appelle `window.startResolution(token)`, qui ferme
 la fiche et ouvre le formulaire en mode résolution (`resolutionIssue` = l'observation) :
 
 - `setFormMode(true)` : titre « Nouvelle résolution », `.onissueonly` masqués (position, catégorie, explication),
@@ -643,8 +645,8 @@ la fiche et ouvre le formulaire en mode résolution (`resolutionIssue` = l'obser
 
 #### `related-issues.js`
 
-Même logique que les observations similaires (`samePlace()` de `similar-issues.js`) : observations publiées, non
-résolues, de catégorie « résoluble », à moins de la distance choisie **ou** à la même adresse, autour de l'observation de
+Même logique que les observations similaires (`samePlace()` de `similar-issues.js`) : observations publiées, dans
+aucune résolution (`status == 0`), de catégorie « résoluble », à moins de la distance choisie **ou** à la même adresse, autour de l'observation de
 départ, qui est sélectionnée (« cette observation »). Filtres modifiables : **catégorie** (celle de l'observation par
 défaut, liste des catégories présentes avec leur nombre), **distance** (`RELATED_DISTANCES` : 50 m à 1 km, 300 m par
 défaut comme `SIMILAR_DISTANCE`), **inclure la même adresse**. Les observations sélectionnées restent affichées quels

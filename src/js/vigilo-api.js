@@ -12,6 +12,24 @@ function baseUrl() {
 
 import {request, randomToken} from './utils';
 var issue_cache = {};
+
+// Rank of a resolution status: 1 resolved > 4 reported resolved > 3 in progress > 2 taken into account > 0
+const STATUS_RANK = {1: 4, 4: 3, 3: 2, 2: 1, 0: 0};
+
+/**
+ * One item per observation: before backend 0.0.26, an observation linked to several resolutions
+ * came once per resolution (possibly with a pending status first). Keep its most advanced status.
+ */
+function uniqueIssues(items) {
+    var best = new Map();
+    items.forEach((item) => {
+        var seen = best.get(item.token);
+        if (seen === undefined || (STATUS_RANK[item.status] || 0) > (STATUS_RANK[seen.status] || 0)) {
+            best.set(item.token, item);
+        }
+    });
+    return items.filter((item) => best.get(item.token) === item);
+}
 export function getIssues(options) {
     /**
      * - int GET['c'] : (Facultatif) : filtre selon catégorie
@@ -64,6 +82,7 @@ export function getIssues(options) {
                             item.permLink = window.location.protocol + "//" + window.location.host + "/?token=" + item.token + "&instance=" + encodeURIComponent(vigiloconfig.getInstance().name);
                             return item
                         })
+                        data = uniqueIssues(data);
                         issue_cache[url] = data;
                         resolve(data)
                     })
