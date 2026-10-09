@@ -451,7 +451,7 @@ retirée après 3 s).
 | Fichier | Export par défaut | Utilisé par |
 |---|---|---|
 | `issue-card.js` | `(issue) => string` : carte de la liste, `onclick="viewIssue('<token>')"`, icônes d'état, pastille de catégorie, commentaire mis en avant (`.card-comment`, 3 lignes au plus, absent si vide), adresse, date (`data-i18n-date`) | `issue-list.js` |
-| `issue-detail.js` | `async (issue) => string` : contenu de `#modal-issue` : en-tête (catégorie, pastilles d'état, phrase d'état), commentaire mis en avant juste dessous (`.issue-quote` : citation en grand, explication en dessous, absent si les deux sont vides), photo + bouton Panoramax, tableau adresse / date / référence, mini-carte, observations similaires, pied (actions principales, partager, menu « ⋮ ») | `issue-list.js` |
+| `issue-detail.js` | `async (issue) => string` : contenu de `#modal-issue` : en-tête (catégorie, pastilles d'état, phrase d'état), photo + bouton Panoramax, commentaire mis en avant sous la photo (`.issue-quote` : citation en grand, explication en dessous, absent si les deux sont vides), tableau adresse / date / référence, mini-carte, observations similaires, pied (actions principales, partager, menu « ⋮ ») | `issue-list.js` |
 | `error.js` | `(e) => string` : carte d'erreur, détail échappé | liste, filtres, formulaire, fiche |
 | `github_issue.js` | `async () => string` : corps pré-rempli (URL-encodé) d'un ticket GitHub (navigateur, territoire, versions) | `app.js` |
 

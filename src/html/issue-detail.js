@@ -92,7 +92,7 @@ export default async function (issue) {
   }
   var stateNote = state.long ? `<p class="issue-state-note issue-state-${state.cls}" data-i18n="${state.long}">${t(state.long)}</p>` : "";
 
-  // The comment is the heart of the observation: shown as a quote right under the title
+  // The comment is the heart of the observation: shown as a quote right under the photo
   var comment = "";
   if (issue.comment || issue.explanation) {
     comment = `<figure class="issue-quote">
@@ -112,7 +112,6 @@ export default async function (issue) {
     <div class="issue-chips">${chips}</div>
     ${stateNote}
   </header>
-  ${comment}
   <div class="issue-layout">
     <div class="issue-media">
       <img class="issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="" role="button" tabindex="0" data-i18n-attr='{"title": "photo-zoom"}' title="${t("photo-zoom")}">
@@ -120,6 +119,7 @@ export default async function (issue) {
       <p class="panoramax-row">
         <a href="#!" class="btn btn-small waves-effect waves-light panoramax-btn loading"><span class="panoramax-loader"></span><i class="material-icons left">streetview</i><span class="panoramax-label">${t("panoramax-searching")}</span></a>
       </p>
+      ${comment}
     </div>
     <div class="issue-info">
       <dl class="issue-facts">
