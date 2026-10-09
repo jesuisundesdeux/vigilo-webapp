@@ -127,6 +127,34 @@
     ${require('./form.html')}
   </div>
 
+  <!-- Modal for a picture taken from a Panoramax view (see js/panoramax-capture.js) -->
+  <div id="modal-panoramax-capture" class="modal modal-fixed-footer fullscreen">
+    <div class="modal-content">
+      <h5 data-i18n="panoramax-capture-title">Photo depuis Panoramax</h5>
+      <p class="pnx-hint" data-i18n="panoramax-capture-hint">Choisissez une vue sur la carte, cadrez-la (glisser, zoomer) puis prenez la photo.</p>
+      <div class="pnx-layout">
+        <div class="pnx-main">
+          <div class="pnx-viewer">
+            <canvas width="640" height="480"></canvas>
+            <div class="pnx-status"></div>
+            <div class="pnx-nav">
+              <a href="#!" class="btn-floating btn-small pnx-prev disabled" data-i18n-attr='{"title": "panoramax-capture-prev"}' title="Vue précédente"><i class="material-icons">arrow_back</i></a>
+              <a href="#!" class="btn-floating btn-small pnx-zoom-out disabled" data-i18n-attr='{"title": "panoramax-capture-zoom-out"}' title="Dézoomer"><i class="material-icons">zoom_out</i></a>
+              <a href="#!" class="btn-floating btn-small pnx-zoom-in disabled" data-i18n-attr='{"title": "panoramax-capture-zoom-in"}' title="Zoomer"><i class="material-icons">zoom_in</i></a>
+              <a href="#!" class="btn-floating btn-small pnx-next disabled" data-i18n-attr='{"title": "panoramax-capture-next"}' title="Vue suivante"><i class="material-icons">arrow_forward</i></a>
+            </div>
+          </div>
+          <div class="pnx-credits"></div>
+        </div>
+        <div class="pnx-map"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close btn-flat waves-effect" data-i18n="cancel">Annuler</a>
+      <a href="#!" class="btn waves-effect waves-light pnx-capture disabled"><i class="material-icons left">photo_camera</i><span data-i18n="panoramax-capture-take">Prendre la photo</span></a>
+    </div>
+  </div>
+
   <!-- Modal for admin -->
   <div id="modal-admin" class="modal modal-fixed-footer">
     <div class="modal-content">

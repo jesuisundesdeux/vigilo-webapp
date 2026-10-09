@@ -170,6 +170,7 @@ exécutés dans le navigateur, donc toute donnée externe doit y passer par `esc
 | `splash.js` | écran de chargement |
 | `install.js` | installation de la PWA |
 | `panoramax.js` | recherche et affichage d'une vue Panoramax |
+| `panoramax-capture.js` | photo d'une observation prise dans une vue Panoramax (formulaire) |
 | `map-layers.js` | fonds de carte communs |
 | `circle-marker-dynamic.js` | marqueur circulaire dont la taille suit le zoom |
 | `timedout-marker.js` | marqueur « viseur » temporaire |
@@ -336,11 +337,19 @@ Voir [§4](#4-formulaire-denvoi-dune-observation). Export : `init()`. Global : `
 #### `image-drawable.js`
 
 `ImageDrawable(div)` (export par défaut) crée un `ClassImageDrawable` sur le `<canvas>` contenu dans `div`
-(`#picture-preview`). Un clic sur l'aperçu le passe en plein écran (classe `fullscreen`) avec des boutons : annuler,
-rétablir, rotation gauche/droite, couleur (rouge, jaune par défaut, vert, bleu, noir, blanc), fermer. Le dessin est
-un trait de 30 px (souris ou tactile) appliqué directement sur le canvas, qui est ensuite celui envoyé au serveur :
-c'est l'outil qui permet à l'auteur de masquer un visage ou une plaque. Historique : `backHistory` / `upHistory`
-(images `ImageData` + rotation).
+(`#picture-preview`). Un clic sur l'aperçu le passe en plein écran (classe `fullscreen`, styles dans
+`image-drawable.scss`) avec deux barres :
+
+- en haut : annuler, rétablir, rotation gauche / droite, terminer ;
+- en bas : outils **crayon** (trait libre), **flèche**, **cercle** (ellipse dans le rectangle tracé, pour entourer),
+  **flouter** (rectangle réduit puis agrandi, sans `ctx.filter` que Safari ne gère pas), **épaisseur** (trois tailles
+  relatives au plus grand côté, `SIZES`), **couleur** (rouge, jaune par défaut, vert, bleu, noir, blanc).
+
+Le dessin (événements `pointer*`, souris et tactile) s'applique directement sur le canvas, qui est ensuite celui envoyé
+au serveur : c'est l'outil qui permet à l'auteur de masquer un visage ou une plaque. Les formes sont prévisualisées en
+repartant de l'image d'avant le geste ; un geste trop court ne dessine rien. Historique : `backHistory` / `upHistory`
+(images `ImageData` + rotation, 10 étapes), la rotation compte comme une étape. Les gestionnaires sont dans l'espace
+de noms `.drawable` : une nouvelle photo remplace l'éditeur de la précédente.
 
 #### `admin.js`
 
@@ -379,6 +388,30 @@ fenêtres (`modal-trigger`).
   `{id, url, embedUrl}` ou `null` (aussi en cas d'erreur). Résultats en cache par coordonnées.
 - `openPanoramaxViewer(picture)` : ouvre `#modal-panoramax` avec la visionneuse en iframe ; l'iframe repasse à
   `about:blank` à la fermeture.
+- `findPicturesAround(lat, lon)` : photos dans ±0,001° (~100 m), la plus proche d'abord (tableau vide en cas
+  d'erreur) ; `fetchPicture(href)` : photo d'un item STAC (suivante / précédente d'une séquence).
+- `pictureFromItem(item)` : normalise un item STAC : `id`, `lat`, `lon`, `datetime`, `azimuth` (`view:azimuth`),
+  `is360` (`pers:interior_orientation.field_of_view` ≥ 360), images `sd` / `hd` / `thumb` (assets), `producer`
+  (`geovisio:producer`, sinon fournisseur `producer`), `license`, `next` / `prev` (liens de la séquence), `url`.
+
+#### `panoramax-capture.js`
+
+`openPanoramaxCapture(location, bounds, onCapture)` ouvre `#modal-panoramax-capture` (dans `index.html`) :
+
+1. **localisation** : `location` (position déjà placée dans le formulaire), sinon position de l'appareil
+   (`navigator.geolocation`), sinon la carte montre la zone de l'instance (`bounds`) et invite à cliquer ;
+2. **vues à proximité** : `findPicturesAround()`, points jaunes sur une carte Leaflet ; un clic sur un point affiche la
+   vue, un clic ailleurs relance la recherche ; la vue courante est en rouge avec sa direction ; boutons
+   précédente / suivante de la séquence (le cap regardé est conservé d'une photo 360° à l'autre) ;
+3. **cadrage** dans un canvas 4:3 (glisser, molette, pincement, boutons de zoom) : une photo 360°
+   (équirectangulaire) est reprojetée en perspective (`renderEquirect`, cap `yaw`, inclinaison `pitch`, champ `fov`) ;
+   une photo plate est recadrée (`flatRegion`, centre et zoom) ;
+4. **capture** à partir de l'image `hd` (`IMAGE_MAX_SIZE` de large au plus, interpolation bilinéaire en 360°) avec une
+   bande de crédits en bas (`panoramax-capture-credit` : auteur, licence, date de la vue), puis
+   `onCapture(dataUrl, picture, location)`.
+
+Les images sont chargées avec `crossOrigin = "anonymous"` : Panoramax les sert avec CORS, sans quoi le canvas serait
+« contaminé » et la vue refusée (`panoramax-capture-error`).
 
 #### `map-layers.js`
 
@@ -542,8 +575,12 @@ Gabarit : `src/html/form.html`, dans `#modal-form` (fenêtre plein écran). Code
 ### 4.2 Ouverture (`window.startForm(token)`)
 
 Appelé par le bouton flottant `+` (`issues.html`) sans argument, ou par le bouton « modifier » d'un modérateur avec
-un jeton. `clearForm()` réinitialise le formulaire (et recrée le `M.Datepicker` sur ordinateur, avec les réglages de
-la clé `datepicker` de la traduction), la fenêtre s'ouvre, puis `initFormMap()` crée la carte au premier appel.
+un jeton. `clearForm()` réinitialise le formulaire : champs, jeton caché, photo et éditeur, position, observations
+résolues, liste des catégories (et recrée le `M.Datepicker` sur ordinateur, avec les réglages de la clé `datepicker`
+de la traduction), la fenêtre s'ouvre, puis `initFormMap()` crée la carte au premier appel.
+
+Le bouton **Tout effacer** (`#form-clear`, pied de la fenêtre, seulement pour une nouvelle observation) appelle
+`clearForm()` après confirmation et recadre la carte sur la zone de l'instance.
 
 ### 4.3 Photo
 
@@ -554,6 +591,12 @@ Trois sources, toutes vers `loadPicture(file, fromCamera, notFromMainInput)` :
 | sélection de fichier (`#issue-picture`) | non | rempli |
 | bouton « Prendre une photo » (mobile, attribut `capture`) | oui | rendu facultatif |
 | collage (`paste` sur `document`, fenêtre ouverte, desktop) | non | rendu facultatif |
+
+Quatrième source, sans `loadPicture` : le bouton **Photo depuis une vue Panoramax** (`#panoramax-picture`) ouvre
+`openPanoramaxCapture()` (voir `panoramax-capture.js`) autour de la position du formulaire si elle est placée. La photo
+capturée passe par `renderImage()` (donc modifiable dans l'éditeur), le champ obligatoire devient facultatif, la
+position est celle de la recherche (si le formulaire n'en a pas encore) et **la date et l'heure sont celles de la vue
+Panoramax**.
 
 `loadPicture` :
 
@@ -750,9 +793,9 @@ Le HTML généré en JS doit donc **à la fois** contenir le texte traduit (`i18
 | `src/css/main.scss` | point d'entrée : polices locales (Inter, Material Icons), `theme-variables.scss`, Materialize (SCSS source), `materialize-custom.scss`, CSS de Leaflet et de ses extensions, `spinner.scss`, `image-drawable.scss`, règles de mise en page (onglets fixes, liste, formulaire, filtres), puis `theme.scss` en dernier |
 | `theme-variables.scss` | variables `$vigilo-*` (jaune `#fdd835`, encre `#1f2328`, rayons, ombres) et surcharges des variables Materialize (`$primary-color`, `$button-raised-background`, `$font-stack`...) — importé **avant** Materialize |
 | `materialize-custom.scss` | tailles des fenêtres `.modal.big` et `.modal.fullscreen`, `.row` en flex, `z-index` du menu |
-| `theme.scss` | habillage de tous les composants, par sections commentées : barre du haut, onglets Liste/Carte, cartes, boutons flottants, fenêtres, fiche, filtres, formulaire, menu, statistiques (`.stats-*`, mode `.stats-embed`), toasts, contrôles Leaflet, mini-carte, bannière d'installation, Panoramax, squelettes de chargement |
+| `theme.scss` | habillage de tous les composants, par sections commentées : barre du haut, onglets Liste/Carte, cartes, boutons flottants, fenêtres, fiche, filtres, formulaire, menu, statistiques (`.stats-*`, mode `.stats-embed`), toasts, contrôles Leaflet, mini-carte, bannière d'installation, Panoramax (bouton, visionneuse, fenêtre de capture `#modal-panoramax-capture`), squelettes de chargement |
 | `dark.scss` | mode sombre : toutes les règles sous `html[data-theme="dark"]` (palette `$dark-*`), importé **après** `theme.scss` ; fonds de carte assombris par un `filter` sur `.leaflet-tile-pane` |
-| `image-drawable.scss` | outil de dessin plein écran |
+| `image-drawable.scss` | éditeur de photo plein écran (barres d'outils, couleurs) |
 | `spinner.scss` | ancienne animation de chargement `.spinner` (n'est plus utilisée dans les gabarits) |
 | `timedout-marker.scss` | transition d'opacité du viseur |
 

@@ -718,3 +718,90 @@ nav {
     text-overflow: ellipsis;
   }
 }
+
+// ---- Picture from a Panoramax view (see js/panoramax-capture.js)
+#modal-form .panoramax-picture .btn-flat {
+  padding: 0 8px;
+  text-transform: none;
+}
+#modal-form .modal-footer #form-clear {
+  text-transform: none;
+}
+#modal-panoramax-capture {
+  .modal-content {
+    padding: 16px;
+    h5 { margin: 0 0 4px; font-size: 1.3rem; }
+  }
+  .pnx-hint {
+    margin: 0 0 12px;
+    color: $vigilo-ink-soft;
+  }
+  .pnx-layout {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .pnx-main { flex: 3; min-width: 0; }
+  .pnx-viewer {
+    position: relative;
+    border-radius: $vigilo-radius-small;
+    overflow: hidden;
+    background: #1f2328;
+    canvas {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      touch-action: none;
+      cursor: grab;
+      &:active { cursor: grabbing; }
+    }
+  }
+  .pnx-status {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 85%;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    text-align: center;
+    pointer-events: none;
+  }
+  .pnx-nav {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    .btn-floating { background: rgba(0, 0, 0, 0.6); }
+    .btn-floating.disabled { background: rgba(0, 0, 0, 0.3) !important; }
+  }
+  .pnx-credits {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: $vigilo-ink-soft;
+  }
+  .pnx-map {
+    flex: 2;
+    min-height: 300px;
+    border-radius: $vigilo-radius-small;
+    overflow: hidden;
+  }
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    .btn, .btn-flat { text-transform: none; }
+  }
+  @media #{$small-and-down} {
+    .modal-content { padding: 12px; }
+    .pnx-layout { flex-direction: column; gap: 10px; }
+    .pnx-map { flex: none; min-height: 0; height: 220px; }
+  }
+}

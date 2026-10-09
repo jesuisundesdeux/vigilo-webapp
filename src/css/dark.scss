@@ -144,4 +144,8 @@ html[data-theme="dark"] {
 
   // Pictures: slightly dimmed, not the photos themselves
   .user-view .background img { filter: brightness(0.55); }
+
+  // Picture from a Panoramax view
+  #modal-panoramax-capture, #modal-panoramax-capture .modal-content { background: $dark-bg; }
+  #modal-panoramax-capture .pnx-hint, #modal-panoramax-capture .pnx-credits { color: $dark-ink-soft; }
 }

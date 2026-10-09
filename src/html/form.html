@@ -31,6 +31,10 @@
               <input type="file" accept="image/*" capture="environment" style="display: none">
             </label>
           </div>
+          <!-- Picture taken from a nearby Panoramax view (see js/panoramax-capture.js) -->
+          <div class="col s12 panoramax-picture">
+            <a href="#!" id="panoramax-picture" class="btn-flat waves-effect"><i class="material-icons left">streetview</i><span data-i18n="panoramax-capture-button">Photo depuis une vue Panoramax</span></a>
+          </div>
           <div id="picture-preview" class="col s3 m2 l12 center-align valign-wrapper">
           </div>
           <div class="col s12 center-align grey-text hide">
@@ -108,6 +112,7 @@
 
   </div>
   <div class="modal-footer">
+    <a href="#!" id="form-clear" class="btn-flat waves-effect left"><i class="material-icons left">delete_sweep</i><span data-i18n="form-clear">Tout effacer</span></a>
     <button class="btn waves-effect waves-light" type="submit" name="action"><span data-i18n="submit">Soumettre</span>
       <i class="material-icons right">send</i>
     </button>

@@ -12,6 +12,7 @@ import relatedIssueCard from '../html/related-issue-card';
 import { distance } from './utils';
 import errorCard from '../html/error';
 import ImageDrawable from './image-drawable';
+import { openPanoramaxCapture } from './panoramax-capture';
 import LocalDataManager from './localDataManager';
 import dataManager from './dataManager';
 
@@ -27,6 +28,8 @@ window.startForm = async function (token) {
   $("#issue-cat option[value=resolution]").removeProp("disabled");
   $(".onissueonly").show();
   $(".onresolutiononly").hide();
+  // "Clear all" only for a new observation
+  $("#form-clear").toggle(token === undefined);
 
   if (token !== undefined) {
     $("#issue-cat option[value=resolution]").prop("disabled", "true");
@@ -55,15 +58,24 @@ window.startForm = async function (token) {
 
 function clearForm() {
   $('#modal-form form').trigger("reset");
+  // hidden inputs are not reset by the form
+  $("#issue-token").val("");
   // A picture is required, from the gallery or from the camera button (see file change handler)
   $("#issue-picture").prop("required", true);
+  $("#picture-preview").off(".drawable").removeClass("drawable fullscreen").empty();
+  $("#picture-preview").next().addClass('hide');
   photoLocatePending = false;
   if (mapmarker !== undefined) {
     mapmarker.remove()
   }
   $("#modal-form-loader .determinate").css("width", "10%");
 
-  $("#related-issues").removeClass("invalid");
+  $("#related-issues").removeClass("invalid").empty().text(i18next.t("related-issues-placeholder"));
+  $(".onissueonly").show();
+  $(".onresolutiononly").hide();
+  if (!WE_ARE_ON_A_MOBILE && M.FormSelect.getInstance($("#issue-cat")[0])) {
+    M.FormSelect.init($("#issue-cat"));
+  }
 
   if (!WE_ARE_ON_A_MOBILE) {
     M.Datepicker.init($("#issue-date"), {
@@ -100,6 +112,53 @@ function hasCameraMetadata(exifObj) {
     || zeroth[piexif.ImageIFD.Model] !== undefined
     || exif[piexif.ExifIFD.DateTimeOriginal] !== undefined;
 }
+
+/**
+ * "Clear all" button: empty every field, the picture and the position
+ */
+$("#form-clear").on("click", async function (e) {
+  e.preventDefault();
+  if (!window.confirm(i18next.t("form-clear-confirm"))) {
+    return;
+  }
+  clearForm();
+  M.updateTextFields();
+  if (formmap !== undefined) {
+    var scope = await vigilo.getScope();
+    formmap.fitBounds(scopeBounds(scope));
+  }
+})
+
+function scopeBounds(scope) {
+  return [
+    [parseFloat(scope.coordinate_lat_min), parseFloat(scope.coordinate_lon_min)],
+    [parseFloat(scope.coordinate_lat_max), parseFloat(scope.coordinate_lon_max)]
+  ];
+}
+
+/**
+ * Picture taken from a nearby Panoramax view: around the observation's position
+ * if it is already set, else around the device's position
+ */
+$("#panoramax-picture").on("click", async function (e) {
+  e.preventDefault();
+  var scope = await vigilo.getScope();
+  var located = formmap !== undefined && formmap.hasLayer(mapmarker);
+  var location = located ? [mapmarker.getLatLng().lat, mapmarker.getLatLng().lng] : null;
+  openPanoramaxCapture(location, scopeBounds(scope), (dataUrl, picture, searchLocation) => {
+    $("#issue-picture").prop("required", false);
+    $("#modal-form .file-path").val(i18next.t("panoramax-capture-file"));
+    renderImage(dataUrl);
+    if (formmap === undefined || !formmap.hasLayer(mapmarker)) {
+      setFormMapPoint(searchLocation || [picture.lat, picture.lon]);
+    }
+    // date and time of the Panoramax picture (now if unknown)
+    var date = picture.datetime && !isNaN(picture.datetime.getTime()) ? picture.datetime : new Date();
+    setDate(date);
+    setTime(date.getHours(), date.getMinutes());
+    M.updateTextFields();
+  });
+})
 
 function longToast(key, options) {
   M.toast({ html: i18next.t(key, options), displayLength: 8000 });
@@ -247,7 +306,8 @@ function renderImage(src) {
 
     canvas.width = image.width * scale;
     canvas.height = image.height * scale;
-    var ctx = canvas.getContext("2d");
+    // read back by the picture editor (undo history)
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
     var x = 0;
     var y = 0;
     ctx.save();
