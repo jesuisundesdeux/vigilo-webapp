@@ -142,16 +142,18 @@ export function createResolution(data) {
     return request(options)
 }
 
-export async function addImage(token, secretId, data, isResolution) {
+// key: moderator key (an approved observation's photo can only be replaced with it)
+export async function addImage(token, secretId, data, isResolution, key) {
     var scope = await getScope();
+    var keyParam = key ? "&key=" + encodeURIComponent(key) : "";
     if (semver.gte( scope.backend_version ,"0.0.16")) {
-        return _addImage_after_0_0_16(token, secretId, data, isResolution);
+        return _addImage_after_0_0_16(token, secretId, data, isResolution, keyParam);
     } else {
-        return _addImage_before_0_0_16(token, secretId, data, isResolution);
+        return _addImage_before_0_0_16(token, secretId, data, isResolution, keyParam);
     }
 }
 
-function _addImage_before_0_0_16(token, secretId, data, isResolution) {
+function _addImage_before_0_0_16(token, secretId, data, isResolution, keyParam) {
     var b64 = atob(data);
     var array = [];
     for (var p = 0; p < b64.length; p++) {
@@ -160,7 +162,7 @@ function _addImage_before_0_0_16(token, secretId, data, isResolution) {
     var u8array = new Uint8Array(array);
 
     var options = {
-        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId+(isResolution?"&type=resolution":""),
+        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId+(isResolution?"&type=resolution":"") + keyParam,
         method: "POST",
         headers: {
             //"Content-Type": CONTENT_TYPE_JPEG
@@ -171,9 +173,9 @@ function _addImage_before_0_0_16(token, secretId, data, isResolution) {
     return request(options)
 }
 
-function _addImage_after_0_0_16(token, secretId, data, isResolution) {
+function _addImage_after_0_0_16(token, secretId, data, isResolution, keyParam) {
     var options = {
-        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId + "&method=base64"+(isResolution?"&type=resolution":""),
+        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId + "&method=base64"+(isResolution?"&type=resolution":"") + keyParam,
         method: "POST",
         headers: {
             "Content-Type": CONTENT_TYPE_X_WWW_FORM_URLENCODED

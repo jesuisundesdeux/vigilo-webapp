@@ -20,6 +20,8 @@ div.drawable {
         background: #000;
         z-index: 9999;
         cursor: default;
+        overflow: hidden;
+        touch-action: none;
 
         canvas {
             margin: auto !important;
@@ -27,6 +29,8 @@ div.drawable {
             max-height: calc(100vh - 112px) !important;
             touch-action: none;
             cursor: crosshair;
+            position: relative;
+            z-index: 0;
         }
 
         .drawable-toolbar {
@@ -40,6 +44,7 @@ div.drawable {
             gap: 6px;
             padding: 0 8px;
             background: rgba(0, 0, 0, 0.85);
+            z-index: 1;
         }
         .drawable-top { top: 0; }
         .drawable-bottom { bottom: 0; }

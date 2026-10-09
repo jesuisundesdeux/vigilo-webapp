@@ -40,7 +40,8 @@ window.startForm = async function (token) {
   $("#form-clear").toggle(token === undefined);
 
   if (token !== undefined) {
-    var issues = await dataManager.getData();
+    // every observation, even one hidden by the filters (e.g. opened from a link)
+    var issues = await vigilo.getIssues();
     var issue = issues.filter(item => item.token == token)[0];
 
     $("#issue-token").val(token);
@@ -96,7 +97,7 @@ function clearForm() {
   $("#issue-token").val("");
   // A picture is required, from the gallery or from the camera button (see file change handler)
   $("#issue-picture").prop("required", true);
-  $("#picture-preview").off(".drawable").removeClass("drawable fullscreen").empty();
+  $("#picture-preview").off(".drawable .drawable-edit").removeClass("drawable fullscreen").empty();
   $("#picture-preview").next().addClass('hide');
   photoLocatePending = false;
   if (mapmarker !== undefined) {
@@ -658,7 +659,8 @@ $("#modal-form form").submit((e) => {
       createdToken = createResponse.token;
       $("#modal-form-loader .determinate").css("width", "50%");
       var jpegb64 = $("#picture-preview canvas")[0].toDataURL("image/jpeg", JPEG_QUALITY).split(",")[1];
-      return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64, isResolution)
+      // the moderator key lets the photo of an approved observation be replaced
+      return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64, isResolution, key)
     })
     .then(() => {
       $("#modal-form-loader .determinate").css("width", "100%");
