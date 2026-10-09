@@ -965,3 +965,46 @@ nav {
 }
 
 
+
+// Full screen photo viewer with zoom (js/photo-viewer.js)
+#modal-issue img.issue-photo { cursor: zoom-in; }
+#modal-issue img.issue-photo.photo-missing { cursor: default; }
+.photo-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: #000;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: zoom-in;
+  &.zoomed { cursor: grab; }
+  .photo-viewer-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform-origin: 0 0;
+    will-change: transform;
+    -webkit-user-drag: none;
+  }
+  .photo-viewer-close {
+    position: absolute;
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .55);
+    color: #fff;
+    i { color: #fff; }
+    &:hover, &:focus-visible { background: rgba(0, 0, 0, .8); }
+  }
+}

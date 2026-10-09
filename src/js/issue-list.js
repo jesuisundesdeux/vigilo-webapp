@@ -9,6 +9,7 @@ import { safeToken } from './utils';
 import { findPanoramaxPicture, openPanoramaxViewer } from './panoramax';
 import { findSimilarIssues, similarIssuesHtml } from './similar-issues';
 import { addModalCross } from './modal-cross';
+import { openPhotoViewer } from './photo-viewer';
 /**
  * Functions for issues list
  */
@@ -52,7 +53,14 @@ export async function viewIssue(token) {
 	if (issue.length > 0) {
 		$("#modal-issue").empty().append(await issueDetail(issue[0]));
 		addModalCross($("#modal-issue"));
-		M.Materialbox.init($("#modal-issue .materialboxed"));
+		// full screen photo, with zoom (not for the "missing photo" image)
+		$("#modal-issue .issue-photo").on("click keydown", function (e) {
+			if (this.classList.contains("photo-missing") || (e.type == "keydown" && e.key != "Enter" && e.key != " ")) {
+				return;
+			}
+			e.preventDefault();
+			openPhotoViewer(this.currentSrc || this.src, this.alt);
+		});
 		window.history.replaceState({}, '', issue[0].permLink)
 		modal.open()
 		showIssueMiniMap($("#modal-issue .issue-minimap")[0], $("#modal-issue .issue-minimap-caption")[0], issue[0]);
