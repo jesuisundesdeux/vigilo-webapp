@@ -8,6 +8,7 @@ import { showIssueMiniMap } from './issue-minimap';
 import { safeToken } from './utils';
 import { findPanoramaxPicture, openPanoramaxViewer } from './panoramax';
 import { findSimilarIssues, similarIssuesHtml } from './similar-issues';
+import { addModalCross } from './modal-cross';
 /**
  * Functions for issues list
  */
@@ -50,6 +51,7 @@ export async function viewIssue(token) {
 	}
 	if (issue.length > 0) {
 		$("#modal-issue").empty().append(await issueDetail(issue[0]));
+		addModalCross($("#modal-issue"));
 		M.Materialbox.init($("#modal-issue .materialboxed"));
 		window.history.replaceState({}, '', issue[0].permLink)
 		modal.open()

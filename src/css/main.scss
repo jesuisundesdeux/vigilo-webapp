@@ -425,3 +425,24 @@ html.admin-mode {
 
 @import "theme.scss";
 @import "dark.scss";
+
+// Close cross of the modals (see js/modal-cross.js), above the scrolling content
+.modal .modal-x {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .85);
+  color: $vigilo-ink;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+  i { font-size: 22px; }
+  &:hover, &:focus-visible { background: #fff; }
+}
+// room for the cross next to the titles
+.modal .modal-content > h3, .modal .modal-content > h5, .modal .filters-header { padding-right: 40px; }

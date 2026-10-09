@@ -13,6 +13,7 @@ import github_issue from '../html/github_issue';
 import M from '@materializecss/materialize';
 import { refreshIssueMiniMap } from './issue-minimap';
 import { escapeHtml } from './utils';
+import { addModalCrosses } from './modal-cross';
 import { hideSplash, setSplashStatus } from './splash';
 
 import dataManager from './dataManager';
@@ -21,6 +22,7 @@ import localDataManager from './localDataManager';
 export default class VigiloApp {
     async init() {
         await i18n.init();
+        addModalCrosses();
         // light / dark theme (side menu item)
         initTheme();
 
