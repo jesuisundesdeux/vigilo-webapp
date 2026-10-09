@@ -221,7 +221,7 @@ Toutes les URL partent de `decodeURIComponent(getInstance().api_path)`.
 
 | Export | Route | Remarques |
 |---|---|---|
-| `getIssues(options)` | `GET get_issues.php?<options>&scope=<scope>` | enrichit chaque observation (§3.3) ; une seule entrée par jeton (`uniqueIssues()` : avant le backend 0.0.26, une observation liée à plusieurs résolutions revenait une fois par résolution ; le statut le plus avancé est gardé, résolue > indiquée résolue > en cours > prise en compte) ; cache par URL (`issue_cache`) |
+| `getIssues(options)` | `GET get_issues.php?<options>&scope=<scope>` | enrichit chaque observation (§3.3) ; une seule entrée par jeton (`uniqueIssues()` : avant le backend 0.0.27, une observation liée à plusieurs résolutions revenait une fois par résolution ; le statut le plus avancé est gardé, résolue > indiquée résolue > en cours > prise en compte) ; cache par URL (`issue_cache`) |
 | `createIssue(data, key)` | `POST create_issue.php[?key=]` | formulaire urlencodé ; génère `data.token` (8 caractères) si absent |
 | `createResolution(data)` | `POST create_resolution.php` | idem, sans clé |
 | `addImage(token, secretId, data, isResolution)` | `POST add_image.php` | `data` = JPEG en base64 ; choisit la méthode selon `backend_version` (§4.6) |

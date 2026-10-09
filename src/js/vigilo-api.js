@@ -17,7 +17,7 @@ var issue_cache = {};
 const STATUS_RANK = {1: 4, 4: 3, 3: 2, 2: 1, 0: 0};
 
 /**
- * One item per observation: before backend 0.0.26, an observation linked to several resolutions
+ * One item per observation: before backend 0.0.27, an observation linked to several resolutions
  * came once per resolution (possibly with a pending status first). Keep its most advanced status.
  */
 function uniqueIssues(items) {
