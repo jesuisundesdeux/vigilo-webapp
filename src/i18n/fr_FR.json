@@ -2,6 +2,8 @@
     "language": "Langue",
     "issues": "Les observations",
     "issues-similar": "Observations similaires",
+    "issues-similar-hint": "Même catégorie, à moins de {{distance}} m ou à la même adresse",
+    "issues-similar-none": "Aucune observation similaire.",
     "stats": "Statistiques",
     "zone-geo": "Zone géographique",
     "see-on-map": "Voir sur la carte",

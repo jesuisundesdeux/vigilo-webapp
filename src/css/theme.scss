@@ -673,3 +673,48 @@ nav {
 @media (prefers-reduced-motion: reduce) {
   .skeleton-card .skeleton-img, .skeleton-card .skeleton-lines span { animation: none; }
 }
+
+// Similar observations, at the bottom of the observation window (js/similar-issues.js)
+.similar-issues {
+  border-top: 1px solid $vigilo-border;
+  margin-top: 8px;
+  padding-top: 12px;
+  h6 {
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    i { margin-right: 0; }
+  }
+  .similar-issues-count {
+    background: $vigilo-yellow;
+    color: $vigilo-ink;
+    border-radius: 999px;
+    padding: 0 8px;
+    font-size: .85rem;
+  }
+  .similar-issues-hint { font-size: .85rem; margin: 0 0 10px; }
+  .similar-issues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+  }
+  .similar-issue {
+    display: block;
+    border-radius: $vigilo-radius-small;
+    overflow: hidden;
+    border: 1px solid $vigilo-border;
+    color: $vigilo-ink;
+    img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+    &:hover, &:focus-visible { box-shadow: $vigilo-shadow-hover; }
+  }
+  .similar-issue-caption {
+    display: block;
+    padding: 3px 6px;
+    font-size: .75rem;
+    color: $vigilo-ink-soft;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

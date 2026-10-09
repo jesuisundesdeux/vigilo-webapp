@@ -81,6 +81,20 @@ export function escapeHtml(value) {
  * Keep only characters allowed in an issue token, so it can be safely
  * embedded in an inline JS handler (e.g. onclick="viewIssue('...')").
  */
+/** Distance in meters between two points (latitude / longitude in degrees) */
+export function distance(lat1, lng1, lat2, lng2) {
+    var rad = Math.PI / 180;
+    var dla = (lat2 - lat1) * rad / 2;
+    var dlo = (lng2 - lng1) * rad / 2;
+    var a = Math.sin(dla) * Math.sin(dla) + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dlo) * Math.sin(dlo);
+    return 6378137 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** Address reduced to lowercase letters and digits, without accents (to compare two addresses) */
+export function flatString(value) {
+    return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
 export function safeToken(token) {
     return String(token || "").replace(/[^A-Za-z0-9_-]/g, "");
 }

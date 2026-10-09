@@ -2,6 +2,8 @@
     "language": "Language",
     "issues": "Reports",
     "issues-similar": "Similar reports",
+    "issues-similar-hint": "Same category, less than {{distance}} m away or at the same address",
+    "issues-similar-none": "No similar report.",
     "stats": "Statistics",
     "zone-geo": "Geographical area",
     "see-on-map": "See on map",
