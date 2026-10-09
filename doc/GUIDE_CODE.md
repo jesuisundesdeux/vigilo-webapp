@@ -85,6 +85,11 @@ Les fichiers JS de `src/html/` (`issue-card.js`, `issue-detail.js`, `error.js`,
 `github_issue.js`) sont des **composants** : des fonctions qui renvoient une chaîne HTML (littéraux de gabarit
 exécutés dans le navigateur, donc toute donnée externe doit y passer par `escapeHtml`).
 
+Fenêtres (`.modal`) : chacune reçoit une **croix de fermeture** en haut à droite (`src/js/modal-cross.js`,
+`addModalCrosses()` appelé par `app.js` après `i18n.init()` ; lien `.modal-close.modal-x`, que Materialize ferme
+tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()` rappelle `addModalCross()`. Seule
+`#modal-form-loader` (envoi en cours) n'en a pas.
+
 ### 1.3 Séquence de démarrage
 
 1. Le navigateur affiche `index.html` : l'écran de chargement `#app-splash` (styles en ligne, fond jaune `#fdd835`,
@@ -267,7 +272,7 @@ adminKey}`) et drapeaux de session :
 |---|---|
 | `cleanIssues()` | vide `#issues .cards-container`, remet `offset` à 0 |
 | `displayIssues(count)` | ajoute les `count` observations filtrées suivantes (`offset` interne) avec `issueCard()` ; retire les cartes squelettes ; message `no-issue` si aucune ; en erreur, remplace **tout `#issues`** par `errorCard(e)` |
-| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, active `Materialbox`, réécrit l'URL avec `permLink` (`history.replaceState`), ouvre `#modal-issue`, lance la mini-carte et la recherche Panoramax, remplit `.similar-issues` avec `findSimilarIssues()` sur toutes les observations chargées |
+| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, active `Materialbox`, réécrit l'URL avec `permLink` (`history.replaceState`), remet la croix (`addModalCross`), ouvre `#modal-issue`, lance la mini-carte et la recherche Panoramax, remplit `.similar-issues` avec `findSimilarIssues()` sur toutes les observations chargées |
 | `refreshIssueCard(issue)` | réaffiche une carte en place après une action de modération ; si elle ne correspond plus aux filtres, la retire et charge l'observation suivante |
 
 `refreshIssueCard` retrouve la carte par le sélecteur `.card[onclick="viewIssue('<token>')"]` : ne pas changer
