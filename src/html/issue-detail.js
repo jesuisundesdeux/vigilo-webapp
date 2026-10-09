@@ -92,13 +92,17 @@ export default async function (issue) {
   }
   var stateNote = state.long ? `<p class="issue-state-note issue-state-${state.cls}" data-i18n="${state.long}">${t(state.long)}</p>` : "";
 
+  // The comment is the heart of the observation: shown as a quote right under the title
   var comment = "";
   if (issue.comment || issue.explanation) {
-    comment = `<section class="issue-section">
-      <h3 class="issue-label" data-i18n="comment">${t("comment")}</h3>
-      ${issue.comment ? `<p class="issue-comment">${escapeHtml(issue.comment)}</p>` : ""}
-      ${issue.explanation ? `<blockquote>${escapeHtml(issue.explanation)}</blockquote>` : ""}
-    </section>`;
+    comment = `<figure class="issue-quote">
+      <i class="material-icons" aria-hidden="true">format_quote</i>
+      <div>
+        <figcaption class="issue-label" data-i18n="comment">${t("comment")}</figcaption>
+        ${issue.comment ? `<blockquote class="issue-comment">${escapeHtml(issue.comment)}</blockquote>` : ""}
+        ${issue.explanation ? `<p class="issue-explanation">${escapeHtml(issue.explanation)}</p>` : ""}
+      </div>
+    </figure>`;
   }
 
   return `
@@ -108,6 +112,7 @@ export default async function (issue) {
     <div class="issue-chips">${chips}</div>
     ${stateNote}
   </header>
+  ${comment}
   <div class="issue-layout">
     <div class="issue-media">
       <img class="issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="" role="button" tabindex="0" data-i18n-attr='{"title": "photo-zoom"}' title="${t("photo-zoom")}">
@@ -131,7 +136,6 @@ export default async function (issue) {
           <dd><a href="${escapeHtml(issue.permLink)}">${token}</a></dd>
         </div>
       </dl>
-      ${comment}
       <div class="issue-minimap-wrapper">
         <div class="issue-minimap"></div>
         <p class="issue-minimap-caption grey-text"></p>
