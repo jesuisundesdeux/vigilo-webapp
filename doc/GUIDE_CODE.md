@@ -451,7 +451,7 @@ retirée après 3 s).
 | Fichier | Export par défaut | Utilisé par |
 |---|---|---|
 | `issue-card.js` | `(issue) => string` : carte de la liste, `onclick="viewIssue('<token>')"`, icônes d'état, pastille de catégorie, adresse, date (`data-i18n-date`) | `issue-list.js` |
-| `issue-detail.js` | `async (issue) => string` : contenu de `#modal-issue` (photo, mini-carte, état, référence, catégorie, date, commentaire, explication, adresse + lien OSM, ligne Panoramax, boutons) | `issue-list.js` |
+| `issue-detail.js` | `async (issue) => string` : contenu de `#modal-issue` : en-tête (catégorie, pastilles d'état, phrase d'état), photo + bouton Panoramax, tableau adresse / date / référence, commentaire et explication, mini-carte, observations similaires, pied (actions principales, partager, menu « ⋮ ») | `issue-list.js` |
 | `error.js` | `(e) => string` : carte d'erreur, détail échappé | liste, filtres, formulaire, fiche |
 | `github_issue.js` | `async () => string` : corps pré-rempli (URL-encodé) d'un ticket GitHub (navigateur, territoire, versions) | `app.js` |
 
@@ -461,16 +461,23 @@ retirée après 3 s).
 - `window.shareIssue(link)` : partage natif (`navigator.share`), sinon copie dans le presse-papiers, sinon suit le
   lien.
 
-Boutons du pied de la fiche selon le cas :
+Actions de la fiche : les **principales** sont des boutons à texte à gauche du pied (`.issue-primary`), les autres
+dans le **menu « ⋮ »** (`.issue-more` ouvre `.issue-menu`, `role="menu"`, au-dessus du pied ; fermé par un clic
+ailleurs ou sur un élément, flèches haut/bas pour naviguer). Le partage (`shareIssue`) reste un bouton à icône. La
+fermeture est la croix en haut à droite (`modal-cross.js`).
 
-| Cas | Boutons ajoutés |
-|---|---|
-| mode modération, `approved == 0` | approuver (`adminApprove(t,'1')`), refuser (`'2'`), modifier (`startForm(t)`) |
-| mode modération, `approved == 1` | remettre à modérer (`'0'`), modifier (`startForm(t)` ; `create_issue.php` garde l'état de modération) |
-| mode modération, `approved == 2` | approuver, remettre à modérer |
-| auteur (`userCanEdit`) et backend ≥ 0.0.17 | supprimer (`deleteIssue`) |
-| observation publiée, dans aucune résolution (`status == 0`), catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) |
-| toujours | **signaler** (`.report-btn`, lien `mailto:` vers `contact_email` de `get_scope.php`, objet `report-issue-subject`, corps `report-issue-body` : référence, catégorie, adresse, date, commentaire, lien, motif à compléter), observations similaires (fait défiler jusqu'à la section `.similar-issues`), partager, voir sur la carte, fermer |
+| Cas | Boutons principaux | Menu « ⋮ » |
+|---|---|---|
+| toujours | | voir sur la carte (`centerOnIssue`), observations similaires (défile jusqu'à `.similar-issues`), voir sur OpenStreetMap, **signaler** (`.report-btn`, lien `mailto:` vers `contact_email` de `get_scope.php`, objet `report-issue-subject`, corps `report-issue-body` : référence, catégorie, adresse, date, commentaire, lien, motif à compléter) |
+| observation publiée, dans aucune résolution (`status == 0`), catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) | |
+| mode modération, `approved == 0` | **Valider** (`adminApprove(t,'1')`), **Refuser** (`'2'`) | modifier (`startForm(t)`) |
+| mode modération, `approved == 1` | (Résoudre si possible) | modifier (`create_issue.php` garde l'état de modération), remettre à modérer (`'0'`), refuser |
+| mode modération, `approved == 2` | **Valider** | remettre à modérer |
+| auteur (`userCanEdit`) et backend ≥ 0.0.17 | | supprimer (`deleteIssue`) |
+
+Pastilles d'état (`.issue-chip-*`) : non modéré, refusé, sinon l'état de résolution (non résolu, pris en compte, en
+cours, indiqué résolu, résolu), plus « J'ai fait ce signalement » ; la phrase longue (`status-*-long`) s'affiche
+dessous quand elle existe.
 
 Les boutons sans texte ont une description (`title`, et `aria-label` pour les lecteurs d'écran) traduite par
 `data-i18n-attr`, affichée au survol : à garder pour tout nouveau bouton à icône seule.
@@ -737,7 +744,7 @@ est de nouveau envoyée par `add_image.php` avec le `secretid` renvoyé.
 | `admin.js` | bannière `#admin-banner` sous la barre du haut (« Mode modération activé », lien pour le désactiver) et classe `admin-mode` sur `<html>` (onglets et carte décalés de la hauteur de la bannière, `main.scss`) ; `window.adminApprove` défini |
 | `vigilo-api.getIssues` | `img` / `img_thumb` = photo originale `get_photo.php?...&key=` (dès qu'une clé est enregistrée) |
 | `issue-filter.js` | filtre par défaut `status = ['unapproved']` + toast |
-| `issue-detail.js` | boutons approuver / refuser / remettre à modérer / modifier |
+| `issue-detail.js` | boutons Valider / Refuser, et dans le menu « ⋮ » : modifier, remettre à modérer, refuser |
 | `form.js` | catégories désactivées proposées ; `create_issue.php?key=` (pas de limite anti-spam, modification possible) ; `secretid` non mémorisé |
 
 ### 5.3 `adminApprove(token, status)`

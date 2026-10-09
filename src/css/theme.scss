@@ -160,45 +160,169 @@ nav {
   }
 }
 
-// Observation detail
+// Observation detail (src/html/issue-detail.js)
 #modal-issue {
-  .modal-content {
-    p {
-      margin: 0 0 14px;
-      b {
-        display: inline-block;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: $vigilo-ink-soft;
-        margin-bottom: 2px;
-      }
-    }
-    h6 {
-      background: rgba($vigilo-yellow, 0.25);
-      border-radius: $vigilo-radius-small;
-      padding: 6px 10px;
-      font-size: 0.95rem;
-      // the status banner only shows when the observation has a status icon
-      &:not(:has(i)) {
-        display: none;
-      }
-    }
-    img.materialboxed {
-      border-radius: $vigilo-radius-small;
-    }
-    // original photos can be tall (portrait): keep them in view, full size on click
-    img.issue-photo {
-      width: 100%;
-      max-height: 45vh;
-      object-fit: contain;
-      background: #e9ecef;
-    }
-    blockquote {
-      border-left-color: $vigilo-yellow-dark;
-      margin: 8px 0 0;
+  .issue-head {
+    padding-right: 40px; // room for the close cross
+    margin-bottom: 16px;
+  }
+  .issue-title {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0 0 8px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .issue-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .issue-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px 2px 6px;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+    background: #eef0f3;
+    color: $vigilo-ink;
+    i { font-size: 16px; }
+  }
+  .issue-chip-unapproved { background: #fff3cd; color: #7a5b00; }
+  .issue-chip-refused { background: #fde2e1; color: #a1251b; }
+  .issue-chip-taked, .issue-chip-inprogress { background: #e3ecfb; color: #1d4f9c; }
+  .issue-chip-done, .issue-chip-resolved { background: #dff3e4; color: #1e6b34; }
+  .issue-chip-mine { background: rgba($vigilo-yellow, .35); }
+  .issue-state-note {
+    margin: 8px 0 0;
+    font-size: .9rem;
+    color: $vigilo-ink-soft;
+  }
+
+  .issue-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 24px;
+    align-items: start;
+    @media #{$small-and-down} {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
     }
   }
+  // original photos can be tall (portrait): keep them in view, full size on click
+  img.issue-photo {
+    display: block;
+    width: 100%;
+    max-height: 45vh;
+    object-fit: contain;
+    background: #e9ecef;
+    border-radius: $vigilo-radius-small;
+  }
+  .panoramax-row { margin: 10px 0 0; }
+
+  .issue-facts {
+    margin: 0 0 16px;
+    border: 1px solid $vigilo-border;
+    border-radius: $vigilo-radius-small;
+  }
+  .issue-fact {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 5fr);
+    gap: 12px;
+    padding: 8px 12px;
+    & + .issue-fact { border-top: 1px solid $vigilo-border; }
+    dt {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: $vigilo-ink-soft;
+      i { font-size: 18px; }
+    }
+    dd { margin: 0; overflow-wrap: anywhere; }
+    @media #{$small-and-down} {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2px;
+    }
+  }
+  .issue-section { margin-bottom: 16px; }
+  .issue-label {
+    font-size: .75rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: $vigilo-ink-soft;
+    margin: 0 0 4px;
+  }
+  .issue-comment { margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
+  blockquote {
+    border-left-color: $vigilo-yellow-dark;
+    margin: 8px 0 0;
+  }
+  .issue-minimap-wrapper { margin-top: 0; }
+
+  // Footer: main actions on the left, share and the "more" menu on the right
+  .modal-footer.issue-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+  }
+  .issue-primary-actions {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .issue-primary {
+    margin: 0;
+    border-radius: 999px;
+    color: #fff;
+    padding: 0 16px;
+    white-space: nowrap;
+    i { color: #fff; }
+  }
+  .resolve-btn, .approve-btn { background-color: #2e7d32; }
+  .refuse-btn { background-color: #c62828; }
+  .issue-icon-btn {
+    margin: 0;
+    padding: 0 8px;
+    color: $vigilo-ink;
+    i { line-height: 36px; }
+  }
+  .issue-menu {
+    position: absolute;
+    right: 8px;
+    bottom: 60px;
+    z-index: 6;
+    min-width: 240px;
+    max-width: calc(100% - 16px);
+    max-height: calc(100% - 76px);
+    overflow-y: auto;
+    padding: 6px 0;
+    background: #fff;
+    border-radius: $vigilo-radius-small;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, .2);
+    &[hidden] { display: none; }
+  }
+  .issue-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    color: $vigilo-ink;
+    i { color: $vigilo-ink-soft; font-size: 20px; }
+    &:hover, &:focus-visible { background: #f2f4f7; outline: none; }
+    &.danger, &.danger i { color: #c62828; }
+  }
+  .issue-menu-divider { height: 1px; margin: 6px 0; background: $vigilo-border; }
 }
 
 // Filters bottom sheet
@@ -550,10 +674,7 @@ nav {
   }
 }
 
-// "See with Panoramax" button, under the location: spinner while looking for a picture
-#modal-issue .panoramax-row {
-  margin-top: -4px;
-}
+// "See with Panoramax" button, under the photo: spinner while looking for a picture
 .panoramax-btn {
   border-radius: 999px;
   text-transform: none;
@@ -843,11 +964,4 @@ nav {
   }
 }
 
-// "Resolve" button of the observation window: first of the footer, on the left
-#modal-issue .modal-footer .resolve-btn {
-  float: left;
-  margin: 6px 0 0 8px;
-  border-radius: 999px;
-  background-color: #2e7d32;
-  color: #fff;
-}
+

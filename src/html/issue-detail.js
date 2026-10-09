@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import localDataManager from '../js/localDataManager';
 import * as vigilo from '../js/vigilo-api';
 
@@ -9,121 +10,182 @@ import { escapeHtml, safeToken } from '../js/utils';
 
 export default async function (issue) {
   const token = safeToken(issue.token);
-  // Icon buttons: their description shows on hover (title) and is read by screen readers
-  const iconBtn = (classes, onclick, icon, key) =>
-    `<a class="btn-floating waves-effect waves-light ${classes}" onclick="${onclick}" data-i18n-attr='{"title": "${key}", "aria-label": "${key}"}' title="${i18next.t(key)}" aria-label="${i18next.t(key)}"><i class="material-icons center">${icon}</i></a>\n`;
-  const btn_to_approve = iconBtn('blue', `adminApprove('${token}','0')`, 'remove_circle', 'admin-unapprove');
-  const btn_approve = iconBtn('green', `adminApprove('${token}','1')`, 'check_circle', 'admin-approve');
-  const btn_refuse = iconBtn('red', `adminApprove('${token}','2')`, 'delete', 'admin-refuse');
-  const btn_edit = iconBtn('blue', `startForm('${token}')`, 'edit', 'edit-issue');
-  const btn_delete = iconBtn('red', `deleteIssue('${token}','2')`, 'delete', 'delete-issue');
-  var btns = "";
-  if (localDataManager.isAdmin()) {
-    if (issue.approved == "0") {
-      btns = btn_approve + btn_refuse + btn_edit;
-    } else if (issue.approved == "1") {
-      // approved observations can be edited too (the backend keeps their moderation state)
-      btns = btn_to_approve + btn_edit;
-    } else if (issue.approved == "2") {
-      btns = btn_approve + btn_to_approve;
-    }
-  } else if (localDataManager.userCanEdit(issue)) {
-    // J'ai fait ce signalement et il n'est pas encore approuvé
-    var scope = await vigilo.getScope();
-    if (semver.gte( scope.backend_version ,"0.0.17")) {
-      btns = btn_delete;
-    }
-    
-  }
+  const t = (key) => i18next.t(key);
+  const lang = i18next.language.split("_")[0];
+  const scope = await vigilo.getScope().catch(() => ({}));
+  const backendAtLeast = (v) => scope.backend_version !== undefined && semver.gte(scope.backend_version, v);
+
+  // Actions: the main ones are buttons of the footer, the others are in the "more" menu
+  const primaryBtn = (classes, onclick, icon, key) =>
+    `<a href="#!" class="btn waves-effect waves-light issue-primary ${classes}" onclick="${onclick}; return false;"><i class="material-icons left">${icon}</i><span data-i18n="${key}">${t(key)}</span></a>\n`;
+  const menuItem = (onclick, icon, key, classes = "", href = "#!") =>
+    `<a href="${escapeHtml(href)}" role="menuitem" class="issue-menu-item ${classes}"${onclick ? ` onclick="${onclick}"` : ""}><i class="material-icons">${icon}</i><span data-i18n="${key}">${t(key)}</span></a>\n`;
+  var primary = "";
+  var menuMain = "";
+  var menuManage = "";
 
   // Resolution of a published observation of a resolvable category, in no resolution yet (status 0: one
   // resolution per observation, the backend refuses to validate a resolution whose observations are in another one)
   // (backend >= 0.0.14)
-  var btn_resolve = "";
-  if (issue.approved == 1 && issue.status == 0 && issue.resolvable) {
-    var scopeForResolution = await vigilo.getScope();
-    if (semver.gte(scopeForResolution.backend_version, "0.0.14")) {
-      btn_resolve = `<a href="#!" class="btn waves-effect waves-light resolve-btn" onclick="startResolution('${token}'); return false;"><i class="material-icons left">done_all</i><span>${i18next.t("resolve-issue")}</span></a>\n`;
+  if (issue.approved == 1 && issue.status == 0 && issue.resolvable && backendAtLeast("0.0.14")) {
+    primary += primaryBtn("resolve-btn", `startResolution('${token}')`, "done_all", "resolve-issue");
+  }
+
+  if (localDataManager.isAdmin()) {
+    if (issue.approved == "0") {
+      primary = primaryBtn("approve-btn", `adminApprove('${token}','1')`, "check_circle", "admin-approve-short")
+        + primaryBtn("refuse-btn", `adminApprove('${token}','2')`, "block", "admin-refuse-short");
+      menuManage += menuItem(`startForm('${token}')`, "edit", "edit-issue");
+    } else if (issue.approved == "1") {
+      // approved observations can be edited too (the backend keeps their moderation state)
+      menuManage += menuItem(`startForm('${token}')`, "edit", "edit-issue")
+        + menuItem(`adminApprove('${token}','0')`, "remove_circle", "admin-unapprove")
+        + menuItem(`adminApprove('${token}','2')`, "block", "admin-refuse", "danger");
+    } else if (issue.approved == "2") {
+      primary = primaryBtn("approve-btn", `adminApprove('${token}','1')`, "check_circle", "admin-approve-short");
+      menuManage += menuItem(`adminApprove('${token}','0')`, "remove_circle", "admin-unapprove");
     }
+  } else if (localDataManager.userCanEdit(issue) && backendAtLeast("0.0.17")) {
+    // my observation, not approved yet
+    menuManage += menuItem(`deleteIssue('${token}','2')`, "delete", "delete-issue", "danger");
   }
 
   // Report the observation to the association of the instance (e-mail with the observation in the body)
-  var scopeForReport = await vigilo.getScope().catch(() => ({}));
   var reportBody = i18next.t("report-issue-body", {
     token: issue.token,
-    category: i18next.t("category-name-" + issue.categorie),
+    category: t("category-name-" + issue.categorie),
     address: issue.address || "",
-    date: issue.date_obj.toLocaleString(i18next.language.split("_")[0]),
+    date: issue.date_obj.toLocaleString(lang),
     comment: issue.comment || "",
     explanation: issue.explanation || "",
     link: issue.permLink,
     interpolation: { escapeValue: false }
   });
-  var reportHref = "mailto:" + encodeURIComponent(scopeForReport.contact_email || "")
+  var reportHref = "mailto:" + encodeURIComponent(scope.contact_email || "")
     + "?subject=" + encodeURIComponent(i18next.t("report-issue-subject", { token: issue.token, interpolation: { escapeValue: false } }))
     + "&body=" + encodeURIComponent(reportBody);
-  var btn_report = `<a class="btn-floating waves-effect waves-light grey darken-1 report-btn" href="${escapeHtml(reportHref)}" data-i18n-attr='{"title": "report-issue", "aria-label": "report-issue"}' title="${i18next.t("report-issue")}" aria-label="${i18next.t("report-issue")}"><i class="material-icons center">flag</i></a>\n`;
+  var osmHref = `https://www.openstreetmap.org/?mlat=${encodeURIComponent(issue.lat_float)}&mlon=${encodeURIComponent(issue.lon_float)}#map=19/${encodeURIComponent(issue.lat_float)}/${encodeURIComponent(issue.lon_float)}`;
+
+  menuMain += menuItem(`centerOnIssue('${token}'); return false;`, "map", "see-on-map")
+    + menuItem(`document.querySelector('#modal-issue .similar-issues').scrollIntoView({behavior: 'smooth'}); return false;`, "view_module", "issues-similar")
+    + `<a href="${escapeHtml(osmHref)}" target="_blank" rel="noopener" role="menuitem" class="issue-menu-item"><i class="material-icons">open_in_new</i><span data-i18n="see-on-osm">${t("see-on-osm")}</span></a>\n`
+    + menuItem("", "flag", "report-issue", "report-btn", reportHref);
+
+  // State: moderation first, then the resolution status
+  var state;
+  if (issue.approved == 0) {
+    state = { cls: "unapproved", icon: "new_releases", key: "status-unapproved", long: "status-unapproved-long" };
+  } else if (issue.approved == 2) {
+    state = { cls: "refused", icon: "block", key: "status-refused" };
+  } else {
+    state = {
+      0: { cls: "open", icon: "radio_button_unchecked", key: "status-unresolved" },
+      1: { cls: "resolved", icon: "done_all", key: "status-resolved", long: "status-resolved-long" },
+      2: { cls: "taked", icon: "info", key: "status-taked", long: "status-taked-long" },
+      3: { cls: "inprogress", icon: "hourglass_empty", key: "status-inprogress", long: "status-inprogress-long" },
+      4: { cls: "done", icon: "done", key: "status-done", long: "status-done-long" }
+    }[issue.status] || { cls: "open", icon: "radio_button_unchecked", key: "status-unresolved" };
+  }
+  var chips = `<span class="issue-chip issue-chip-${state.cls}"><i class="material-icons">${state.icon}</i><span data-i18n="${state.key}">${t(state.key)}</span></span>`;
+  if (localDataManager.getTokenSecretId(issue.token) != undefined) {
+    chips += `<span class="issue-chip issue-chip-mine"><i class="material-icons">person</i><span data-i18n="i-make-it">${t("i-make-it")}</span></span>`;
+  }
+  var stateNote = state.long ? `<p class="issue-state-note issue-state-${state.cls}" data-i18n="${state.long}">${t(state.long)}</p>` : "";
+
+  var comment = "";
+  if (issue.comment || issue.explanation) {
+    comment = `<section class="issue-section">
+      <h3 class="issue-label" data-i18n="comment">${t("comment")}</h3>
+      ${issue.comment ? `<p class="issue-comment">${escapeHtml(issue.comment)}</p>` : ""}
+      ${issue.explanation ? `<blockquote>${escapeHtml(issue.explanation)}</blockquote>` : ""}
+    </section>`;
+  }
 
   return `
-<div class="modal-content">
-  <div class="row">
-      <div class="col s12 m6 l5 xl4">
-          <div class="center-align">
-              <img class="materialboxed center-align issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="">
-          </div>
-          <div class="issue-minimap-wrapper">
-              <div class="issue-minimap"></div>
-              <p class="issue-minimap-caption grey-text"></p>
-          </div>
+<div class="modal-content issue-detail">
+  <header class="issue-head">
+    <h2 class="issue-title"><span class="cat-dot" style="background-color: ${escapeHtml(issue.color)}"></span><span data-i18n="category-name-${escapeHtml(issue.categorie)}">${t("category-name-" + issue.categorie)}</span></h2>
+    <div class="issue-chips">${chips}</div>
+    ${stateNote}
+  </header>
+  <div class="issue-layout">
+    <div class="issue-media">
+      <img class="materialboxed issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="">
+      <!-- shown while looking for a Panoramax picture, removed if there is none (see js/panoramax.js) -->
+      <p class="panoramax-row">
+        <a href="#!" class="btn btn-small waves-effect waves-light panoramax-btn loading"><span class="panoramax-loader"></span><i class="material-icons left">streetview</i><span class="panoramax-label">${t("panoramax-searching")}</span></a>
+      </p>
+    </div>
+    <div class="issue-info">
+      <dl class="issue-facts">
+        <div class="issue-fact">
+          <dt><i class="material-icons">place</i><span data-i18n="location">${t("location")}</span></dt>
+          <dd>${escapeHtml(issue.address)}</dd>
+        </div>
+        <div class="issue-fact">
+          <dt><i class="material-icons">event</i><span data-i18n="date">${t("date")}</span></dt>
+          <dd data-i18n-date="${issue.date_obj.toString()}">${issue.date_obj.toLocaleString(lang)}</dd>
+        </div>
+        <div class="issue-fact">
+          <dt><i class="material-icons">tag</i><span data-i18n="issue-id">${t("issue-id")}</span></dt>
+          <dd><a href="${escapeHtml(issue.permLink)}">${token}</a></dd>
+        </div>
+      </dl>
+      ${comment}
+      <div class="issue-minimap-wrapper">
+        <div class="issue-minimap"></div>
+        <p class="issue-minimap-caption grey-text"></p>
       </div>
-      <div class="col s12 m6 l7 xl8">
-          <h6 class="center-align valign-wrapper">
-            ${(issue.approved == 0) ? '<i class="material-icons">new_releases</i> <span data-i18n="status-unapproved-long">'+i18next.t("status-unapproved-long")+'</span>' : ''}
-            ${(issue.status == 1) ? '<i class="material-icons">done_all</i> <span data-i18n="status-resolved-long">'+i18next.t("status-resolved-long")+'</span>' : ''}
-            ${(issue.status == 2) ? '<i class="material-icons">info</i> <span data-i18n="status-taked-long">'+i18next.t("status-taked-long")+'</span>' : ''}
-            ${(issue.status == 3) ? '<i class="material-icons">hourglass_empty</i> <span data-i18n="status-inprogress-long">'+i18next.t("status-inprogress-long")+'</span>' : ''}
-            ${(issue.status == 4) ? '<i class="material-icons">done</i> <span data-i18n="status-done-long">'+i18next.t("status-done-long")+'</span>' : ''}
-            ${(localDataManager.getTokenSecretId(issue.token) != undefined) ? '<i class="material-icons">person</i> <span data-i18n="i-make-it">'+i18next.t("i-make-it")+'</span>' : ''}
-          </h6>
-          <p><b>${i18next.t("issue-id")} :</b> <a href="${escapeHtml(issue.permLink)}">${token}</a> | <a href="#!" onclick="document.querySelector('#modal-issue .similar-issues').scrollIntoView({behavior: 'smooth'}); return false;" data-i18n="issues-similar">${i18next.t("issues-similar")}</a></p>
-
-          <p>
-              <b><span data-i18n="category">${i18next.t("category")}</span></b><br>
-              <span class="cat-dot" style="background-color: ${escapeHtml(issue.color)}"></span><span data-i18n="category-name-${escapeHtml(issue.categorie)}">${i18next.t("category-name-"+issue.categorie)}</span>
-          </p>
-          <p>
-              <b><span data-i18n="date">${i18next.t("date")}</span></b><br>
-              ${issue.date_obj.toLocaleString(i18next.language.split("_")[0])}
-          </p>
-          <p>
-              <b><span data-i18n="comment">${i18next.t("comment")}</span></b><br>
-              ${escapeHtml(issue.comment)}
-              <br><blockquote>${escapeHtml(issue.explanation)}</blockquote>
-          </p>
-          <p>
-              <b><span data-i18n="location">${i18next.t("location")}</span></b><br>
-              ${escapeHtml(issue.address)}
-              <a href="https://www.openstreetmap.org/?mlat=${encodeURIComponent(issue.lat_float)}&mlon=${encodeURIComponent(issue.lon_float)}#map=19/${encodeURIComponent(issue.lat_float)}/${encodeURIComponent(issue.lon_float)}" target="_blank" rel="noopener" data-i18n-attr='{"title": "see-on-osm"}' title="${i18next.t("see-on-osm")}"><i class="material-icons tiny">open_in_new</i></a>
-          </p>
-          <!-- shown while looking for a Panoramax picture, removed if there is none (see js/panoramax.js) -->
-          <p class="panoramax-row">
-              <a href="#!" class="btn btn-small waves-effect waves-light panoramax-btn loading"><span class="panoramax-loader"></span><i class="material-icons left">streetview</i><span class="panoramax-label">${i18next.t("panoramax-searching")}</span></a>
-          </p>
-      </div>
+    </div>
   </div>
   <!-- filled by js/similar-issues.js once the window is open -->
   <div class="similar-issues"></div>
 </div>
-<div class="modal-footer">
-${btn_resolve}${btns}
-${btn_report}<a data-i18n-attr='{"title": "issues-similar"}' title="${i18next.t("issues-similar")}" class="waves-effect waves-light btn-floating" href="#!" onclick="document.querySelector('#modal-issue .similar-issues').scrollIntoView({behavior: 'smooth'}); return false;"><i class="material-icons center">view_module</i></a>
-<a data-i18n-attr='{"title": "share-link"}' title="${i18next.t("share-link")}" class="waves-effect waves-light btn-floating" href="${escapeHtml(issue.permLink)}" onclick="return shareIssue(this)"><i class="material-icons center">share</i></a>
-<a data-i18n-attr='{"title": "see-on-map"}' title="${i18next.t("see-on-map")}" class="waves-effect waves-light btn-floating" onclick="centerOnIssue('${token}')"><i class="material-icons center">map</i></a>
-<a href="#!" data-i18n-attr='{"title": "close"}' title="${i18next.t("close")}" class="modal-close grey waves-effect waves-light btn-floating"><i class="material-icons center">close</i></a>
+<div class="issue-menu" role="menu" hidden>
+${menuMain}${menuManage ? '<div class="issue-menu-divider" role="separator"></div>\n' + menuManage : ""}</div>
+<div class="modal-footer issue-actions">
+  <div class="issue-primary-actions">${primary}</div>
+  <a href="${escapeHtml(issue.permLink)}" class="btn-flat waves-effect issue-icon-btn" onclick="return shareIssue(this)" data-i18n-attr='{"title": "share-link", "aria-label": "share-link"}' title="${t("share-link")}" aria-label="${t("share-link")}"><i class="material-icons">share</i></a>
+  <a href="#!" class="btn-flat waves-effect issue-icon-btn issue-more" aria-haspopup="menu" aria-expanded="false" data-i18n-attr='{"title": "more-actions", "aria-label": "more-actions"}' title="${t("more-actions")}" aria-label="${t("more-actions")}"><i class="material-icons">more_vert</i></a>
 </div>
-
 `
 }
+
+// "More" menu of the observation window
+function toggleIssueMenu(open) {
+  var menu = $("#modal-issue .issue-menu");
+  var button = $("#modal-issue .issue-more");
+  if (open === undefined) {
+    open = menu.prop("hidden");
+  }
+  menu.prop("hidden", !open);
+  button.attr("aria-expanded", String(open));
+  if (open) {
+    menu.find(".issue-menu-item").first().trigger("focus");
+  }
+}
+$(document).on("click", "#modal-issue .issue-more", function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  toggleIssueMenu();
+}).on("click", "#modal-issue .issue-menu-item", function () {
+  toggleIssueMenu(false);
+}).on("click", function (e) {
+  if (!$(e.target).closest("#modal-issue .issue-menu").length) {
+    toggleIssueMenu(false);
+  }
+}).on("keydown", "#modal-issue .issue-menu", function (e) {
+  var items = $(this).find(".issue-menu-item");
+  var index = items.index(document.activeElement);
+  if (e.key == "Escape") {
+    e.stopPropagation();
+    toggleIssueMenu(false);
+    $("#modal-issue .issue-more").trigger("focus");
+  } else if (e.key == "ArrowDown" || e.key == "ArrowUp") {
+    e.preventDefault();
+    items.eq((index + (e.key == "ArrowDown" ? 1 : -1) + items.length) % items.length).trigger("focus");
+  }
+});
 
 
 window.deleteIssue = async function(token) {
