@@ -48,10 +48,24 @@ html[data-theme="dark"] {
   }
   .modal .modal-footer { border-top-color: $dark-border; }
   #modal-form, #modal-form .modal-content { background: $dark-bg; }
-  #modal-issue .modal-content {
-    h6 { background: rgba(#fdd835, 0.16); color: $dark-ink; }
-    p b { color: $dark-ink-soft; }
+  #modal-issue {
     img.issue-photo { background: $dark-surface-2; }
+    .issue-chip { background: $dark-surface-2; color: $dark-ink; }
+    .issue-chip-unapproved { background: rgba(#fdd835, .18); color: #f5d36b; }
+    .issue-chip-refused { background: rgba(#e53935, .2); color: #ff9a92; }
+    .issue-chip-taked, .issue-chip-inprogress { background: rgba(#4c8dff, .2); color: #a9c8ff; }
+    .issue-chip-done, .issue-chip-resolved { background: rgba(#43a047, .22); color: #98dba5; }
+    .issue-chip-mine { background: rgba(#fdd835, .14); }
+    .issue-state-note, .issue-fact dt, .issue-label { color: $dark-ink-soft; }
+    .issue-facts, .issue-fact + .issue-fact { border-color: $dark-border; }
+    .issue-icon-btn, .issue-icon-btn i { color: $dark-ink; }
+    .issue-primary, .issue-primary i { color: #fff; }
+    .resolve-btn, .approve-btn { background-color: #2e7d32; }
+    .refuse-btn { background-color: #c62828; }
+    .issue-menu { background: $dark-surface-2; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); }
+    .issue-menu-item { color: $dark-ink; i { color: $dark-ink-soft; } &:hover, &:focus-visible { background: #30353d; } }
+    .issue-menu-item.danger, .issue-menu-item.danger i { color: #ff8a80; }
+    .issue-menu-divider { background: $dark-border; }
   }
   .similar-issues {
     border-top-color: $dark-border;
