@@ -110,7 +110,7 @@ export default async function (issue) {
   </header>
   <div class="issue-layout">
     <div class="issue-media">
-      <img class="materialboxed issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="">
+      <img class="issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="" role="button" tabindex="0" data-i18n-attr='{"title": "photo-zoom"}' title="${t("photo-zoom")}">
       <!-- shown while looking for a Panoramax picture, removed if there is none (see js/panoramax.js) -->
       <p class="panoramax-row">
         <a href="#!" class="btn btn-small waves-effect waves-light panoramax-btn loading"><span class="panoramax-loader"></span><i class="material-icons left">streetview</i><span class="panoramax-label">${t("panoramax-searching")}</span></a>

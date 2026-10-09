@@ -272,7 +272,7 @@ adminKey}`) et drapeaux de session :
 |---|---|
 | `cleanIssues()` | vide `#issues .cards-container`, remet `offset` à 0 |
 | `displayIssues(count)` | ajoute les `count` observations filtrées suivantes (`offset` interne) avec `issueCard()` ; retire les cartes squelettes ; message `no-issue` si aucune ; en erreur, remplace **tout `#issues`** par `errorCard(e)` |
-| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, active `Materialbox`, réécrit l'URL avec `permLink` (`history.replaceState`), remet la croix (`addModalCross`), ouvre `#modal-issue`, lance la mini-carte et la recherche Panoramax, remplit `.similar-issues` avec `findSimilarIssues()` sur toutes les observations chargées |
+| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, branche la photo sur `openPhotoViewer()` (clic, Entrée ; pas pour l'image « photo manquante »), réécrit l'URL avec `permLink` (`history.replaceState`), remet la croix (`addModalCross`), ouvre `#modal-issue`, lance la mini-carte et la recherche Panoramax, remplit `.similar-issues` avec `findSimilarIssues()` sur toutes les observations chargées |
 | `refreshIssueCard(issue)` | réaffiche une carte en place après une action de modération ; si elle ne correspond plus aux filtres, la retire et charge l'observation suivante |
 
 `refreshIssueCard` retrouve la carte par le sélecteur `.card[onclick="viewIssue('<token>')"]` : ne pas changer
@@ -474,6 +474,13 @@ fermeture est la croix en haut à droite (`modal-cross.js`).
 | mode modération, `approved == 1` | (Résoudre si possible) | modifier (`create_issue.php` garde l'état de modération), remettre à modérer (`'0'`), refuser |
 | mode modération, `approved == 2` | **Valider** | remettre à modérer |
 | auteur (`userCanEdit`) et backend ≥ 0.0.17 | | supprimer (`deleteIssue`) |
+
+Photo en plein écran (`src/js/photo-viewer.js`, `openPhotoViewer(src, alt)`) : calque `#photo-viewer` (fond noir,
+`touch-action: none`, plein écran du navigateur quand il l'accepte, pas sur iPhone), zoom à deux doigts et
+déplacement (événements `pointer*`, transformation `translate` + `scale` de l'image, bornée pour ne pas laisser de
+bord vide), double tap / double clic pour zoomer ×2,5 ou revenir, molette sur ordinateur, zoom jusqu'à ×6.
+Fermeture : croix, Échap (intercepté pour ne pas fermer aussi la fiche), bouton retour (entrée d'historique
+`{photoViewer: true}`), sortie du plein écran, tap à côté de la photo.
 
 Pastilles d'état (`.issue-chip-*`) : non modéré, refusé, sinon l'état de résolution (non résolu, pris en compte, en
 cours, indiqué résolu, résolu), plus « J'ai fait ce signalement » ; la phrase longue (`status-*-long`) s'affiche
