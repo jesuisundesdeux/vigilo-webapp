@@ -114,19 +114,30 @@ export function pictureFromItem(item) {
 }
 
 /**
- * Pictures around (lat, lon), nearest first (empty array on error)
+ * Pictures around (lat, lon), nearest first (empty array on error).
+ * dates: optional {from, to} (Date, either may be null): only the pictures taken in this
+ * period. Asked to the API (STAC "datetime" parameter, retried without it if refused)
+ * and checked here as well.
  */
-export function findPicturesAround(lat, lon) {
+export function findPicturesAround(lat, lon, dates) {
+	var from = dates && dates.from, to = dates && dates.to;
+	var interval = (from || to) ? (from ? from.toISOString() : "..") + "/" + (to ? to.toISOString() : "..") : null;
 	return getSearchEndpoint()
 		.then((endpoint) => {
 			var bbox = [lon - NEARBY_RADIUS_DEG, lat - NEARBY_RADIUS_DEG, lon + NEARBY_RADIUS_DEG, lat + NEARBY_RADIUS_DEG]
 				.map((d) => d.toFixed(7)).join(",");
-			return fetch(endpoint + "?bbox=" + bbox + "&limit=100");
+			var url = endpoint + "?bbox=" + bbox + "&limit=100";
+			if (!interval) {
+				return fetch(url);
+			}
+			return fetch(url + "&datetime=" + encodeURIComponent(interval))
+				.then((r) => r.ok ? r : fetch(url));
 		})
 		.then((r) => r.ok ? r.json() : { features: [] })
 		.then((result) => {
 			var dist = (p) => Math.pow(p.lon - lon, 2) + Math.pow(p.lat - lat, 2);
 			return (result.features || []).map(pictureFromItem).filter((p) => p && p.sd)
+				.filter((p) => !interval || (p.datetime && (!from || p.datetime >= from) && (!to || p.datetime <= to)))
 				.sort((a, b) => dist(a) - dist(b));
 		})
 		.catch(() => []);

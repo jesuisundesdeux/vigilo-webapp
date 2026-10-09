@@ -162,6 +162,20 @@ $("#form-clear").on("click", async function (e) {
   }
 })
 
+/**
+ * Default view of the instance: center and zoom of the scope (map_center_string, map_zoom),
+ * with its bounds as fallback
+ */
+function scopeView(scope) {
+  var center = String(scope.map_center_string || "").split(",").map(parseFloat);
+  var zoom = parseInt(scope.map_zoom);
+  return {
+    center: center.length == 2 && center.every((c) => !isNaN(c)) ? center : null,
+    zoom: isNaN(zoom) ? null : zoom,
+    bounds: scopeBounds(scope)
+  };
+}
+
 function scopeBounds(scope) {
   return [
     [parseFloat(scope.coordinate_lat_min), parseFloat(scope.coordinate_lon_min)],
@@ -179,7 +193,7 @@ $("#panoramax-picture").on("click", async function (e) {
   var located = formmap !== undefined && formmap.hasLayer(mapmarker);
   var location = resolutionIssue ? [resolutionIssue.lat_float, resolutionIssue.lon_float]
     : located ? [mapmarker.getLatLng().lat, mapmarker.getLatLng().lng] : null;
-  openPanoramaxCapture(location, scopeBounds(scope), (dataUrl, picture, searchLocation) => {
+  openPanoramaxCapture(location, scopeView(scope), (dataUrl, picture, searchLocation) => {
     $("#issue-picture").prop("required", false);
     $("#modal-form .file-path").val(i18next.t("panoramax-capture-file"));
     renderImage(dataUrl);

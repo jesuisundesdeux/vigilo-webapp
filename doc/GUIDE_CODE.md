@@ -389,20 +389,25 @@ fenêtres (`modal-trigger`).
   `{id, url, embedUrl}` ou `null` (aussi en cas d'erreur). Résultats en cache par coordonnées.
 - `openPanoramaxViewer(picture)` : ouvre `#modal-panoramax` avec la visionneuse en iframe ; l'iframe repasse à
   `about:blank` à la fermeture.
-- `findPicturesAround(lat, lon)` : photos dans ±0,001° (~100 m), la plus proche d'abord (tableau vide en cas
-  d'erreur) ; `fetchPicture(href)` : photo d'un item STAC (suivante / précédente d'une séquence).
+- `findPicturesAround(lat, lon, dates)` : photos dans ±0,001° (~100 m), la plus proche d'abord (tableau vide en cas
+  d'erreur) ; `dates` facultatif `{from, to}` (dates, l'une ou l'autre `null`) : paramètre STAC `datetime` envoyé à
+  l'API (nouvelle requête sans lui si elle le refuse) et date de chaque photo vérifiée dans le navigateur ; `fetchPicture(href)` : photo d'un item STAC (suivante / précédente d'une séquence).
 - `pictureFromItem(item)` : normalise un item STAC : `id`, `lat`, `lon`, `datetime`, `azimuth` (`view:azimuth`),
   `is360` (`pers:interior_orientation.field_of_view` ≥ 360), images `sd` / `hd` / `thumb` (assets), `producer`
   (`geovisio:producer`, sinon fournisseur `producer`), `license`, `next` / `prev` (liens de la séquence), `url`.
 
 #### `panoramax-capture.js`
 
-`openPanoramaxCapture(location, bounds, onCapture)` ouvre `#modal-panoramax-capture` (dans `index.html`) :
+`openPanoramaxCapture(location, scopeView, onCapture)` ouvre `#modal-panoramax-capture` (dans `index.html`) :
 
 1. **localisation** : `location` (position déjà placée dans le formulaire), sinon position de l'appareil
-   (`navigator.geolocation`), sinon la carte montre la zone de l'instance (`bounds`) et invite à cliquer ;
+   (`navigator.geolocation`) ; en attendant, ou si elle échoue, la carte montre la **vue par défaut de l'instance**
+   (`scopeView` construit par `scopeView()` de `form.js` : `map_center_string` et `map_zoom` du scope, sinon ses
+   bornes ; appliquée aussi à la fin de l'ouverture de la fenêtre, quand la carte a sa taille) et invite à cliquer ;
 2. **vues à proximité** : `findPicturesAround()`, points jaunes sur une carte Leaflet ; un clic sur un point affiche la
-   vue, un clic ailleurs relance la recherche ; la vue courante est en rouge avec sa direction ; boutons
+   vue (date au survol), un clic ailleurs relance la recherche ; **filtre par date** (`.pnx-filters` : toutes, moins
+   d'un an, moins de 3 ans, ou période « du … au … » en jours entiers) qui relance la recherche
+   (`panoramax-capture-none-dates` si aucune vue) ; la vue courante est en rouge avec sa direction ; boutons
    précédente / suivante de la séquence (le cap regardé est conservé d'une photo 360° à l'autre) ;
 3. **cadrage** dans un canvas 4:3 (glisser, molette, pincement, boutons de zoom) : une photo 360°
    (équirectangulaire) est reprojetée en perspective (`renderEquirect`, cap `yaw`, inclinaison `pitch`, champ `fov`) ;
@@ -825,6 +830,9 @@ Le HTML généré en JS doit donc **à la fois** contenir le texte traduit (`i18
   les variables CSS `--stats-accent` / `--stats-track` de `theme.scss`.
 - Les avertissements de dépréciation de Sass dus à Materialize sont masqués (`quietDeps`, `silenceDeprecations` dans
   `webpack.config.js`).
+- Menu latéral : colonne flex, les versions (`#version`, `#version-server`) en bas grâce à `margin-top: auto`
+  (elles étaient en position absolue et cachaient « Mode modération » sur les écrans peu hauts) ; vérifier le menu à
+  390 × 667 après l'ajout d'une entrée.
 - Vérifier tout changement à 1280 px et à 390 px de large, en thème clair **et** sombre : un nouveau composant
   aux couleurs fixes (`#fff`, `$vigilo-ink`...) a besoin de sa règle dans `dark.scss`.
 

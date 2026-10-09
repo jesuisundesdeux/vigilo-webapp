@@ -736,6 +736,43 @@ nav {
     margin: 0 0 12px;
     color: $vigilo-ink-soft;
   }
+  .pnx-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .4rem .75rem;
+    margin: 0 0 12px;
+    font-size: .9rem;
+    color: $vigilo-ink-soft;
+  }
+  .pnx-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .3rem;
+    a {
+      padding: .3rem .7rem;
+      border: 1px solid $vigilo-border;
+      border-radius: 999px;
+      color: $vigilo-ink;
+      &.active { background: $vigilo-ink; border-color: $vigilo-ink; color: #fff; }
+    }
+  }
+  .pnx-date {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .9rem;
+    color: inherit;
+    input {
+      height: 2rem;
+      padding: 0 .4rem;
+      border: 1px solid $vigilo-border;
+      border-radius: 8px;
+      background: transparent;
+      color: $vigilo-ink;
+      font: inherit;
+    }
+  }
   .pnx-layout {
     display: flex;
     gap: 16px;

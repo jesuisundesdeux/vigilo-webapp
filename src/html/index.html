@@ -132,6 +132,17 @@
     <div class="modal-content">
       <h5 data-i18n="panoramax-capture-title">Photo depuis Panoramax</h5>
       <p class="pnx-hint" data-i18n="panoramax-capture-hint">Choisissez une vue sur la carte, cadrez-la (glisser, zoomer) puis prenez la photo.</p>
+      <!-- Date filter of the views (see js/panoramax-capture.js) -->
+      <div class="pnx-filters">
+        <span class="pnx-filter-label" data-i18n="panoramax-capture-dates">Date des vues</span>
+        <div class="pnx-dates">
+          <a href="#!" data-years="0" data-i18n="panoramax-capture-dates-all">Toutes</a>
+          <a href="#!" data-years="1" data-i18n="panoramax-capture-dates-1y">Moins d'un an</a>
+          <a href="#!" data-years="3" data-i18n="panoramax-capture-dates-3y">Moins de 3 ans</a>
+        </div>
+        <label class="pnx-date"><span data-i18n="panoramax-capture-date-from">Du</span> <input type="date" class="browser-default pnx-date-from"></label>
+        <label class="pnx-date"><span data-i18n="panoramax-capture-date-to">au</span> <input type="date" class="browser-default pnx-date-to"></label>
+      </div>
       <div class="pnx-layout">
         <div class="pnx-main">
           <div class="pnx-viewer">

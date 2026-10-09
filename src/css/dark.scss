@@ -148,6 +148,12 @@ html[data-theme="dark"] {
   // Picture from a Panoramax view
   #modal-panoramax-capture, #modal-panoramax-capture .modal-content { background: $dark-bg; }
   #modal-panoramax-capture .pnx-hint, #modal-panoramax-capture .pnx-credits { color: $dark-ink-soft; }
+  #modal-panoramax-capture {
+    .pnx-filters { color: $dark-ink-soft; }
+    .pnx-dates a { border-color: $dark-border; color: $dark-ink; }
+    .pnx-dates a.active { background: #fdd835; border-color: #fdd835; color: #1f2328; }
+    .pnx-date input { border-color: $dark-border; color: $dark-ink; color-scheme: dark; }
+  }
 
   // Observations offered for a resolution
   #modal-form #related-panel {
