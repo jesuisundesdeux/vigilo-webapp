@@ -41,6 +41,9 @@ framework (pas de React/Vue).
 
 ## Règles à respecter
 
+- **Documentation** : toute modification du code s'accompagne, dans la même PR, de la mise à jour de la documentation
+  concernée dans `doc/` (`GUIDE_CODE.md` : modules, flux, recettes) et de ce fichier si l'organisation ou les règles
+  changent.
 - **Compatibilité avec les instances** : toutes les instances ne sont pas à jour. Toute nouvelle route ou nouveau
   champ du backend doit avoir un repli (route en 404 → ancien comportement). Ne pas supposer une version de backend.
 - **Sécurité** : échapper toute donnée venant de l'API ou de vigilo-conf avant de l'insérer dans le HTML
