@@ -193,4 +193,11 @@ html[data-theme="dark"] {
     color: $dark-ink;
     &:hover, &:focus-visible { background: $dark-surface-2; }
   }
+
+  #issues > .fixed-action-btn a.btn-floating.white { background-color: $dark-surface-2 !important; i { color: $dark-ink; } }
+  #modal-drafts {
+    .drafts-hint, .drafts-empty, .draft-where { color: $dark-ink-soft; }
+    .draft { border-color: $dark-border; background: $dark-surface-2; }
+    .draft-where.missing { color: #ff8a80; }
+  }
 }

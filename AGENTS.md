@@ -31,6 +31,7 @@ modérer quand on a une clé admin/modérateur. Elle parle à l'API de l'**insta
 | `src/js/issue-filter.js`, `issue-list.js`, `issue-map.js`, `form.js`, `stats.js`, `admin.js` | Filtres, liste, carte, formulaire d'envoi (observation, ou résolution depuis la fiche d'une observation), statistiques, modération |
 | `src/js/similar-issues.js`, `related-issues.js` | Observations similaires (fiche) et observations proposées dans une résolution |
 | `src/js/image-drawable.js`, `panoramax.js`, `panoramax-capture.js` | Éditeur de photo du formulaire ; vues Panoramax (fiche, photo prise dans une vue) |
+| `src/js/photo-drafts.js` | Photos en brouillon (mobile) : prises avec la position du téléphone, gardées sur l'appareil (IndexedDB), puis transformées en observation |
 | `src/js/localDataManager.js` | Stockage local : jetons/secretid des observations envoyées, clé admin, langue, modes beta/dev |
 | `src/html/` | Gabarits HTML (inclus avec `${require('./x.html')}`, voir `webpack/html-interpolate-loader.js`) et composants JS (`issue-card.js`…) |
 | `src/css/` | SCSS : Materialize personnalisé, `theme-variables.scss` (couleurs), `theme.scss`, `dark.scss` (mode sombre), `main.scss` |

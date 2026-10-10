@@ -1045,3 +1045,75 @@ nav {
     &:hover, &:focus-visible { background: rgba(0, 0, 0, .8); }
   }
 }
+
+// Photo drafts (js/photo-drafts.js): buttons next to "+" and gallery
+#issues > .fixed-action-btn {
+  a.btn-floating.white {
+    background-color: #fff !important;
+    i { color: $vigilo-ink; }
+  }
+  #drafts-btn {
+    position: relative;
+    overflow: visible;
+    .drafts-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: $vigilo-yellow;
+      color: $vigilo-ink;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 20px;
+      text-align: center;
+    }
+  }
+}
+#modal-drafts {
+  max-height: 85%;
+  .drafts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-right: 40px; // room for the close cross
+    h5 { margin: 0; font-size: 1.4rem; }
+    .drafts-take { border-radius: 999px; text-transform: none; }
+  }
+  .drafts-hint, .drafts-empty { color: $vigilo-ink-soft; font-size: .9rem; margin: 8px 0 12px; }
+  .drafts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .draft {
+    position: relative;
+    border: 1px solid $vigilo-border;
+    border-radius: $vigilo-radius-small;
+    overflow: hidden;
+    img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+  }
+  .draft-caption {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 8px 6px;
+    font-size: .8rem;
+    .draft-where { color: $vigilo-ink-soft; &.missing { color: #c62828; } }
+  }
+  .draft-delete {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .55);
+    i { color: #fff; font-size: 20px; }
+  }
+}

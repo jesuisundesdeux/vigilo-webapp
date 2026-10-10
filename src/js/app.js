@@ -4,6 +4,7 @@ import * as map from './issue-map';
 import * as list from './issue-list';
 import * as filters from './issue-filter';
 import * as form from './form';
+import { initPhotoDrafts } from './photo-drafts';
 import * as navs from './navs';
 import * as stats from './stats';
 import * as admin from './admin';
@@ -85,6 +86,7 @@ export default class VigiloApp {
          * ISSUE FORM
          */
         form.init();
+        initPhotoDrafts();
         stats.init()
 
         /**

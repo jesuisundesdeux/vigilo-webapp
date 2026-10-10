@@ -341,6 +341,27 @@ Les tailles des cercles par niveau de zoom sont dans la constante `STYLES` (`"0-
 
 Voir [§4](#4-formulaire-denvoi-dune-observation). Export : `init()`. Global : `window.startForm(token)`.
 
+#### `photo-drafts.js`
+
+Photos en brouillon, **sur mobile seulement** (`WE_ARE_ON_A_MOBILE`, et IndexedDB disponible). Android retire la
+position GPS de toutes les photos remises à une page web (issue #128) : la position vient ici de la géolocalisation
+du navigateur, au moment de la prise de vue, pas de la photo.
+
+- Boutons à côté du « + » (`issues.html`) : `#draft-camera-btn` (appareil photo du téléphone, champ caché
+  `#draft-camera-input` avec `capture`) et `#drafts-btn` (galerie, avec le nombre de brouillons, masqué sans
+  brouillon).
+- Prise de vue : la position est demandée **au clic** (avant l'ouverture de l'appareil photo), puis une seconde fois
+  au retour ; la plus précise est gardée (`bestPosition`). La photo est réduite à 1500 px (JPEG 0,9) et enregistrée
+  dans IndexedDB (base `vigilo-drafts`, magasin `drafts` : `{id, instance, image (Blob), lat, lon, accuracy, date}`),
+  avec `navigator.storage.persist()`. Sans position (refusée, indisponible) : `lat`/`lon` à `null`.
+- Galerie `#modal-drafts` (`index.html`, bas de l'écran) : brouillons de l'instance courante, les plus récents
+  d'abord, avec date, précision (« ± n m » ou « sans position ») et suppression ; bouton pour une nouvelle photo.
+- Un clic sur une photo appelle `window.startFormFromDraft(draft)` (`form.js`) : formulaire d'une nouvelle
+  observation avec la photo (éditable), le point (`setFormMapPoint`, adresse retrouvée), la date et l'heure de la
+  prise de vue. Le brouillon est supprimé (`deleteDraft`) une fois l'observation envoyée.
+- Limites : les brouillons restent dans le navigateur du téléphone (effacés avec les données du site ; sur iPhone,
+  Safari peut les effacer après 7 jours sans utilisation si l'appli n'est pas installée).
+
 #### `image-drawable.js`
 
 `ImageDrawable(div)` (export par défaut) crée un `ClassImageDrawable` sur le `<canvas>` contenu dans `div`

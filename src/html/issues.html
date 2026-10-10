@@ -16,6 +16,14 @@
   <a title="Filtrer" data-i18n-attr='{"title": "filter-issues"}' class="btn-floating btn-large blue darken-1 black-text modal-trigger" href="#modal-filters">
     <i class="material-icons">filter_list</i>
   </a>
+  <!-- Mobile only: photo drafts with the phone's position (see js/photo-drafts.js) -->
+  <a id="drafts-btn" title="Brouillons" data-i18n-attr='{"title": "drafts", "aria-label": "drafts"}' class="btn-floating white black-text modal-trigger hide" href="#modal-drafts">
+    <i class="material-icons">photo_library</i><span class="drafts-count"></span>
+  </a>
+  <a id="draft-camera-btn" title="Photo en brouillon" data-i18n-attr='{"title": "drafts-take-photo", "aria-label": "drafts-take-photo"}' class="btn-floating btn-large white black-text hide" href="#!">
+    <i class="material-icons">photo_camera</i>
+  </a>
+  <input id="draft-camera-input" type="file" accept="image/*" capture="environment" style="display: none">
   <a title="Ajouter une observation" data-i18n-attr='{"title": "add-issue"}' class="btn-floating btn-large yellow darken-3 black-text" onclick="startForm()">
     <i class="material-icons">add</i>
   </a>
