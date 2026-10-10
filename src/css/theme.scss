@@ -877,10 +877,56 @@ nav {
   }
 }
 
-// ---- Picture from a Panoramax view (see js/panoramax-capture.js)
-#modal-form .panoramax-picture .btn-flat {
-  padding: 0 8px;
-  text-transform: none;
+// ---- Sources of the picture of the form: file, camera (mobile), Panoramax view, same tiles
+#modal-form {
+  .picture-title {
+    margin: 0 0 8px;
+    font-size: .9rem;
+    color: $vigilo-ink-soft;
+  }
+  .picture-sources {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .picture-source {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 76px;
+    padding: 10px 6px;
+    border: 1px solid $vigilo-border;
+    border-radius: $vigilo-radius-small;
+    background: #fff;
+    color: $vigilo-ink;
+    font-size: .85rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    &.hide { display: none; }
+    i { font-size: 28px; color: $vigilo-ink; }
+    &:hover, &:focus-within, &:focus-visible { border-color: $vigilo-yellow-dark; background: rgba($vigilo-yellow, .12); }
+  }
+  // the file inputs stay in the page (required: the browser shows its message on them)
+  .picture-input {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .picture-source-name {
+    margin: 6px 0 0;
+    font-size: .85rem;
+    color: $vigilo-ink-soft;
+    overflow-wrap: anywhere;
+    &:empty { display: none; }
+  }
 }
 #modal-form .modal-footer #form-clear {
   text-transform: none;

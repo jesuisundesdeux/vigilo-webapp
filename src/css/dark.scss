@@ -200,4 +200,13 @@ html[data-theme="dark"] {
     .draft { border-color: $dark-border; background: $dark-surface-2; }
     .draft-where.missing { color: #ff8a80; }
   }
+
+  #modal-form .picture-source {
+    background: $dark-surface-2;
+    border-color: $dark-border;
+    color: $dark-ink;
+    i { color: $dark-ink; }
+    &:hover, &:focus-within, &:focus-visible { border-color: #f2c200; background: rgba(#fdd835, .1); }
+  }
+  #modal-form .picture-title, #modal-form .picture-source-name { color: $dark-ink-soft; }
 }

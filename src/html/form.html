@@ -8,32 +8,30 @@
       <!-- Picture -->
       <div class="col s12 m12 l6 xl4">
         <div class="card-panel row">
+          <!-- Sources of the picture, same tiles: file (gallery), camera (mobile), Panoramax view -->
           <div class="col s12">
-            <div class="file-field input-field">
-              <div class="btn">
-                <span><i class="material-icons">camera_alt</i></span>
-                <input id="issue-picture" type="file" accept="image/*" class="validate" required>
-              </div>
-              <div class="file-path-wrapper">
-                <label><span data-i18n="picture">Photo</span> <span class="red-text">*</span></label>
-                <input class="file-path validate" type="text">
-              </div>
+            <p class="picture-title"><span data-i18n="picture">Photo</span> <span class="red-text">*</span></p>
+            <div class="picture-sources">
+              <label class="picture-source waves-effect">
+                <!-- kept focusable (not display: none) so that the browser can say it is required -->
+                <input id="issue-picture" type="file" accept="image/*" class="picture-input" required>
+                <i class="material-icons">photo_library</i><span data-i18n="choose-picture">Choisir une photo</span>
+              </label>
+              <!-- Mobile only: take the picture now, so the phone's position is the photo's position (issue #128) -->
+              <label class="picture-source camera-capture waves-effect hide">
+                <input type="file" accept="image/*" capture="environment" class="picture-input">
+                <i class="material-icons">photo_camera</i><span data-i18n="take-picture">Prendre une photo</span>
+              </label>
+              <!-- Picture taken from a nearby Panoramax view (see js/panoramax-capture.js) -->
+              <a href="#!" id="panoramax-picture" class="picture-source waves-effect">
+                <i class="material-icons">streetview</i><span data-i18n="panoramax-capture-short">Vue Panoramax</span>
+              </a>
             </div>
-          </div>
-          <!-- Desktop only: a picture can also be pasted from the clipboard (issue #26) -->
-          <div class="col s12 paste-hint hide grey-text">
-            <i class="material-icons tiny">content_paste</i> <span data-i18n="paste-hint">Vous pouvez aussi coller une image (Ctrl+V)</span>
-          </div>
-          <!-- Mobile only: take the picture now, so the phone's position is the photo's position (issue #128) -->
-          <div class="col s12 camera-capture hide">
-            <label class="btn yellow darken-3 black-text">
-              <i class="material-icons left">photo_camera</i><span data-i18n="take-picture">Prendre une photo</span>
-              <input type="file" accept="image/*" capture="environment" style="display: none">
-            </label>
-          </div>
-          <!-- Picture taken from a nearby Panoramax view (see js/panoramax-capture.js) -->
-          <div class="col s12 panoramax-picture">
-            <a href="#!" id="panoramax-picture" class="btn-flat waves-effect"><i class="material-icons left">streetview</i><span data-i18n="panoramax-capture-button">Photo depuis une vue Panoramax</span></a>
+            <p class="picture-source-name"></p>
+            <!-- Desktop only: a picture can also be pasted from the clipboard (issue #26) -->
+            <p class="paste-hint hide grey-text">
+              <i class="material-icons tiny">content_paste</i> <span data-i18n="paste-hint">Vous pouvez aussi coller une image (Ctrl+V)</span>
+            </p>
           </div>
           <div id="picture-preview" class="col s12 center-align">
           </div>
