@@ -122,6 +122,19 @@
     </div>
   </div>
 
+  <!-- Photo drafts (mobile, see js/photo-drafts.js) -->
+  <div id="modal-drafts" class="modal bottom-sheet">
+    <div class="modal-content">
+      <div class="drafts-header">
+        <h5 data-i18n="drafts">Brouillons</h5>
+        <a href="#!" class="btn waves-effect drafts-take"><i class="material-icons left">photo_camera</i><span data-i18n="drafts-take-photo">Photo en brouillon</span></a>
+      </div>
+      <p class="drafts-hint" data-i18n="drafts-hint">Photos prises avec leur position, sur ce téléphone. Touchez une photo pour créer l'observation.</p>
+      <p class="drafts-empty hide" data-i18n="drafts-empty">Aucun brouillon.</p>
+      <div class="drafts-grid"></div>
+    </div>
+  </div>
+
   <!-- Modal for form -->
   <div id="modal-form" class="modal modal-fixed-footer fullscreen">
     ${require('./form.html')}

@@ -13,6 +13,7 @@ import { distance } from './utils';
 import errorCard from '../html/error';
 import ImageDrawable from './image-drawable';
 import { openPanoramaxCapture } from './panoramax-capture';
+import { deleteDraft } from './photo-drafts';
 import LocalDataManager from './localDataManager';
 import dataManager from './dataManager';
 
@@ -20,6 +21,8 @@ import i18next from 'i18next';
 
 // Observation the resolution being written was started from (resolution mode), or null
 var resolutionIssue = null;
+// Photo draft the observation is made from (see photo-drafts.js), deleted once sent
+var currentDraftId = null;
 
 /** Show the fields of an observation or of a resolution */
 function setFormMode(resolution) {
@@ -65,6 +68,24 @@ window.startForm = async function (token) {
 }
 
 /**
+ * New observation from a photo draft (see photo-drafts.js): photo, position and date of
+ * the shot. draft.image is a data URL.
+ */
+window.startFormFromDraft = async function (draft) {
+  await window.startForm();
+  currentDraftId = draft.id;
+  $("#issue-picture").prop("required", false);
+  renderImage(draft.image);
+  var date = new Date(draft.date);
+  setDate(date);
+  setTime(date.getHours(), date.getMinutes());
+  if (draft.lat !== null && draft.lon !== null) {
+    setFormMapPoint([draft.lat, draft.lon]);
+  }
+  M.updateTextFields();
+}
+
+/**
  * Resolution of an observation (button of the observation window): picture, date, comment
  * and the observations it resolves (similar ones offered, see related-issues.js)
  */
@@ -92,6 +113,7 @@ window.startResolution = async function (token) {
 
 function clearForm() {
   resolutionIssue = null;
+  currentDraftId = null;
   $('#modal-form form').trigger("reset");
   // hidden inputs are not reset by the form
   $("#issue-token").val("");
@@ -605,6 +627,7 @@ $("#modal-form form").submit((e) => {
 
   var isResolution = resolutionIssue !== null;
   var resolvedToken = isResolution ? resolutionIssue.token : null;
+  var sentDraftId = isResolution ? null : currentDraftId;
 
   if (isResolution){
     data.tokenlist = selectedRelatedTokens().join(',');
@@ -664,6 +687,10 @@ $("#modal-form form").submit((e) => {
     })
     .then(() => {
       $("#modal-form-loader .determinate").css("width", "100%");
+      // the draft became an observation
+      if (sentDraftId !== null) {
+        deleteDraft(sentDraftId).catch(() => {});
+      }
       // Open the observation just posted (the URL may still carry the token of the
       // observation viewed before)
       var url = new URL(window.location.href);
