@@ -119,6 +119,7 @@ function clearForm() {
   $("#issue-token").val("");
   // A picture is required, from the gallery or from the camera button (see file change handler)
   $("#issue-picture").prop("required", true);
+  setPictureSource("");
   $("#picture-preview").off(".drawable .drawable-edit").removeClass("drawable fullscreen").empty();
   $("#picture-preview").next().addClass('hide');
   photoLocatePending = false;
@@ -218,7 +219,7 @@ $("#panoramax-picture").on("click", async function (e) {
     : located ? [mapmarker.getLatLng().lat, mapmarker.getLatLng().lng] : null;
   openPanoramaxCapture(location, scopeView(scope), (dataUrl, picture, searchLocation) => {
     $("#issue-picture").prop("required", false);
-    $("#modal-form .file-path").val(i18next.t("panoramax-capture-file"));
+    setPictureSource(i18next.t("panoramax-capture-file"));
     renderImage(dataUrl);
     if (!resolutionIssue && (formmap === undefined || !formmap.hasLayer(mapmarker))) {
       setFormMapPoint(searchLocation || [picture.lat, picture.lon]);
@@ -231,6 +232,11 @@ $("#panoramax-picture").on("click", async function (e) {
   });
 })
 
+// Where the picture comes from (file name, pasted image, Panoramax view), under the source tiles
+function setPictureSource(text) {
+  $("#modal-form .picture-source-name").text(text || "");
+}
+
 function longToast(key, options) {
   M.toast({ html: i18next.t(key, options), displayLength: 8000 });
 }
@@ -240,6 +246,7 @@ function longToast(key, options) {
  */
 $("#modal-form input[type=file]").change(function () {
   if (this.files && this.files[0]) {
+    setPictureSource(this.files[0].name);
     // Taken right now with the camera button: the phone's position is the photo's position
     loadPicture(this.files[0], this.hasAttribute("capture"), this.id != "issue-picture");
   }
@@ -259,7 +266,7 @@ $(document).on("paste", function (event) {
     return;
   }
   event.preventDefault();
-  $("#modal-form .file-path").val(i18next.t("pasted-image"));
+  setPictureSource(i18next.t("pasted-image"));
   loadPicture(image, false, true);
 })
 

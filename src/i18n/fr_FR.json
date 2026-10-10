@@ -142,6 +142,8 @@
     "nearby-one": "1 autre observation à moins de 500 m",
     "nearby-other": "{{count}} autres observations à moins de 500 m",
     "take-picture": "Prendre une photo",
+    "choose-picture": "Choisir une photo",
+    "panoramax-capture-short": "Vue Panoramax",
     "photo-location-estimated": "Position estimée d'après votre téléphone (± {{accuracy}} m) : vérifiez-la sur la carte.",
     "photo-location-removed": "Votre téléphone a retiré la position de cette photo : placez le point sur la carte, recherchez l'adresse, ou prenez la photo directement depuis l'appli.",
     "photo-no-location": "Cette photo ne contient pas de position : placez le point sur la carte ou recherchez l'adresse.",

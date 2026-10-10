@@ -652,6 +652,12 @@ Le bouton **Tout effacer** (`#form-clear`, pied de la fenêtre, seulement pour u
 
 ### 4.3 Photo
 
+Les sources de la photo sont présentées par des **tuiles identiques** (`.picture-sources` > `.picture-source` :
+icône + libellé) : « Choisir une photo » (`#issue-picture`, champ fichier caché mais focalisable — classe
+`.picture-input`, pas `display: none` — pour que le navigateur signale qu'il est obligatoire), « Prendre une photo »
+(`.camera-capture`, mobile) et « Vue Panoramax » (`#panoramax-picture`). L'origine de la photo choisie (nom du
+fichier, image collée, vue Panoramax) s'affiche dessous (`setPictureSource()`, `.picture-source-name`).
+
 Trois sources, toutes vers `loadPicture(file, fromCamera, notFromMainInput)` :
 
 | Source | `fromCamera` | Champ obligatoire `#issue-picture` |
