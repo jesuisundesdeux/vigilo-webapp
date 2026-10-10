@@ -802,7 +802,9 @@ En cas d'échec : toast `moderation-failed`.
 
 ### 6.1 Contenu (`stats.html`, `stats.js`)
 
-Calculées sur **toutes** les observations reçues (`vigilo.getIssues()`), sans les filtres de la liste, sur la
+Calculées sur **toutes** les observations reçues, **archivées comprises** (`vigilo.getIssues({archived: 1})` :
+backend ≥ 0.0.29, les observations archivées depuis l'admin ne sont plus listées mais restent comptées ; les backends
+plus anciens ignorent le paramètre), sans les filtres de la liste, sur la
 **période choisie** (`.stats-periods` : 30 jours, 12 mois, tout) : les chiffres clés comme les graphiques
 (`renderPeriod()` appelle `renderKpis(selected, start)`).
 

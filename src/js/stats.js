@@ -50,7 +50,9 @@ function startOfMonth(d) {
 
 export async function init() {
     try {
-        issues = await vigilo.getIssues();
+        // archived observations are no longer listed but still count in the statistics
+        // (backend >= 0.0.29; older ones ignore the parameter)
+        issues = await vigilo.getIssues({ archived: 1 });
         cats = await vigiloconfig.getCategories();
     } catch (e) {
         return;
