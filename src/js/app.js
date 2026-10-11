@@ -7,7 +7,7 @@ import * as form from './form';
 import { initPhotoDrafts } from './photo-drafts';
 import * as navs from './navs';
 import * as stats from './stats';
-import * as admin from './admin';
+import * as moderator from './moderator';
 import * as i18n from './i18n';
 import { initTheme } from './theme';
 import github_issue from '../html/github_issue';
@@ -73,8 +73,8 @@ export default class VigiloApp {
         $("nav .brand-logo").append(" " + vigiloconfig.getInstance().name)
 
 
-        // Admin behaviour
-        await admin.init();
+        // Moderator of this instance
+        await moderator.init();
 
         /**
          * SIDENAV

@@ -31,19 +31,19 @@ export default async function (issue) {
     primary += primaryBtn("resolve-btn", `startResolution('${token}')`, "done_all", "resolve-issue");
   }
 
-  if (localDataManager.isAdmin()) {
+  if (localDataManager.isModerator()) {
     if (issue.approved == "0") {
-      primary = primaryBtn("approve-btn", `adminApprove('${token}','1')`, "check_circle", "admin-approve-short")
-        + primaryBtn("refuse-btn", `adminApprove('${token}','2')`, "block", "admin-refuse-short");
+      primary = primaryBtn("approve-btn", `moderate('${token}','1')`, "check_circle", "moderation-approve-short")
+        + primaryBtn("refuse-btn", `moderate('${token}','2')`, "block", "moderation-refuse-short");
       menuManage += menuItem(`startForm('${token}')`, "edit", "edit-issue");
     } else if (issue.approved == "1") {
       // approved observations can be edited too (the backend keeps their moderation state)
       menuManage += menuItem(`startForm('${token}')`, "edit", "edit-issue")
-        + menuItem(`adminApprove('${token}','0')`, "remove_circle", "admin-unapprove")
-        + menuItem(`adminApprove('${token}','2')`, "block", "admin-refuse", "danger");
+        + menuItem(`moderate('${token}','0')`, "remove_circle", "moderation-unapprove")
+        + menuItem(`moderate('${token}','2')`, "block", "moderation-refuse", "danger");
     } else if (issue.approved == "2") {
-      primary = primaryBtn("approve-btn", `adminApprove('${token}','1')`, "check_circle", "admin-approve-short");
-      menuManage += menuItem(`adminApprove('${token}','0')`, "remove_circle", "admin-unapprove");
+      primary = primaryBtn("approve-btn", `moderate('${token}','1')`, "check_circle", "moderation-approve-short");
+      menuManage += menuItem(`moderate('${token}','0')`, "remove_circle", "moderation-unapprove");
     }
   } else if (localDataManager.userCanEdit(issue) && backendAtLeast("0.0.17")) {
     // my observation, not approved yet

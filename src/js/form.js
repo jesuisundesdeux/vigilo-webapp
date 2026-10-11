@@ -662,8 +662,8 @@ $("#modal-form form").submit((e) => {
   modalLoader.open()
 
   var key;
-  if (LocalDataManager.isAdmin()) {
-    key = LocalDataManager.getAdminKey();
+  if (LocalDataManager.isModerator()) {
+    key = LocalDataManager.getModeratorKey();
   }
 
   var firstStep;
@@ -741,7 +741,7 @@ export async function init() {
     // Fill category select
     var cats = await vigiloconfig.getCategories();
     for (var i in cats) {
-      if (cats[i].disable == false || LocalDataManager.isAdmin()) {
+      if (cats[i].disable == false || LocalDataManager.isModerator()) {
         $("#issue-cat").append(`<option data-i18n="category-name-${i}" value="${i}">${i18next.t("category-name-"+i)}</option>`)
       }
     }

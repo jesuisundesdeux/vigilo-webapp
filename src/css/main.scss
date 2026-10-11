@@ -39,9 +39,14 @@ body {
 
 // Side menu: versions at the bottom when there is room, after the other items otherwise
 // (they used to be absolutely positioned and covered the last items on short screens)
+// Height of the visible screen: 100vh (Materialize) is taller than the screen of mobile browsers, whose
+// toolbar hid the last items of the menu
 .sidenav {
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   ul.tabs {
     height: 100%;
   }
@@ -77,14 +82,14 @@ nav.nav-extended {
   }
 }
 
-// Moderation mode: banner under the top bar, the tabs and the map move down (see js/admin.js)
-$admin-banner-h: 32px;
-.admin-banner {
+// Moderators: banner under the top bar, the tabs and the map move down (see js/moderator.js)
+$moderator-banner-h: 32px;
+.moderator-banner {
   position: fixed;
   top: 64px;
   left: 0;
   right: 0;
-  height: $admin-banner-h;
+  height: $moderator-banner-h;
   z-index: 998;
   display: flex;
   align-items: center;
@@ -102,15 +107,70 @@ $admin-banner-h: 32px;
   &[hidden] { display: none; }
   @media #{$small-and-down} { top: 56px; }
 }
-html.admin-mode {
-  #content {
-    ul.tabs { top: 64px + $admin-banner-h; }
-    @media #{$small-and-down} {
-      ul.tabs { top: 56px + $admin-banner-h; }
-    }
-    & > div { margin-top: 48px + $admin-banner-h; }
+// Side menu shortcut of the moderators, with the number of observations to moderate
+#moderation-shortcut a {
+  display: flex;
+  align-items: center;
+  .moderation-shortcut-label {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  #issues #issues-map { height: calc(100vh - 113px - #{$admin-banner-h}); }
+  .moderation-count {
+    min-width: 24px;
+    height: 22px;
+    line-height: 22px;
+    padding: 0 7px;
+    border-radius: 11px;
+    background: #283593;
+    color: #fff;
+    font-size: .8rem;
+    text-align: center;
+    &.hide { display: none; }
+  }
+}
+// Moderator settings: parts shown according to the state of the key (js/moderator.js)
+#modal-moderator {
+  &:not([data-state=none]):not(.editing) .moderator-show-none,
+  &[data-state=none] .moderator-show-key,
+  &.editing .moderator-show-key,
+  &:not([data-state=active]) .moderator-show-active,
+  &:not([data-state=off]) .moderator-show-off { display: none !important; }
+  .moderator-status { font-weight: 500; }
+  .moderator-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 16px;
+    // long labels wrap instead of being cut on phones
+    .btn, .btn-flat {
+      display: inline-flex;
+      align-items: center;
+      height: auto;
+      min-height: 36px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      line-height: 1.3;
+      white-space: normal;
+      text-align: left;
+      text-transform: none;
+      i.left { line-height: inherit; height: auto; }
+    }
+  }
+  .moderator-instance { font-size: .9rem; }
+  #moderator-key { font-family: monospace; }
+}
+html.moderator-mode {
+  #content {
+    ul.tabs { top: 64px + $moderator-banner-h; }
+    @media #{$small-and-down} {
+      ul.tabs { top: 56px + $moderator-banner-h; }
+    }
+    & > div { margin-top: 48px + $moderator-banner-h; }
+  }
+  #issues #issues-map { height: calc(100vh - 113px - #{$moderator-banner-h}); }
 }
 
 #issues {

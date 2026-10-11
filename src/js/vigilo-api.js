@@ -68,12 +68,12 @@ export function getIssues(options) {
                             // pixelated until the observation is approved
                             item.img_thumb_panel = baseUrl() + "/generate_panel.php?s=150&token=" + item.token;
                             item.img_panel = baseUrl() + "/generate_panel.php?s=800&token=" + item.token;
-                            var adminKey = localDataManager.getAdminKey();
+                            var moderatorKey = localDataManager.activeModeratorKey();
                             var secretid = localDataManager.getTokenSecretId(item.token);
-                            if (adminKey) {
-                              // moderators see every original photo, in moderation mode or not (a key that is not
-                              // a moderator's is refused: the image falls back on the pixelated panel)
-                              item.img = item.img_thumb = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + encodeURIComponent(adminKey);
+                            if (moderatorKey) {
+                              // moderators see every original photo (a key that is not a moderator's is refused:
+                              // the image falls back on the pixelated panel)
+                              item.img = item.img_thumb = baseUrl() + "/get_photo.php?token=" + item.token + "&key=" + encodeURIComponent(moderatorKey);
                             } else if (item.approved == 1) {
                               // original photo, only served by the backend once the observation is approved
                               item.img = item.img_thumb = baseUrl() + "/get_photo.php?token=" + item.token;
