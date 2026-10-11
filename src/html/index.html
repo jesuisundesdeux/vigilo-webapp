@@ -179,20 +179,35 @@
     </div>
   </div>
 
-  <!-- Modal for admin -->
-  <div id="modal-admin" class="modal modal-fixed-footer">
+  <!-- Moderator key of the instance, see js/moderator.js (state: none, pending, active, off, error) -->
+  <div id="modal-moderator" class="modal modal-fixed-footer" data-state="none">
     <div class="modal-content">
-      <h5 data-i18n="moderator-become"></h5>
-      <span data-i18n="moderator-text"></span>
+      <h5 data-i18n="moderator-title">Modération</h5>
+      <p class="moderator-status"></p>
+      <p class="moderator-show-none" data-i18n="moderator-text"></p>
+      <p class="moderator-show-active moderator-rules" data-i18n="moderator-rules"></p>
 
-      <div class="input-field">
-        <input id="role_key" type="text" class="validate">
-        <label for="role_key" data-i18n="your-access-key">Votre clé d'accès</label>
-        <button id="generate-key" type="button" class="waves-effect waves-light btn"><span data-i18n="generate-key">Générer une clé</span> <i
-            class="material-icons right">loop</i></button>
-        <button id="save-key" type="button" class="waves-effect waves-light btn"><span data-i18n="save">Enregistrer</span> <i
-            class="material-icons right">save</i></button>
+      <div class="moderator-key-form moderator-show-none">
+        <div class="input-field">
+          <input id="moderator-key" type="text" autocomplete="off" spellcheck="false">
+          <label for="moderator-key" data-i18n="your-access-key">Clé modérateur</label>
+        </div>
+        <p class="moderator-generated hide" data-i18n="moderator-generated"></p>
+        <div class="moderator-actions">
+          <button type="button" class="btn-flat waves-effect moderator-generate"><i class="material-icons left">autorenew</i><span data-i18n="generate-key">Générer une clé</span></button>
+          <button type="button" class="btn-flat waves-effect moderator-copy hide"><i class="material-icons left">content_copy</i><span data-i18n="moderator-copy">Copier la clé</span></button>
+          <button type="button" class="btn waves-effect waves-light moderator-save"><i class="material-icons left">save</i><span data-i18n="save">Enregistrer</span></button>
+        </div>
       </div>
+
+      <div class="moderator-actions moderator-show-key">
+        <button type="button" class="btn waves-effect waves-light moderator-show-active moderator-disable"><i class="material-icons left">visibility_off</i><span data-i18n="moderator-disable">Désactiver le mode modérateur</span></button>
+        <button type="button" class="btn waves-effect waves-light moderator-show-off moderator-enable"><i class="material-icons left">verified_user</i><span data-i18n="moderator-enable">Activer le mode modérateur</span></button>
+        <button type="button" class="btn-flat waves-effect moderator-change"><i class="material-icons left">edit</i><span data-i18n="moderator-change-key">Changer la clé</span></button>
+        <button type="button" class="btn-flat waves-effect moderator-copy-saved"><i class="material-icons left">content_copy</i><span data-i18n="moderator-copy">Copier la clé</span></button>
+        <button type="button" class="btn-flat waves-effect red-text moderator-delete"><i class="material-icons left">delete</i><span data-i18n="moderator-delete-key">Supprimer la clé</span></button>
+      </div>
+      <p class="moderator-instance grey-text"></p>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-close waves-effect waves-light btn" data-i18n-attr='{"title": "close"}' title="Fermer"><i class="material-icons">close</i></a>

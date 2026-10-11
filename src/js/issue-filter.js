@@ -100,21 +100,28 @@ export async function init() {
 			dataManager.setFilter(readFilters());
 		}
 
-		// Moderators: by default only the observations waiting for moderation are listed
-		// (can be changed in the filters)
-		if (LocalDataManager.isAdmin()) {
-			$(MODAL + " input[name=status]").each(function () {
-				$(this).prop('checked', $(this).val() == 'unapproved');
-			});
-			// set before the first display, without triggering a re-render
-			dataManager.status = ['unapproved'];
-			M.toast({ html: i18next.t("moderator-default-filter"), displayLength: 6000 });
-		}
 		refresh();
 
 	} catch (e) {
 		$("#issues .cards-container").empty().append(errorCard(e));
 	}
+}
+
+/**
+ * Applies filters (same format as dataManager.filters()) and checks the boxes of the filter
+ * window accordingly ([] = every box of the group, ["-"] = none): moderators' shortcut.
+ */
+export function applyFilters(filters) {
+	["categories", "dow", "hour", "status", "city"].forEach((name) => {
+		var values = filters[name == "city" ? "cities" : name] || [];
+		$(MODAL + " input[name=" + name + "]").each(function () {
+			$(this).prop("checked", values.length == 0 || values.indexOf($(this).val()) != -1);
+		});
+	});
+	$(MODAL + " input[name=owner]").prop("checked", !!filters.onlyme);
+	$(MODAL + " input[name=age][value='" + (filters.age || "all") + "']").prop("checked", true);
+	$(MODAL + " input[name=comment]").val(filters.comment || "");
+	dataManager.setFilter(filters);
 }
 
 /**

@@ -48,20 +48,67 @@ class LocalDataManager {
     this.save()
   }
 
-  getAdminKey(){
-    return this._data.adminKey;
+  // Current instance name (read here: vigilo-config imports this module)
+  instanceName(){
+    try {
+      var instance = JSON.parse(localStorage.getItem("vigilo-instance"));
+      return instance && instance.name ? instance.name : "";
+    } catch (e) {
+      return "";
+    }
   }
-  setAdminKey(key){
-    this._data.adminKey = key;
+
+  /**
+   * Moderator key of the current instance: one can moderate several instances, each with
+   * its own key. The former single key (adminKey) goes to the instance where it is first read.
+   */
+  getModeratorKey(){
+    var keys = this._data.moderatorKeys || {};
+    var name = this.instanceName();
+    if (keys[name] === undefined && this._data.adminKey) {
+      this.setModeratorKey(this._data.adminKey);
+      delete this._data.adminKey;
+      this.save();
+      keys = this._data.moderatorKeys;
+    }
+    return keys[name] || "";
+  }
+  setModeratorKey(key){
+    this._data.moderatorKeys = this._data.moderatorKeys || {};
+    if (key) {
+      this._data.moderatorKeys[this.instanceName()] = key;
+    } else {
+      delete this._data.moderatorKeys[this.instanceName()];
+      this.setModerationOff(false);
+    }
     this.save();
   }
 
-  setIsAdmin(isAdmin){
-    sessionStorage.setItem("vigilo-isAdmin", isAdmin)
+  // Moderation mode turned off on this instance (the key is kept)
+  isModerationOff(){
+    return !!(this._data.moderationOff || {})[this.instanceName()];
+  }
+  setModerationOff(off){
+    this._data.moderationOff = this._data.moderationOff || {};
+    if (off) {
+      this._data.moderationOff[this.instanceName()] = true;
+    } else {
+      delete this._data.moderationOff[this.instanceName()];
+    }
+    this.save();
   }
 
-  isAdmin(){
-    return sessionStorage.getItem("vigilo-isAdmin") === "true"
+  // Key to send to the backend: none when the moderation mode is off
+  activeModeratorKey(){
+    return this.isModerationOff() ? "" : this.getModeratorKey();
+  }
+
+  // Moderator on this instance: key accepted by the backend and mode on (set by moderator.js)
+  setModerator(moderator){
+    this._moderator = moderator;
+  }
+  isModerator(){
+    return this._moderator === true;
   }
 
   setBeta(){

@@ -6,7 +6,7 @@ Informations pour les agents IA (et les humains) qui travaillent sur ce dépôt.
 
 Application web de [Vigilo](https://vigilo.city), publiée sur [app.vigilo.city](https://app.vigilo.city) (installable en
 PWA) : consulter, filtrer et signaler les observations (problèmes de déplacement à pied / à vélo) d'un territoire, et
-modérer quand on a une clé admin/modérateur. Elle parle à l'API de l'**instance** choisie (backend
+modérer quand on a une clé modérateur (propre à chaque instance). Elle parle à l'API de l'**instance** choisie (backend
 [vigilo-backend](https://github.com/jesuisundesdeux/vigilo-backend), une instance par association).
 
 - La liste des instances vient de [vigilo-conf](https://github.com/jesuisundesdeux/vigilo-conf) (`main/citylist.json`,
@@ -28,11 +28,11 @@ modérer quand on a une clé admin/modérateur. Elle parle à l'API de l'**insta
 | `src/js/vigilo-config.js` | Instances et catégories (vigilo-conf / instance), version, instance courante |
 | `src/js/vigilo-api.js` | Appels à l'API du backend (`get_issues.php`, `create_issue.php`, `add_image.php`, `approve.php`…) |
 | `src/js/dataManager.js` | Filtres appliqués aux observations (`filterIssues`, `periodStart`, `issueStatus`) |
-| `src/js/issue-filter.js`, `issue-list.js`, `issue-map.js`, `form.js`, `stats.js`, `admin.js` | Filtres, liste, carte, formulaire d'envoi (observation, ou résolution depuis la fiche d'une observation), statistiques, modération |
+| `src/js/issue-filter.js`, `issue-list.js`, `issue-map.js`, `form.js`, `stats.js`, `moderator.js` | Filtres, liste, carte, formulaire d'envoi (observation, ou résolution depuis la fiche d'une observation), statistiques, modérateurs (clé, réglages, raccourci « À modérer », modération) |
 | `src/js/similar-issues.js`, `related-issues.js` | Observations similaires (fiche) et observations proposées dans une résolution |
 | `src/js/image-drawable.js`, `panoramax.js`, `panoramax-capture.js` | Éditeur de photo du formulaire ; vues Panoramax (fiche, photo prise dans une vue) |
 | `src/js/photo-drafts.js` | Photos en brouillon (mobile) : prises avec la position du téléphone, gardées sur l'appareil (IndexedDB), puis transformées en observation |
-| `src/js/localDataManager.js` | Stockage local : jetons/secretid des observations envoyées, clé admin, langue, modes beta/dev |
+| `src/js/localDataManager.js` | Stockage local : jetons/secretid des observations envoyées, clé modérateur par instance, langue, modes beta/dev |
 | `src/html/` | Gabarits HTML (inclus avec `${require('./x.html')}`, voir `webpack/html-interpolate-loader.js`) et composants JS (`issue-card.js`…) |
 | `src/css/` | SCSS : Materialize personnalisé, `theme-variables.scss` (couleurs), `theme.scss`, `dark.scss` (mode sombre), `main.scss` |
 | `src/i18n/fr_FR.json`, `en_US.json` | Traductions (clés identiques dans les deux fichiers) |
@@ -58,7 +58,8 @@ framework (pas de React/Vue).
 - **Images** : une image en erreur passe sur `data-fallback`, puis sur l'image par défaut
   (`src/img/photo-missing.svg`) — voir `main.js`.
 - **Mobile d'abord** : vérifier l'affichage à 390 px de large, en thème clair et sombre (`dark.scss`).
-- **Langue** : interface et messages de commit en **français** ; commentaires du code en anglais, courts.
+- **Langue** : interface et messages de commit en **français** ; commentaires du code en anglais, courts. Dans
+  l'interface, on parle de **modérateur** (pas d'« admin »).
 
 ## Construire et tester
 

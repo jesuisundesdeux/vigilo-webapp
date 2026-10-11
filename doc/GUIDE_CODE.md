@@ -121,7 +121,7 @@ tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()
    | `?instance=` | `await window.setInstance(nom, true)` si différent de l'instance courante | enregistre sans recharger |
    | Pas d'instance | `hideSplash()` puis ouverture de `#modal-zone`, et `return` | l'application s'arrête là jusqu'au choix |
    | Titre | `document.title`, nom ajouté au logo de la barre | |
-   | Modération | `await admin.init()` | clé, `acl.php`, entrée du menu |
+   | Modération | `await moderator.init()` | clé de l'instance, `acl.php`, entrée du menu, bandeau, raccourci |
    | Menu latéral | `navs.init()` (non attendu) | onglets, installation, version du serveur |
    | Formulaire | `form.init()` (non attendu) | catégories du `<select>`, sélecteurs date/heure |
    | Statistiques | `stats.init()` (non attendu) | |
@@ -169,7 +169,7 @@ tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()
 | `issue-filter.js` | fenêtre des filtres |
 | `form.js` | formulaire d'envoi / de modification |
 | `image-drawable.js` | outil de dessin sur la photo (masquer un visage, une plaque) |
-| `admin.js` | mode modération |
+| `moderator.js` | modérateurs : clé de l'instance, réglages, raccourci « À modérer », modération |
 | `stats.js` | statistiques |
 | `i18n.js` | traductions |
 | `navs.js` | menu latéral |
@@ -253,14 +253,17 @@ a eu un changement.
 #### `localDataManager.js`
 
 Singleton `LocalDataManager`, données persistantes dans `localStorage['vigilo-localdata']` (objet `{tokens, lang,
-adminKey}`) et drapeaux de session :
+moderatorKeys, moderationOff}`) et drapeaux de session :
 
 | Méthode | Stockage |
 |---|---|
 | `getTokenSecretId(token)` / `setTokenSecretId(token, secretId)` | `tokens[token]` : `secretid` des observations envoyées depuis ce navigateur |
 | `getLang()` / `setLang(lang)` | `lang` |
-| `getAdminKey()` / `setAdminKey(key)` | `adminKey` |
-| `isAdmin()` / `setIsAdmin(bool)` | `sessionStorage['vigilo-isAdmin']` (mode modération actif) |
+| `getModeratorKey()` / `setModeratorKey(key)` | `moderatorKeys[<nom de l'instance>]` : une clé par instance ; l'ancienne clé unique `adminKey` est rattachée à la première instance où elle est lue ; `setModeratorKey("")` supprime la clé (et `moderationOff`) de l'instance |
+| `isModerationOff()` / `setModerationOff(bool)` | `moderationOff[<nom de l'instance>]` : mode modérateur désactivé sur cet appareil, clé gardée |
+| `activeModeratorKey()` | la clé, ou `""` si le mode est désactivé (photos d'origine de `getIssues`) |
+| `isModerator()` / `setModerator(bool)` | en mémoire : clé reconnue (`acl.php` : `admin` ou `moderator`) et mode actif, réglé par `moderator.init()` |
+| `instanceName()` | nom de l'instance courante (`localStorage['vigilo-instance']`, lu directement : `vigilo-config` importe ce module) |
 | `isBeta()` / `setBeta()` | `sessionStorage['vigilo-beta']` |
 | `isDev()` / `setDev()` | `sessionStorage['vigilo-dev']` |
 | `userCanEdit(issue)` | vrai si le `secretid` est connu et l'observation non approuvée |
@@ -332,8 +335,8 @@ Les tailles des cercles par niveau de zoom sont dans la constante `STYLES` (`"0-
   affiche les compteurs par valeur, branche les liens « Tout / Aucun » (`[data-toggle-group]`), le bouton
   `#filters-reset`, le résumé `#filters-summary` (« N observations », pluriel i18next). Les filtres sont appliqués à
   la **fermeture** de `#modal-filters` (`onCloseStart` → `dataManager.setFilter(readFilters())`).
-- En mode modération, coche seulement `unapproved` et règle `dataManager.status = ['unapproved']` directement (sans
-  événement), avec un toast `moderator-default-filter`.
+- `applyFilters(filters)` (exportée, raccourci des modérateurs) : coche les cases de `#modal-filters` d'après des
+  filtres au format de `dataManager.filters()` (`[]` = tout le groupe), puis `dataManager.setFilter(filters)`.
 - `checkedValues(name)` : `[]` si tout est coché (= pas de filtre, pour garder les observations dont la catégorie ou
   la commune est inconnue de la configuration), `["-"]` si rien n'est coché (ne correspond à rien), sinon les valeurs.
 
@@ -388,9 +391,9 @@ commence que sur le canvas. Le zoom revient à 1 à la fermeture et après une r
 Aperçu dans le formulaire : `#picture-preview canvas` sur toute la largeur de la carte, hauteur au plus
 `min(55vh, 420px)`.
 
-#### `admin.js`
+#### `moderator.js`
 
-Voir [§5](#5-mode-modération). Export : `init()`. Global (en mode modération) : `window.adminApprove(token, status)`.
+Voir [§5](#5-mode-modération). Export : `init()`. Global (modérateur, mode actif) : `window.moderate(token, status)`.
 
 #### `stats.js`
 
@@ -501,7 +504,7 @@ fermeture est la croix en haut à droite (`modal-cross.js`).
 |---|---|---|
 | toujours | | voir sur la carte (`centerOnIssue`), observations similaires (défile jusqu'à `.similar-issues`), voir sur OpenStreetMap, **signaler** (`.report-btn`, lien `mailto:` vers `contact_email` de `get_scope.php`, objet `report-issue-subject`, corps `report-issue-body` : référence, catégorie, adresse, date, commentaire, lien, motif à compléter) |
 | observation publiée, dans aucune résolution (`status == 0`), catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) | |
-| mode modération, `approved == 0` | **Valider** (`adminApprove(t,'1')`), **Refuser** (`'2'`) | modifier (`startForm(t)`) |
+| mode modération, `approved == 0` | **Valider** (`moderate(t,'1')`), **Refuser** (`'2'`) | modifier (`startForm(t)`) |
 | mode modération, `approved == 1` | (Résoudre si possible) | modifier (`create_issue.php` garde l'état de modération), remettre à modérer (`'0'`), refuser |
 | mode modération, `approved == 2` | **Valider** | remettre à modérer |
 | auteur (`userCanEdit`) et backend ≥ 0.0.17 | | supprimer (`deleteIssue`) |
@@ -553,7 +556,7 @@ Les boutons sans texte ont une description (`title`, et `aria-label` pour les le
 - Le cache vit **jusqu'au rechargement de la page**. `get_scope.php`, `citylist.json`, `acl.php` ne sont donc
   demandés qu'une fois.
 - `vigilo-api.getIssues` a un second cache (`issue_cache`) qui garde le tableau **enrichi** : tous les modules
-  partagent les mêmes objets. Une modification d'un objet (par exemple `issue.approved` dans `adminApprove`) est vue
+  partagent les mêmes objets. Une modification d'un objet (par exemple `issue.approved` dans `moderate`) est vue
   partout.
 
 ### 3.3 Observations (`getIssues`) et enrichissement
@@ -767,40 +770,61 @@ déjà approuvée, le backend répond sinon 403 `ALREADYAPPROVED`. L'observation
 
 ## 5. Mode modération
 
-### 5.1 Clé et rôle (`admin.js`)
+### 5.1 Clé de l'instance et rôle (`moderator.js`)
 
-- La fenêtre `#modal-admin` (titre `moderator-become`, texte `moderator-text`, champ `#role_key`, boutons
-  `#generate-key` et `#save-key`) s'ouvre par l'entrée de menu **« Accès modérateur »** (`#admin-status`,
-  `moderator-access`, affichée quand aucune clé n'est enregistrée dans ce navigateur), ou après **10 clics** sur
-  l'avatar Vigilo du menu latéral (`#mobile-menu a[href='#user']`, au premier clic si une clé est déjà enregistrée).
-  La clé est propre au navigateur et au site (`localStorage`) : un autre appareil, un autre navigateur ou des données
-  effacées n'en ont pas.
-- « Enregistrer » stocke la clé (`localDataManager.setAdminKey`) et recharge la page. « Générer une clé » remplit le
-  champ avec 40 caractères aléatoires (voir §12 : ce bouton n'a plus de sens avec les backends actuels).
-- Au démarrage, s'il y a une clé : `acl.php?key=` donne le rôle.
-  - `admin` ou `moderator` : entrée de menu `#admin-status` « Activer / Désactiver mode admin » (`moderator-enable` / `moderator-disable`). L'activation
-    demande confirmation (`moderator-warning`) puis met `sessionStorage['vigilo-isAdmin'] = true` et recharge.
-  - autre réponse (`false`, `citystaff`, erreur) : entrée « Presque modérateur » (`moderator-pending`) qui rouvre la
-    fenêtre, et le mode est désactivé.
-- Le mode modération dure le temps de la session de l'onglet (`sessionStorage`) ; la clé, elle, est permanente
-  (`localStorage`).
+- La clé est **propre à chaque instance** (`localDataManager.getModeratorKey()`, `moderatorKeys[<instance>]`) : on
+  peut être modérateur sur une instance et pas sur une autre, avec une clé par instance. Elle reste dans le navigateur
+  (`localStorage`) : un autre appareil, un autre navigateur ou des données effacées n'en ont pas.
+- Au démarrage, `keyState(key)` : `none` (pas de clé), sinon `acl.php?key=` → `active` (`admin` ou `moderator`, mode
+  actif), `off` (reconnue mais mode désactivé sur l'appareil, `moderationOff`), `pending` (autre réponse : clé pas
+  encore ajoutée dans l'admin de l'instance) ou `error` (échec de la requête). `localDataManager.setModerator(state ==
+  "active")`.
+- Entrée du menu `#moderator-entry` (icône clé, sous « Langue ») : « Devenir modérateur », « Clé modérateur en
+  attente », « Modération » ou « Modération (désactivée) » selon l'état ; elle ouvre la fenêtre `#modal-moderator`
+  (aussi par le lien « Réglages » du bandeau). Il n'y a plus de bascule « mode admin » ni d'entrée cachée (clics sur
+  le logo).
+- Fenêtre `#modal-moderator`, `data-state` = l'état (les éléments `.moderator-show-none / -key / -active / -off` sont
+  affichés selon l'état, `main.scss`) :
+  - `none` : texte `moderator-text`, champ `#moderator-key`, **Générer une clé** (40 caractères, `randomToken`, avec
+    le texte `moderator-generated` et **Copier la clé**) et **Enregistrer** (`setModeratorKey`, rechargement). Une
+    clé générée doit être saisie dans le champ « Clé fournie par la personne » de la page Comptes de l'admin
+    (backend ≥ 0.0.30) ;
+  - autres états : message `moderator-state-<état>`, **Désactiver le mode modérateur** (`active`) ou **Activer le mode
+    modérateur** (`off`, confirmation `moderator-warning`), **Changer la clé** (classe `editing` : formulaire de
+    saisie), **Copier la clé**, **Supprimer la clé** (confirmation, `setModeratorKey("")`) ; chaque action recharge la
+    page ;
+  - rappel `moderator-instance` : la clé ne vaut que pour cette instance.
 
-### 5.2 Effets du mode modération
+### 5.2 Effets pour un modérateur (état `active`)
 
 | Où | Effet |
 |---|---|
-| `admin.js` | bannière `#admin-banner` sous la barre du haut (« Mode modération activé », lien pour le désactiver) et classe `admin-mode` sur `<html>` (onglets et carte décalés de la hauteur de la bannière, `main.scss`) ; `window.adminApprove` défini |
-| `vigilo-api.getIssues` | `img` / `img_thumb` = photo originale `get_photo.php?...&key=` (dès qu'une clé est enregistrée) |
-| `issue-filter.js` | filtre par défaut `status = ['unapproved']` + toast |
+| `moderator.js` | bandeau `#moderator-banner` sous la barre du haut (« Vous êtes modérateur », lien « Réglages ») et classe `moderator-mode` sur `<html>` (onglets et carte décalés de la hauteur du bandeau, `main.scss`) ; `window.moderate` défini ; raccourci du menu (§5.3) |
+| `vigilo-api.getIssues` | `img` / `img_thumb` = photo originale `get_photo.php?...&key=` (`activeModeratorKey()` : dès qu'une clé est enregistrée, sauf mode désactivé) |
 | `issue-detail.js` | boutons Valider / Refuser, et dans le menu « ⋮ » : modifier, remettre à modérer, refuser |
 | `form.js` | catégories désactivées proposées ; `create_issue.php?key=` (pas de limite anti-spam, modification possible) ; `secretid` non mémorisé |
 
-### 5.3 `adminApprove(token, status)`
+La liste n'est plus filtrée par défaut sur les observations à modérer : c'est le rôle du raccourci.
+
+### 5.3 Raccourci « À modérer » (`#moderation-shortcut`)
+
+Entrée du menu latéral placée juste sous les onglets (jamais en bas de l'écran, où la barre des navigateurs mobiles
+peut la masquer ; le menu prend la hauteur visible, `100dvh`), avec le nombre d'observations `approved == 0`.
+
+- « À modérer » : mémorise les filtres en cours (`previousFilters`) et applique `QUEUE_FILTERS` (statut `unapproved`
+  seulement, autres filtres remis à zéro) avec `applyFilters()` de `issue-filter.js` ;
+- quand le filtre de statut vaut exactement `['unapproved']` (raccourci ou fenêtre des filtres), l'entrée devient
+  « Toutes les observations » : retour aux filtres mémorisés (ou actuels) avec **tous les statuts** (`status: []`).
+
+Le libellé et le nombre sont mis à jour à chaque `filterchange` et après chaque modération. Le raccourci ferme le
+menu et revient à l'onglet des observations.
+
+### 5.4 `moderate(token, status)`
 
 `status` : `'1'` approuver, `'0'` remettre à modérer, `'2'` refuser (ces deux derniers demandent confirmation). Après
 `approve.php` (sans cache), l'observation en mémoire est mise à jour (`approved`), sa carte est réaffichée ou retirée
-(`refreshIssueCard`), la carte Leaflet redessinée, la fiche fermée et un toast `moderation-done-<status>` affiché.
-En cas d'échec : toast `moderation-failed`.
+(`refreshIssueCard`), la carte Leaflet redessinée, le nombre du raccourci recalculé, la fiche fermée et un toast
+`moderation-done-<status>` affiché. En cas d'échec : toast `moderation-failed`.
 
 ---
 
@@ -848,7 +872,7 @@ Le bloc `#stats` de `index.html` inclut `stats.html` ; il s'affiche par l'onglet
   `postMessage({type: 'vigilo-stats-height', height}, '*')` à chaque changement de hauteur de `.stats-page` ;
   `site.js` de vigilo-website ajuste la hauteur de l'iframe.
 - Le même `VigiloApp.init()` s'exécute : `i18n.init()` (pas de `#modal-i18n`, donc toujours en français),
-  `setInstance(?instance, true)`, `admin.init()`, `navs.init()`, `form.init()`, `stats.init()`. L'exécution
+  `setInstance(?instance, true)`, `moderator.init()`, `navs.init()`, `form.init()`, `stats.init()`. L'exécution
   s'interrompt ensuite sur `M.Tabs.getInstance($("#issues .tabs")).options` (élément absent : `TypeError`), erreur
   attrapée et affichée dans la console par `main.js`. Les statistiques, lancées avant, s'affichent quand même. Sans
   instance, l'erreur survient plus tôt (`#modal-zone` absent).
@@ -926,11 +950,10 @@ Le HTML généré en JS doit donc **à la fois** contenir le texte traduit (`i18
 | Clé | Stockage | Contenu | Écrit par |
 |---|---|---|---|
 | `vigilo-instance` | `localStorage` | JSON de l'instance choisie (`api_path`, `scope`, `prod`, `country`, `name`) | `setInstance` (`vigilo-config.js`) ; lu aussi par le script en ligne de `index.html` |
-| `vigilo-localdata` | `localStorage` | `{tokens: {<token>: <secretid>}, lang, adminKey}` | `localDataManager` |
+| `vigilo-localdata` | `localStorage` | `{tokens: {<token>: <secretid>}, lang, moderatorKeys: {<instance>: <clé>}, moderationOff: {<instance>: true}}` | `localDataManager` |
 | `vigilo-version` | `localStorage` | version de l'application | `localDataManager.setVersion`, jamais appelée |
 | `vigilo-theme` | `localStorage` | `auto`, `light` ou `dark` | `theme.js` ; lu aussi par le script en ligne de `index.html` |
 | `vigilo-install-dismissed` | `localStorage` | `"1"` si la bannière d'installation a été fermée ou l'application installée | `install.js` |
-| `vigilo-isAdmin` | `sessionStorage` | `"true"` / `"false"` : mode modération actif | `localDataManager.setIsAdmin` |
 | `vigilo-beta` | `sessionStorage` | `"true"` : instances de test visibles | `?beta` |
 | `vigilo-dev` | `sessionStorage` | `"true"` : backend local | `?dev` |
 
@@ -1067,11 +1090,11 @@ documenter la version minimale dans un commentaire.
 ### 12.1 Couplages et globales
 
 - **Fonctions globales** appelées depuis des attributs `onclick` de HTML généré : `viewIssue`, `centerOnIssue`,
-  `startForm`, `adminApprove` (définie seulement en mode modération), `deleteIssue`, `shareIssue`, `setLang`,
+  `startForm`, `moderate` (définie seulement pour un modérateur, mode actif), `deleteIssue`, `shareIssue`, `setLang`,
   `setInstance`. Les renommer impose de mettre à jour les gabarits ; tout jeton inséré dans un `onclick` doit passer
   par `safeToken`.
 - Autres globales : `window.$`, `window.vigilo`, `window.issuesmap`, `window.WE_ARE_ON_A_MOBILE`, et `M`
-  (Materialize) et `L` (Leaflet), utilisés sans import dans plusieurs modules (`admin.js`, `navs.js`, `issue-list.js`,
+  (Materialize) et `L` (Leaflet), utilisés sans import dans plusieurs modules (`moderator.js`, `navs.js`, `issue-list.js`,
   `map-layers.js`, `circle-marker-dynamic.js`, `main.js`...). Ils fonctionnent parce que ces bibliothèques
   s'enregistrent sur `window` lorsqu'un autre module les importe.
 - **Gestionnaires posés à l'évaluation du module** (`form.js`, `install.js`) : ils supposent que le DOM existe déjà
@@ -1111,21 +1134,14 @@ documenter la version minimale dans un commentaire.
 | Liste vide | à chaque arrivée en bas de page avec une liste filtrée vide, un nouveau message « Aucun signalement » est ajouté |
 | Textes non traduits | `alert` « La localisation doit se trouver dans la zone géographique choisie. » (`form.js`), noms des fonds de carte (`map-layers.js`), attributs `title` « Filtrer » et « Ajouter une observation » (`issues.html`), textes initiaux de l'écran de chargement |
 | `?mobile` | le test `location.search.indexOf('mobile')` s'active aussi pour `?comment=automobile` |
-| Clics sur l'avatar | le commentaire de `admin.js` parle de 15 clics, le code en attend 10 |
-| `acl.php` | la clé n'est pas encodée (`encodeURIComponent`) dans l'URL, contrairement à `approve.php` |
 | Code mort | `localDataManager.setVersion` et la clé `vigilo-version`, `spinner.scss`, variable `issues` inutilisée dans `issue-map.init`, second argument de `deleteIssue('<token>','2')` |
 | Iframe | `VigiloApp.init()` s'arrête sur une `TypeError` dans `stats-iframe.html` (§6.3) ; elle y lance aussi des appels inutiles (`acl.php` si une clé est stockée, initialisation du formulaire) |
 
 ### 12.5 Fenêtre « Devenir modérateur »
 
-Le texte `moderator-text` (« Insérez la clé fournie par un modérateur ... ou cliquez sur "générer" et transmettez
-cette clé à un modérateur. Votre autorisation ... doit être validée par un modérateur. ») et le bouton
-`#generate-key` décrivent un ancien fonctionnement où une clé créée par l'utilisateur était ensuite enregistrée par un
-modérateur. Avec le backend actuel, les clés sont **générées uniquement par l'instance**, à la création d'un compte
-ou par « Régénérer » dans la page **Comptes** de l'admin (`account_new_key()` dans `app/admin/inc/accounts.php`) ; une
-clé générée dans le navigateur ne peut pas y être saisie et restera toujours « Presque modérateur ». Le libellé
-`moderator-pending` suppose aussi cette attente de validation. Une mise à jour cohérente consisterait à retirer le
-bouton et sa traduction, et à demander la clé fournie par l'administrateur de l'instance.
+Une clé générée dans l'application n'est reconnue que si un administrateur la saisit dans le champ « Clé fournie par
+la personne » de la page Comptes (backend ≥ 0.0.30) ; sur un backend plus ancien, il faut demander la clé générée
+par l'instance et la coller dans le champ.
 
 ### 12.6 Sécurité
 
