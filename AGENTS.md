@@ -16,6 +16,8 @@ modérer quand on a une clé modérateur (propre à chaque instance). Elle parle
   pas à jour.
 - Instance choisie : `localStorage['vigilo-instance']`, ou `?instance=<nom>` dans l'URL. `?beta` affiche aussi les
   instances de test, `?dev` utilise un backend local (`http://127.0.0.1`).
+- `config.json` facultatif à côté d'`index.html` : `{"conf_url": "…"}` remplace vigilo-conf (écosystème fermé, image
+  Docker utilisée par [vigilo-demo](https://github.com/jesuisundesdeux/vigilo-demo)) ; voir `doc/GUIDE_CODE.md` §3.1.
 - `stats-iframe.html` : page de statistiques intégrable (utilisée par vigilo.city) ; fond transparent, envoie sa
   hauteur à la page parente (`postMessage({type: 'vigilo-stats-height', height})`).
 
@@ -25,7 +27,7 @@ modérer quand on a une clé modérateur (propre à chaque instance). Elle parle
 |---|---|
 | `src/js/main.js` | Point d'entrée (CSS, gestion globale des erreurs d'image, lancement de `app.js`) |
 | `src/js/app.js` | Initialisation : instance, i18n, navigation, formulaire, liste, carte, filtres, statistiques |
-| `src/js/vigilo-config.js` | Instances et catégories (vigilo-conf / instance), version, instance courante |
+| `src/js/vigilo-config.js` | Instances et catégories (vigilo-conf / instance, ou `config.json` d'un écosystème fermé), version, instance courante |
 | `src/js/vigilo-api.js` | Appels à l'API du backend (`get_issues.php`, `create_issue.php`, `add_image.php`, `approve.php`…) |
 | `src/js/dataManager.js` | Filtres appliqués aux observations (`filterIssues`, `periodStart`, `issueStatus`) |
 | `src/js/issue-filter.js`, `issue-list.js`, `issue-map.js`, `form.js`, `stats.js`, `moderator.js` | Filtres, liste, carte, formulaire d'envoi (observation, ou résolution depuis la fiche d'une observation), statistiques, modérateurs (clé, réglages, raccourci « À modérer », modération) |
@@ -83,6 +85,9 @@ Contrôler : aucune erreur JavaScript, affichage à 1280 et 390 px.
 publication sur la branche `gh-pages` (app.vigilo.city). Les pull requests sont seulement construites. Les noms de
 fichiers contiennent un hash : pas de problème de cache après un déploiement.
 
+`.github/workflows/docker.yml` : image `ghcr.io/jesuisundesdeux/vigilo-webapp` (nginx, `Dockerfile`) publiée pour
+chaque tag `vX.Y.Z` (`X.Y.Z`, `X.Y`, `X`, `latest`) et chaque push sur `master` (`edge`).
+
 Version de l'application : `package.json` (`npm --no-git-tag-version version patch|minor|major`).
 
 ## Dépôts liés
@@ -90,3 +95,5 @@ Version de l'application : `package.json` (`npm --no-git-tag-version version pat
 - [vigilo-backend](https://github.com/jesuisundesdeux/vigilo-backend) : API (`doc/REST_API.md`).
 - [vigilo-conf](https://github.com/jesuisundesdeux/vigilo-conf) : instances et catégories nationales.
 - [vigilo-website](https://github.com/jesuisundesdeux/vigilo-website) : site vigilo.city (intègre `stats-iframe.html`).
+- [vigilo-demo](https://github.com/jesuisundesdeux/vigilo-demo) : instances de démonstration (image Docker de la
+  webapp avec `config.json`).

@@ -115,10 +115,12 @@ tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()
 
    | Étape | Code | Détail |
    |---|---|---|
+   | Configuration | `await vigiloconfig.loadAppConfig()` | `config.json` facultatif (§3.1), avant les catégories |
    | Traductions | `await i18n.init()` | charge les catégories (pour leurs noms), initialise i18next, applique la langue mémorisée |
    | Modes | `?beta` → `localDataManager.setBeta()`, sinon `?dev` → `setDev()` | stockés en `sessionStorage` |
    | Instances | `await vigiloconfig.getInstances()` | remplit la liste de `#modal-zone` ; un clic appelle `window.setInstance(nom)` |
    | `?instance=` | `await window.setInstance(nom, true)` si différent de l'instance courante | enregistre sans recharger |
+   | Écosystème fermé | si `isClosed()` : oubli d'une instance qui n'est plus listée, choix automatique de la seule instance, message `.zone-empty` s'il n'y en a aucune | voir §3.1 |
    | Pas d'instance | `hideSplash()` puis ouverture de `#modal-zone`, et `return` | l'application s'arrête là jusqu'au choix |
    | Titre | `document.title`, nom ajouté au logo de la barre | |
    | Modération | `await moderator.init()` | clé de l'instance, `acl.php`, entrée du menu, bandeau, raccourci |
@@ -194,7 +196,9 @@ tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()
 
 | Export | Description |
 |---|---|
-| `getInstances(all)` | liste des instances depuis `citylist.json` de vigilo-conf, en tableau d'objets `{api_path, scope, prod, country, name}` (`name` = clé du JSON). Filtrée sur `prod` sauf mode beta ou `all` défini. En mode dev : une seule instance `Dev` (`api_path: http://127.0.0.1`, `scope: XX_dev`) |
+| `loadAppConfig()` | lit `config.json` à côté d'`index.html` (facultatif, voir §3.1) ; à appeler avant `getInstances()` et `getCategories()` |
+| `isClosed()` | `true` si `config.json` donne un `conf_url` (écosystème fermé : instances et catégories lues dans ce dossier, pas dans vigilo-conf) |
+| `getInstances(all)` | liste des instances depuis `citylist.json` de vigilo-conf (ou de `conf_url`), en tableau d'objets `{api_path, scope, prod, country, name}` (`name` = clé du JSON). Filtrée sur `prod` sauf mode beta, écosystème fermé ou `all` défini. En mode dev : une seule instance `Dev` (`api_path: http://127.0.0.1`, `scope: XX_dev`) |
 | `getCategories()` | promesse, mise en cache dans le module, d'un objet `{catid: {id, name, i18n, color, disable, resolvable, custom}}` (voir §3.1) |
 | `getInstance()` | objet de l'instance courante lu dans `localStorage['vigilo-instance']`, ou `null` |
 | `VERSION` | `"vigilo-webapp-<version>"`, envoyé dans le champ `version` de `create_issue.php` |
@@ -407,7 +411,7 @@ Voir [§7](#7-traductions-i18n). Export : `init()`. Global : `window.setLang(lan
 
 `init()` : `M.Sidenav` sur `#mobile-menu`, `M.Tabs` sur ses onglets (le menu se ferme au changement d'onglet),
 `install.init()`, affiche l'entrée « Ce territoire sur vigilo.city » (`#instance-page`, lien `instancePageUrl()` du
-nom de l'instance courante), puis ajoute `backend_version` (de `get_scope.php`) au texte et au lien de
+nom de l'instance courante ; pas en écosystème fermé), puis ajoute `backend_version` (de `get_scope.php`) au texte et au lien de
 `#version-server`.
 
 Les onglets du menu (`navs.html`) sont des onglets Materialize : `href="#issues"` et `href="#stats"` affichent l'un
@@ -529,13 +533,20 @@ Les boutons sans texte ont une description (`title`, et `aria-label` pour les le
 
 ### 3.1 Instances et catégories (`vigilo-config.js`)
 
+- **Configuration** : `loadAppConfig()` lit `config.json` à côté d'`index.html` (`fetch`, `no-store`). Absent
+  (app.vigilo.city), les fichiers viennent de vigilo-conf. Sinon `{"conf_url": "/conf"}` (chemin relatif à la page
+  ou URL absolue) désigne le dossier de `citylist.json` et `categorielist.json` : **écosystème fermé** (instances de
+  [vigilo-demo](https://github.com/jesuisundesdeux/vigilo-demo), image Docker de la webapp). Dans ce mode : pas de
+  filtre `prod`, une instance mémorisée qui n'est plus listée est oubliée, la seule instance listée est choisie
+  automatiquement, un message invite à créer le territoire dans l'admin s'il n'y en a aucun, et le lien « Ce
+  territoire sur vigilo.city » est masqué.
 - **Instances** : `https://raw.githubusercontent.com/jesuisundesdeux/vigilo-conf/main/main/citylist.json`. Une
   instance choisie est enregistrée **en entier** (JSON de l'entrée + `name`) dans `localStorage['vigilo-instance']` :
   si `api_path` ou `scope` changent dans vigilo-conf, les utilisateurs gardent l'ancienne copie jusqu'à ce qu'ils
   choisissent de nouveau le territoire.
 - **Catégories** : `getCategories()` essaie `<api_path>/get_categories.php` (backend ≥ 0.0.23). Si la route échoue
   (404 sur un ancien backend, réseau) ou renvoie autre chose qu'un tableau non vide, il utilise la liste nationale
-  `main/categorielist.json` de vigilo-conf. `formatCategories` produit :
+  `main/categorielist.json` de vigilo-conf (ou `<conf_url>/categorielist.json`). `formatCategories` produit :
 
   ```js
   { 8: { id: 8, name: "Absence d'aménagement", i18n: {en_US: "..."}, color: "...",
@@ -576,7 +587,7 @@ Chaque observation reçue (valeurs texte, voir `REST_API.md`) est complétée :
 | `date_obj` | `new Date(time * 1000)` |
 | `img_thumb_panel`, `img_panel` | `generate_panel.php?s=150&token=` et `s=800` : photo pixelisée tant que non approuvée |
 | `img`, `img_thumb` | clé de modérateur enregistrée (en mode modération ou non) : `get_photo.php?token=&key=<clé>` (une clé refusée retombe sur le panneau pixelisé, `data-fallback`) ; observation approuvée : `get_photo.php?token=` ; observation de l'auteur (son `secretid` connu) : `img_panel` / `img_thumb_panel` avec `&secretid=` (non pixelisée par `generate_panel.php`) ; sinon `img_panel` / `img_thumb_panel` |
-| `permLink` | `<protocole>//<hôte>/?token=<token>&instance=<nom>` |
+| `permLink` | `<origine><chemin de la page>?token=<token>&instance=<nom>` (fonctionne aussi sous un chemin : `/develop/`, `/webapp/`) |
 
 ### 3.4 Filtres (`dataManager.filterIssues`)
 
@@ -1011,6 +1022,14 @@ affichage à 1280 et 390 px. Penser à `stats-iframe.html` si le changement touc
 
 Les noms de fichiers contiennent un hash : pas de problème de cache après un déploiement (seuls `index.html` et
 `stats-iframe.html` gardent leur nom).
+
+**Image Docker** (`.github/workflows/docker.yml`, `Dockerfile`) : construction en deux étapes (`node:22-alpine` puis
+`nginx:1.28-alpine` avec `docker/nginx.conf`), publiée sur `ghcr.io/jesuisundesdeux/vigilo-webapp` : `X.Y.Z`, `X.Y`,
+`X` et `latest` pour un tag `vX.Y.Z` (refusé s'il ne correspond pas à `package.json`), `edge` pour chaque push sur
+`master` ; les pull requests construisent l'image sans la publier. nginx sert `dist/` à la racine, avec des
+redirections relatives (`absolute_redirect off`) pour fonctionner derrière un proxy sous un chemin ; `index.html` et
+`config.json` ne sont pas mis en cache. Un `config.json` monté à côté d'`index.html` choisit la configuration (§3.1).
+Utilisée par [vigilo-demo](https://github.com/jesuisundesdeux/vigilo-demo).
 
 ### 10.4 Version
 

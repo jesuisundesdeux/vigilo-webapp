@@ -13,7 +13,7 @@ export async function init() {
     install.init();
     // Page of the territory on vigilo.city (stable alias by instance name, see vigilo-website)
     var instance = vigiloconfig.getInstance();
-    if (instance && instance.name) {
+    if (instance && instance.name && !vigiloconfig.isClosed()) {
         $("#instance-page").attr("href", instancePageUrl(instance.name)).parent().removeClass("hide");
     }
     var version = (await vigilo.getScope()).backend_version

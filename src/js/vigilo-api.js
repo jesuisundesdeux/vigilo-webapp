@@ -86,7 +86,7 @@ export function getIssues(options) {
                               item.img = item.img_panel;
                               item.img_thumb = item.img_thumb_panel;
                             }
-                            item.permLink = window.location.protocol + "//" + window.location.host + "/?token=" + item.token + "&instance=" + encodeURIComponent(vigiloconfig.getInstance().name);
+                            item.permLink = window.location.origin + window.location.pathname + "?token=" + item.token + "&instance=" + encodeURIComponent(vigiloconfig.getInstance().name);
                             return item
                         })
                         data = uniqueIssues(data);

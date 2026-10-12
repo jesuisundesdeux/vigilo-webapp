@@ -510,3 +510,8 @@ html.moderator-mode {
 }
 // room for the cross next to the titles
 .modal .modal-content > h3, .modal .modal-content > h5, .modal .filters-header { padding-right: 40px; }
+
+// Closed set of instances without any territory yet: message only
+#modal-zone .collection:empty {
+  display: none;
+}
