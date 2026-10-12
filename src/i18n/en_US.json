@@ -9,6 +9,7 @@
     "issues-similar-none": "No similar report.",
     "stats": "Statistics",
     "zone-geo": "Geographical area",
+    "zone-empty": "No territory is configured on this instance yet: create it in its administration (Scopes page).",
     "see-on-map": "See on map",
     "issue-id": "Report ID",
     "bug-report": "Report an issue",

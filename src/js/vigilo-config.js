@@ -1,9 +1,33 @@
 import {request} from './utils';
 import localDataManager from './localDataManager';
 
-const SCOPES_URL="https://raw.githubusercontent.com/jesuisundesdeux/vigilo-conf/main/main/citylist.json";
-const CATEGORIES_URL="https://raw.githubusercontent.com/jesuisundesdeux/vigilo-conf/main/main/categorielist.json";
+const CONF_URL="https://raw.githubusercontent.com/jesuisundesdeux/vigilo-conf/main/main";
 const RESOLVABLE_CATEGORIES=[2,3,4,5,6,7,8,11,100]
+
+// Optional config.json next to index.html (closed set of instances, e.g. vigilo-demo):
+// {"conf_url": "<folder of citylist.json and categorielist.json>"}
+var appConfig = {};
+export async function loadAppConfig() {
+    try {
+        var response = await fetch("config.json", { cache: "no-store" });
+        var data = response.ok ? await response.json() : null;
+        if (data && typeof data.conf_url == "string" && data.conf_url !== "") {
+            appConfig = { conf_url: new URL(data.conf_url, window.location.href).href.replace(/\/+$/, "") };
+        }
+    } catch (e) {
+        // no config.json (app.vigilo.city): vigilo-conf
+    }
+    return appConfig;
+}
+
+// Instances and categories of a closed set of instances instead of vigilo-conf
+export function isClosed() {
+    return appConfig.conf_url !== undefined;
+}
+
+function confUrl(file) {
+    return (isClosed() ? appConfig.conf_url : CONF_URL) + "/" + file;
+}
 
 export async function getInstances(all){
     if (localDataManager.isDev()) {
@@ -16,14 +40,14 @@ export async function getInstances(all){
         name: "Dev"});
     }
     else {
-      var scopes = await request(SCOPES_URL);
+      var scopes = await request(confUrl("citylist.json"));
       scopes = Object.entries(scopes).map((item)=>{
           item[1].name = item[0];
           return item[1]
       })
 
     
-      if (!localDataManager.isBeta() && all == undefined){
+      if (!localDataManager.isBeta() && !isClosed() && all == undefined){
           scopes = scopes.filter((item)=>item.prod)
       }
     }
@@ -80,7 +104,7 @@ export function getCategories() {
         return cat;
     });
     categoriesPromise = fromInstance
-        .catch(() => request(CATEGORIES_URL))
+        .catch(() => request(confUrl("categorielist.json")))
         .then(formatCategories)
         .catch((e) => {
             categoriesPromise = null;

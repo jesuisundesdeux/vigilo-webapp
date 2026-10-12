@@ -9,6 +9,7 @@
     "issues-similar-none": "Aucune observation similaire.",
     "stats": "Statistiques",
     "zone-geo": "Zone géographique",
+    "zone-empty": "Aucun territoire n'est encore configuré sur cette instance : créez-le dans son administration (page Scopes).",
     "see-on-map": "Voir sur la carte",
     "issue-id": "Référence de suivi",
     "bug-report": "Signaler un bug",

@@ -22,6 +22,8 @@ import localDataManager from './localDataManager';
 
 export default class VigiloApp {
     async init() {
+        // before the categories (i18n), which may come from the configuration
+        await vigiloconfig.loadAppConfig();
         await i18n.init();
         addModalCrosses();
         // light / dark theme (side menu item)
@@ -53,6 +55,20 @@ export default class VigiloApp {
         if (searchParams.has('instance')){
             if (searchParams.get('instance') != current_instance){
                 await window.setInstance(searchParams.get('instance'), true);
+            }
+        }
+
+        if (vigiloconfig.isClosed()) {
+            // Closed set of instances: forget a territory that is no longer listed, pick the only one
+            var chosen = vigiloconfig.getInstance();
+            if (chosen != null && !instances.some((instance) => instance.name == chosen.name)) {
+                localStorage.removeItem('vigilo-instance');
+            }
+            if (vigiloconfig.getInstance() == null && instances.length == 1) {
+                await window.setInstance(instances[0].name, true);
+            }
+            if (instances.length == 0) {
+                $("#modal-zone .zone-empty").removeClass("hide");
             }
         }
 
