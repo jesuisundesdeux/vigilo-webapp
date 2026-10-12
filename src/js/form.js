@@ -23,6 +23,8 @@ import i18next from 'i18next';
 var resolutionIssue = null;
 // Photo draft the observation is made from (see photo-drafts.js), deleted once sent
 var currentDraftId = null;
+// Edited observation: its photo is sent again only when replaced, drawn on or rotated
+var photoChanged = false;
 
 /** Show the fields of an observation or of a resolution */
 function setFormMode(resolution) {
@@ -50,7 +52,8 @@ window.startForm = async function (token) {
     $("#issue-token").val(token);
 
     $("input[type='file']").prop("required", false)
-    renderImage(issue.img)
+    // current photo: sent again only if replaced, drawn on or rotated
+    renderImage(issue.img, true)
 
     setFormMapPoint([issue.lat_float, issue.lon_float], issue.address);
     setDate(issue.date_obj)
@@ -114,13 +117,14 @@ window.startResolution = async function (token) {
 function clearForm() {
   resolutionIssue = null;
   currentDraftId = null;
+  photoChanged = false;
   $('#modal-form form').trigger("reset");
   // hidden inputs are not reset by the form
   $("#issue-token").val("");
   // A picture is required, from the gallery or from the camera button (see file change handler)
   $("#issue-picture").prop("required", true);
   setPictureSource("");
-  $("#picture-preview").off(".drawable .drawable-edit").removeClass("drawable fullscreen").empty();
+  $("#picture-preview").off(".drawable .drawable-edit .form").removeClass("drawable fullscreen").empty();
   $("#picture-preview").next().addClass('hide');
   photoLocatePending = false;
   if (mapmarker !== undefined) {
@@ -360,10 +364,27 @@ function loadPicture(file, fromCamera, notFromMainInput) {
   reader.readAsDataURL(file);
 }
 
-function renderImage(src) {
+function renderImage(src, existing) {
   var image = new Image();
   image.crossOrigin = "Anonymous";
+  if (existing) {
+    // current photo of an edited observation that can't be loaded in the editor: shown as is, kept
+    image.onerror = function () {
+      if (photoChanged) {
+        return;
+      }
+      $("#picture-preview").empty().append($('<img class="responsive-img" alt="">').attr("src", src))
+        .append($('<p class="grey-text"></p>').text(i18next.t("photo-kept")));
+    };
+  }
   image.onload = function () {
+    if (existing && photoChanged) {
+      // replaced before the current photo was loaded
+      return;
+    }
+    if (!existing) {
+      photoChanged = true;
+    }
     var orientation = 0;
 
     if (typeof src != "string") {
@@ -435,6 +456,9 @@ function renderImage(src) {
     $("#picture-preview").empty().append(canvas);
     $("#picture-preview").next().removeClass('hide');
     ImageDrawable($("#picture-preview"))
+    $("#picture-preview").off("drawable-change.form").on("drawable-change.form", function () {
+      photoChanged = true;
+    });
 
 
   }
@@ -658,6 +682,13 @@ $("#modal-form form").submit((e) => {
     data.address = $("#issue-address").val();
   }
   $("#related-issues").removeClass("invalid");
+  // New observation or resolution: a photo is required (loaded in the editor)
+  var editing = data.token !== "";
+  if (!editing && $("#picture-preview canvas").length == 0) {
+    M.toast({html: i18next.t('photo-required'), classes: "red"})
+    e.preventDefault();
+    return
+  }
   var modalLoader = M.Modal.getInstance($("#modal-form-loader"))
   modalLoader.open()
 
@@ -688,6 +719,10 @@ $("#modal-form form").submit((e) => {
 
       createdToken = createResponse.token;
       $("#modal-form-loader .determinate").css("width", "50%");
+      if (editing && !photoChanged) {
+        // same photo: not sent again (no new JPEG compression of the original)
+        return;
+      }
       var jpegb64 = $("#picture-preview canvas")[0].toDataURL("image/jpeg", JPEG_QUALITY).split(",")[1];
       // the moderator key lets the photo of an approved observation be replaced
       return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64, isResolution, key)

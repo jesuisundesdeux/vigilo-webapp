@@ -115,6 +115,8 @@
     "solved-reports": "Observations résolues",
     "solved-reports-required": "Vous devez sélectionner au moins une observation résolue",
     "location-required": "Veuillez indiquer la localisation de l'observation sur la carte",
+    "photo-required": "Ajoutez une photo",
+    "photo-kept": "La photo actuelle est conservée. Pour la remplacer, choisissez une autre photo.",
     "date-required": "Veuillez indiquer la date de l'observation",
     "map-tiles-fallback": "Le fond de carte ne se charge pas : passage aux serveurs OpenStreetMap.",
     "moderation-confirm-unapprove": "Retirer la validation de cette observation ? Elle repassera en attente de modération et ne sera plus visible publiquement.",

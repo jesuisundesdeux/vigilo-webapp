@@ -757,7 +757,9 @@ Au `submit` du formulaire (validation HTML5 des champs `required` d'abord) :
 6. la réponse doit contenir un `token` ; hors mode modération, `secretid` est mémorisé
    (`setTokenSecretId`) : c'est ce qui permet ensuite le filtre « Seulement les miens », l'icône « je l'ai fait » et
    la suppression ;
-7. le canvas est exporté en JPEG (qualité `JPEG_QUALITY = 0.9`) et envoyé par `addImage()` :
+7. sans photo dans l'éditeur (nouvelle observation ou résolution), message `photo-required` avant tout envoi ; en
+   modification, la photo n'est envoyée que si `photoChanged` (§4.7) ;
+   le canvas est exporté en JPEG (qualité `JPEG_QUALITY = 0.9`) et envoyé par `addImage()` :
    - backend ≥ 0.0.16 : `add_image.php?token=&secretid=&method=base64[&type=resolution][&key=]`, champ `imagebin64`
      (la clé en mode modération : sans elle, le backend refuse de remplacer la photo d'une observation approuvée) ;
    - plus ancien : corps binaire brut ;
@@ -772,9 +774,13 @@ formulaire » qui la referme sans perdre la saisie.
 `startForm(token)` pré-remplit le formulaire depuis l'observation : jeton caché `#issue-token`, photo (rechargée dans
 le canvas depuis `issue.img`, avec `crossOrigin = "Anonymous"`), point et adresse, date et heure, catégorie, commentaire
 et explication ; la photo n'est plus obligatoire. L'envoi suit le même
-chemin : `create_issue.php?key=` avec le `token` existant (le backend modifie l'observation), puis la photo du canvas
-est de nouveau envoyée par `add_image.php` avec le `secretid` renvoyé **et la clé** (`&key=`) : pour une observation
-déjà approuvée, le backend répond sinon 403 `ALREADYAPPROVED`. L'observation est cherchée dans toutes les observations
+chemin : `create_issue.php?key=` avec le `token` existant (le backend modifie l'observation). La photo n'est renvoyée
+que si elle a changé (`photoChanged` : nouvelle photo chargée, ou dessin / rotation, signalés par l'événement
+`drawable-change` de l'éditeur) : sinon, l'original reste tel quel, sans nouvelle compression JPEG. Elle part alors par
+`add_image.php` avec le `secretid` renvoyé **et la clé** (`&key=`) : pour une observation déjà approuvée, le backend
+répond sinon 403 `ALREADYAPPROVED`. Si la photo actuelle ne peut pas être chargée dans l'éditeur (photo absente,
+réseau), elle est affichée telle quelle avec le message `photo-kept` et conservée ; une photo choisie pendant le
+chargement n'est pas remplacée par l'ancienne. L'observation est cherchée dans toutes les observations
 (`vigilo.getIssues()`), pas seulement celles qui passent les filtres.
 
 ---
