@@ -275,6 +275,8 @@ export class ClassImageDrawable {
     this.backHistory = this.backHistory.slice(-HISTORY_LENGTH);
     this.upHistory = [];
     this.updateBtnStatus();
+    // drawn on or rotated: the form sends the photo again
+    $(this.div).trigger('drawable-change');
     return data;
   }
 
