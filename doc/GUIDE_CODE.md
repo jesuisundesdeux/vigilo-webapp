@@ -28,7 +28,7 @@ Sommaire :
 
 - Application **mono-page**, sans framework : jQuery 3, Materialize 1.2 (`@materializecss/materialize`, composants
   modaux, onglets, menus, sélecteurs de date), Leaflet 1.9 (cartes), Chart.js 4 (un seul graphique), i18next
-  (traductions), piexifjs (lecture EXIF des photos), semver (comparaison des versions de backend).
+  (traductions), piexifjs (lecture EXIF des photos).
 - Tout le code passe par **un seul point d'entrée webpack**, `src/js/main.js`, qui importe aussi le CSS
   (`src/css/main.scss`).
 - Deux pages HTML sont produites à partir de gabarits, par deux instances de `HtmlWebpackPlugin`
@@ -234,7 +234,7 @@ Toutes les URL partent de `decodeURIComponent(getInstance().api_path)`.
 | `getIssues(options)` | `GET get_issues.php?<options>&scope=<scope>` | enrichit chaque observation (§3.3) ; une seule entrée par jeton (`uniqueIssues()` : avant le backend 0.0.27, une observation liée à plusieurs résolutions revenait une fois par résolution ; le statut le plus avancé est gardé, résolue > indiquée résolue > en cours > prise en compte) ; cache par URL (`issue_cache`) |
 | `createIssue(data, key)` | `POST create_issue.php[?key=]` | formulaire urlencodé ; génère `data.token` (8 caractères) si absent |
 | `createResolution(data)` | `POST create_resolution.php` | idem, sans clé |
-| `addImage(token, secretId, data, isResolution, key)` | `POST add_image.php` | `data` = JPEG en base64 ; choisit la méthode selon `backend_version` (§4.6) ; `key` = clé de modération (`&key=`), nécessaire pour remplacer la photo d'une observation approuvée (sinon 403 `ALREADYAPPROVED`) |
+| `addImage(token, secretId, data, isResolution, key)` | `POST add_image.php` | `data` = JPEG en base64, envoyé en formulaire `method=base64` (§4.6) ; `key` = clé de modération (`&key=`), nécessaire pour remplacer la photo d'une observation approuvée (sinon 403 `ALREADYAPPROVED`) |
 | `acl(key)` | `GET acl.php?key=` | rôle de la clé |
 | `approve(key, token, status)` | `GET approve.php?key=&token=&approved=` | jamais mis en cache (`nocache`) |
 | `deleteIssue(token, secretId)` | `GET delete.php?secretid=&token=` | |
@@ -507,11 +507,11 @@ fermeture est la croix en haut à droite (`modal-cross.js`).
 | Cas | Boutons principaux | Menu « ⋮ » |
 |---|---|---|
 | toujours | | voir sur la carte (`centerOnIssue`), observations similaires (défile jusqu'à `.similar-issues`), voir sur OpenStreetMap, **signaler** (`.report-btn`, lien `mailto:` vers `contact_email` de `get_scope.php`, objet `report-issue-subject`, corps `report-issue-body` : référence, catégorie, adresse, date, commentaire, lien, motif à compléter) |
-| observation publiée, dans aucune résolution (`status == 0`), catégorie résoluble (backend ≥ 0.0.14) | **Résoudre** : `startResolution(token)` (§4.5) | |
+| observation publiée, dans aucune résolution (`status == 0`), catégorie résoluble | **Résoudre** : `startResolution(token)` (§4.5) | |
 | mode modération, `approved == 0` | **Valider** (`moderate(t,'1')`), **Refuser** (`'2'`) | modifier (`startForm(t)`) |
 | mode modération, `approved == 1` | (Résoudre si possible) | modifier (`create_issue.php` garde l'état de modération), remettre à modérer (`'0'`), refuser |
 | mode modération, `approved == 2` | **Valider** | remettre à modérer |
-| auteur (`userCanEdit`) et backend ≥ 0.0.17 | | supprimer (`deleteIssue`) |
+| auteur (`userCanEdit`) | | supprimer (`deleteIssue`) |
 
 Photo en plein écran (`src/js/photo-viewer.js`, `openPhotoViewer(src, alt)`) : calque `#photo-viewer` (fond noir,
 `touch-action: none`, plein écran du navigateur quand il l'accepte, pas sur iPhone), zoom à deux doigts et
@@ -717,7 +717,7 @@ Panoramax**.
 
 Une résolution se crée **depuis une observation** : le bouton **Résoudre** de sa fiche (`issue-detail.js`, observation
 publiée, **dans aucune résolution** (`status == 0` : le backend n'accepte qu'une résolution par observation et refuse
-de valider une résolution dont une observation figure dans une autre), de catégorie « résoluble », backend ≥ 0.0.14)
+de valider une résolution dont une observation figure dans une autre), de catégorie « résoluble »)
 appelle `window.startResolution(token)`, qui ferme
 la fiche et ouvre le formulaire en mode résolution (`resolutionIssue` = l'observation) :
 
@@ -760,9 +760,8 @@ Au `submit` du formulaire (validation HTML5 des champs `required` d'abord) :
 7. sans photo dans l'éditeur (nouvelle observation ou résolution), message `photo-required` avant tout envoi ; en
    modification, la photo n'est envoyée que si `photoChanged` (§4.7) ;
    le canvas est exporté en JPEG (qualité `JPEG_QUALITY = 0.9`) et envoyé par `addImage()` :
-   - backend ≥ 0.0.16 : `add_image.php?token=&secretid=&method=base64[&type=resolution][&key=]`, champ `imagebin64`
-     (la clé en mode modération : sans elle, le backend refuse de remplacer la photo d'une observation approuvée) ;
-   - plus ancien : corps binaire brut ;
+   `add_image.php?token=&secretid=&method=base64[&type=resolution][&key=]`, champ `imagebin64` (backend ≥ 0.0.16 ;
+   la clé en mode modération : sans elle, le backend refuse de remplacer la photo d'une observation approuvée) ;
 8. après 1 s, la page se recharge sur `?token=<nouveau jeton>` (fiche de l'observation ouverte) ; pour une
    résolution, sur la fiche de l'observation de départ.
 
@@ -1095,15 +1094,9 @@ Deux motifs existent dans le code :
   return nouvelle.catch(() => ancienComportement());
   ```
 
-- **Selon la version** (comme `addImage`, le bouton Résoudre, le bouton de suppression) :
-
-  ```js
-  var scope = await vigilo.getScope();
-  if (semver.gte(scope.backend_version, "0.0.24")) { ... } else { ... }
-  ```
-
-  `semver.gte` lève une exception si `backend_version` n'est pas une version valide : la protéger
-  (`semver.valid(...)`) dans le nouveau code.
+- **Selon la version** : `scope.backend_version` (de `get_scope.php`) donne la version du backend. Préférer le
+  repli sur la route ou le champ manquant (ci-dessus), qui ne dépend pas d'un format de version ; sinon, comparer
+  les versions en tolérant une valeur absente ou mal formée.
 
 Dans les deux cas : ne jamais supposer la version du backend, ne pas casser l'affichage si la route manque, et
 documenter la version minimale dans un commentaire.
@@ -1138,11 +1131,13 @@ documenter la version minimale dans un commentaire.
 
 ### 12.3 Compatibilité avec les anciens backends
 
-- Points de repli existants : `get_categories.php` (0.0.23), `catresolvable` (liste en dur), `add_image.php` binaire
-  avant 0.0.16, bouton Résoudre (0.0.14), suppression par l'auteur (0.0.17), filtre des communes (seulement si
+- **Version minimale prise en charge : backend 0.0.17** (aucune instance plus ancienne en service,
+  [vigilo-backend#328](https://github.com/jesuisundesdeux/vigilo-backend/issues/328)). Les replis pour les backends
+  plus anciens ont été retirés en 1.19.1 : envoi de la photo en corps binaire brut (< 0.0.16), tests de version du
+  bouton Résoudre (0.0.14) et de la suppression par l'auteur (0.0.17), dépendance `semver`.
+- Points de repli existants : `get_categories.php` (0.0.23), `catresolvable` (liste en dur), une entrée par
+  observation (`uniqueIssues`, avant 0.0.27), `archived=1` ignoré avant 0.0.29, filtre des communes (seulement si
   `cityname` et `scope.cities` existent).
-- `semver.gte(scope.backend_version, ...)` dans `issue-detail.js` et `addImage()` lève une exception si
-  la version est absente ou mal formée (`form.init()` affiche alors une carte d'erreur en tête de la liste).
 
 ### 12.4 Bogues et incohérences relevés (non corrigés)
 

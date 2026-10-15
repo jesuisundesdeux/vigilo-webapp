@@ -1,6 +1,6 @@
 {
   "name": "vigilo-webapp",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -38,7 +38,6 @@
     "leaflet.fullscreen": "^5.3.3",
     "leaflet.locatecontrol": "^0.90.1",
     "material-icons": "^1.13.14",
-    "piexifjs": "^1.0.6",
-    "semver": "^7.8.5"
+    "piexifjs": "^1.0.6"
   }
 }
