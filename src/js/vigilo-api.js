@@ -1,7 +1,6 @@
 import * as vigiloconfig from './vigilo-config';
 import localDataManager from './localDataManager';
 
-import * as semver from 'semver';
 
 const CONTENT_TYPE_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded"
 const CONTENT_TYPE_JPEG = "image/jpeg"
@@ -143,37 +142,9 @@ export function createResolution(data) {
 }
 
 // key: moderator key (an approved observation's photo can only be replaced with it)
-export async function addImage(token, secretId, data, isResolution, key) {
-    var scope = await getScope();
+// Photo as base64 in a form (backend >= 0.0.16; older backends are no longer supported)
+export function addImage(token, secretId, data, isResolution, key) {
     var keyParam = key ? "&key=" + encodeURIComponent(key) : "";
-    if (semver.gte( scope.backend_version ,"0.0.16")) {
-        return _addImage_after_0_0_16(token, secretId, data, isResolution, keyParam);
-    } else {
-        return _addImage_before_0_0_16(token, secretId, data, isResolution, keyParam);
-    }
-}
-
-function _addImage_before_0_0_16(token, secretId, data, isResolution, keyParam) {
-    var b64 = atob(data);
-    var array = [];
-    for (var p = 0; p < b64.length; p++) {
-      array[p] = b64.charCodeAt(p);
-    }
-    var u8array = new Uint8Array(array);
-
-    var options = {
-        url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId+(isResolution?"&type=resolution":"") + keyParam,
-        method: "POST",
-        headers: {
-            //"Content-Type": CONTENT_TYPE_JPEG
-        },
-        body: u8array.buffer
-
-    }
-    return request(options)
-}
-
-function _addImage_after_0_0_16(token, secretId, data, isResolution, keyParam) {
     var options = {
         url: baseUrl() + "/add_image.php?token=" + token + "&secretid=" + secretId + "&method=base64"+(isResolution?"&type=resolution":"") + keyParam,
         method: "POST",

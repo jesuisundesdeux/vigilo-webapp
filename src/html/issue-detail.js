@@ -2,7 +2,6 @@ import $ from 'jquery';
 import localDataManager from '../js/localDataManager';
 import * as vigilo from '../js/vigilo-api';
 
-import * as semver from 'semver';
 import i18next from 'i18next';
 import errorCard from './error';
 import { escapeHtml, safeToken } from '../js/utils';
@@ -13,7 +12,6 @@ export default async function (issue) {
   const t = (key) => i18next.t(key);
   const lang = i18next.language.split("_")[0];
   const scope = await vigilo.getScope().catch(() => ({}));
-  const backendAtLeast = (v) => scope.backend_version !== undefined && semver.gte(scope.backend_version, v);
 
   // Actions: the main ones are buttons of the footer, the others are in the "more" menu
   const primaryBtn = (classes, onclick, icon, key) =>
@@ -26,8 +24,7 @@ export default async function (issue) {
 
   // Resolution of a published observation of a resolvable category, in no resolution yet (status 0: one
   // resolution per observation, the backend refuses to validate a resolution whose observations are in another one)
-  // (backend >= 0.0.14)
-  if (issue.approved == 1 && issue.status == 0 && issue.resolvable && backendAtLeast("0.0.14")) {
+  if (issue.approved == 1 && issue.status == 0 && issue.resolvable) {
     primary += primaryBtn("resolve-btn", `startResolution('${token}')`, "done_all", "resolve-issue");
   }
 
@@ -45,7 +42,7 @@ export default async function (issue) {
       primary = primaryBtn("approve-btn", `moderate('${token}','1')`, "check_circle", "moderation-approve-short");
       menuManage += menuItem(`moderate('${token}','0')`, "remove_circle", "moderation-unapprove");
     }
-  } else if (localDataManager.userCanEdit(issue) && backendAtLeast("0.0.17")) {
+  } else if (localDataManager.userCanEdit(issue)) {
     // my observation, not approved yet
     menuManage += menuItem(`deleteIssue('${token}','2')`, "delete", "delete-issue", "danger");
   }
