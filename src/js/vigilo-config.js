@@ -50,9 +50,105 @@ export async function getInstances(all){
       if (!localDataManager.isBeta() && !isClosed() && all == undefined){
           scopes = scopes.filter((item)=>item.prod)
       }
+      // Instances added by hand in this browser (not in a closed set of instances)
+      if (!isClosed()) {
+          scopes = scopes.concat(getCustomInstances())
+      }
     }
     return scopes
 
+}
+
+/*
+ * Custom instances: not listed in vigilo-conf, added in this browser ("Instance personnalisée")
+ * and kept in localStorage. Same fields as citylist.json, plus custom: true.
+ */
+const CUSTOM_INSTANCES_KEY = 'vigilo-custom-instances';
+
+export function getCustomInstances() {
+    try {
+        var list = JSON.parse(localStorage.getItem(CUSTOM_INSTANCES_KEY));
+        return Array.isArray(list) ? list.filter((item) => item && typeof item.name == "string" && item.name !== ""
+            && typeof item.api_path == "string" && typeof item.scope == "string") : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveCustomInstances(list) {
+    localStorage.setItem(CUSTOM_INSTANCES_KEY, JSON.stringify(list));
+}
+
+// Address typed by the user -> api_path (scheme://host/path, without a file, query or final "/")
+export function normalizeApiPath(value) {
+    var text = String(value || "").trim();
+    if (text === "") {
+        return null;
+    }
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(text)) {
+        text = "https://" + text;
+    }
+    try {
+        var url = new URL(text);
+    } catch (e) {
+        return null;
+    }
+    if (url.protocol != "https:" && url.protocol != "http:") {
+        return null;
+    }
+    // Address of a page of the instance (get_scope.php, admin/…) accepted: its folder
+    var path = url.pathname.replace(/\/admin(\/.*)?$/, "").replace(/\/[^\/]*\.php$/, "").replace(/\/+$/, "");
+    return url.origin + path;
+}
+
+/*
+ * Checks the instance (get_scope.php of the scope) and keeps it. Returns the instance, or throws an
+ * Error whose message is an i18n key.
+ */
+export async function addCustomInstance(address, scope, name) {
+    var api_path = normalizeApiPath(address);
+    scope = String(scope || "").trim();
+    if (api_path === null) {
+        throw new Error("custom-instance-error-url");
+    }
+    if (!/^[A-Za-z0-9_-]{1,64}$/.test(scope)) {
+        throw new Error("custom-instance-error-scope");
+    }
+    // An https page cannot call an http instance (mixed content)
+    if (window.location.protocol == "https:" && api_path.indexOf("http:") === 0) {
+        throw new Error("custom-instance-error-https");
+    }
+    var data = null;
+    try {
+        var response = await fetch(api_path + "/get_scope.php?scope=" + encodeURIComponent(scope), { cache: "no-store" });
+        data = await response.json();
+        if (response.status == 404) {
+            throw new Error("custom-instance-error-unknown-scope");
+        }
+    } catch (e) {
+        throw new Error(e.message == "custom-instance-error-unknown-scope" ? e.message : "custom-instance-error-unreachable");
+    }
+    if (!data || data.coordinate_lat_min === undefined) {
+        throw new Error("custom-instance-error-unreachable");
+    }
+    name = String(name || "").trim() || String(data.display_name || "").trim() || scope;
+    name = name.slice(0, 80);
+    var listed = await getInstances(true);
+    if (listed.some((item) => !item.custom && item.name == name)) {
+        throw new Error("custom-instance-error-name");
+    }
+    var instance = { name: name, api_path: api_path, scope: scope, country: "", prod: true, custom: true };
+    // Same name: the custom instance is replaced
+    saveCustomInstances(getCustomInstances().filter((item) => item.name != name).concat([instance]));
+    return instance;
+}
+
+export function removeCustomInstance(name) {
+    saveCustomInstances(getCustomInstances().filter((item) => item.name != name));
+    var current = getInstance();
+    if (current && current.custom && current.name == name) {
+        localStorage.removeItem('vigilo-instance');
+    }
 }
 
 // Categories of the instance (backend >= 0.0.23: national list minus the ones disabled by the

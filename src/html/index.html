@@ -81,6 +81,26 @@
       <p class="zone-empty hide" data-i18n="zone-empty">Aucun territoire n'est encore configuré sur cette instance : créez-le dans son administration (page Scopes).</p>
       <div class="collection">
       </div>
+      <!-- Instance not listed in vigilo-conf, kept in this browser (app.js, initCustomInstanceForm) -->
+      <form id="custom-instance-form" class="custom-instance-form hide" novalidate>
+        <h6 data-i18n="custom-instance">Instance personnalisée</h6>
+        <p class="custom-instance-help" data-i18n="custom-instance-help">Instance Vigilo absente de la liste : indiquez l'adresse de son API et le nom de son territoire (scope), donnés par l'association qui la gère. Elle est gardée dans ce navigateur.</p>
+        <div class="input-field">
+          <input id="custom-instance-url" type="url" inputmode="url" autocomplete="url" required placeholder="https://vigilo.example.org" spellcheck="false">
+          <label for="custom-instance-url" class="active"><span data-i18n="custom-instance-url">Adresse de l'instance</span> <span class="red-text">*</span></label>
+        </div>
+        <div class="input-field">
+          <input id="custom-instance-scope" type="text" required maxlength="64" placeholder="34_montpellier" autocapitalize="off" spellcheck="false">
+          <label for="custom-instance-scope" class="active"><span data-i18n="custom-instance-scope">Territoire (scope)</span> <span class="red-text">*</span></label>
+        </div>
+        <div class="input-field">
+          <input id="custom-instance-name" type="text" maxlength="80">
+          <label for="custom-instance-name" data-i18n="custom-instance-name">Nom affiché</label>
+          <span class="helper-text" data-i18n="custom-instance-name-help">Facultatif : celui du territoire sinon.</span>
+        </div>
+        <p class="custom-instance-error red-text hide" role="alert"></p>
+        <button type="submit" class="btn waves-effect waves-light"><i class="material-icons left">check</i><span data-i18n="custom-instance-add">Ajouter et choisir</span></button>
+      </form>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-close waves-effect waves-light btn" data-i18n-attr='{"title": "close"}' title="Fermer"><i class="material-icons">close</i></a>

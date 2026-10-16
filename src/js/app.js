@@ -20,6 +20,35 @@ import { hideSplash, setSplashStatus } from './splash';
 import dataManager from './dataManager';
 import localDataManager from './localDataManager';
 
+/*
+ * "Instance personnalisée": instance not listed in vigilo-conf (address of its API and scope),
+ * checked with get_scope.php then kept in this browser (vigiloconfig.addCustomInstance()).
+ */
+function initCustomInstanceForm() {
+    var form = $("#custom-instance-form");
+    var error = form.find(".custom-instance-error");
+    $(`<a href="#!" class="collection-item custom-instance-toggle"><i class="material-icons left">add</i>${escapeHtml(i18next.t('custom-instance-choose'))}</a>`)
+        .on('click', (e) => {
+            e.preventDefault();
+            form.removeClass('hide');
+            form.find('#custom-instance-url').trigger('focus');
+        })
+        .appendTo("#modal-zone .modal-content .collection");
+    form.on('submit', async (e) => {
+        e.preventDefault();
+        var button = form.find('button[type="submit"]').prop('disabled', true);
+        error.addClass('hide').text('');
+        try {
+            var instance = await vigiloconfig.addCustomInstance(form.find('#custom-instance-url').val(),
+                form.find('#custom-instance-scope').val(), form.find('#custom-instance-name').val());
+            await window.setInstance(instance.name);
+        } catch (err) {
+            error.text(i18next.t(err.message)).removeClass('hide');
+            button.prop('disabled', false);
+        }
+    });
+}
+
 export default class VigiloApp {
     async init() {
         // before the categories (i18n), which may come from the configuration
@@ -47,10 +76,33 @@ export default class VigiloApp {
         var instances = await vigiloconfig.getInstances();
 
         instances.forEach((instance) => {
-            $(`<a href="#!" class="collection-item${(instance.name == current_instance ? ' active' : '')}">${escapeHtml(instance.name)}</a>`)
+            var item = $(`<a href="#!" class="collection-item${(instance.name == current_instance ? ' active' : '')}">${escapeHtml(instance.name)}</a>`)
                 .on('click', () => window.setInstance(instance.name))
                 .appendTo("#modal-zone .modal-content .collection");
+            if (instance.custom) {
+                // Added in this browser: its address, and a button to remove it
+                item.addClass('custom-instance-item').empty()
+                    .append($('<span class="custom-instance-text"></span>').text(instance.name)
+                        .append($('<span class="custom-instance-url"></span>').text(instance.api_path)))
+                    .append($(`<span class="custom-instance-remove" role="button" tabindex="0"
+                        title="${escapeHtml(i18next.t('custom-instance-remove'))}" aria-label="${escapeHtml(i18next.t('custom-instance-remove'))}"><i class="material-icons">delete</i></span>`)
+                        .on('click keydown', (e) => {
+                            if (e.type == 'keydown' && e.key != 'Enter' && e.key != ' ') { return; }
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!confirm(i18next.t('custom-instance-remove-confirm', { name: instance.name }))) { return; }
+                            vigiloconfig.removeCustomInstance(instance.name);
+                            if (instance.name == current_instance) {
+                                window.location.reload();
+                            } else {
+                                item.remove();
+                            }
+                        }));
+            }
         })
+        if (!vigiloconfig.isClosed()) {
+            initCustomInstanceForm();
+        }
 
         if (searchParams.has('instance')){
             if (searchParams.get('instance') != current_instance){

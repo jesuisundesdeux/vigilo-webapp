@@ -14,7 +14,9 @@ modérer quand on a une clé modérateur (propre à chaque instance). Elle parle
 - Les catégories viennent de l'instance (`get_categories.php`, backend ≥ 0.0.23 : catégories propres, désactivées,
   `catresolvable`) avec **repli** sur la liste nationale de vigilo-conf (`main/categorielist.json`) pour les instances
   pas à jour.
-- Instance choisie : `localStorage['vigilo-instance']`, ou `?instance=<nom>` dans l'URL. `?beta` affiche aussi les
+- Instance choisie : `localStorage['vigilo-instance']`, ou `?instance=<nom>` dans l'URL. « Instance personnalisée… » (hors
+  écosystème fermé) : instance absente de vigilo-conf (adresse de l'API + scope, vérifiés par `get_scope.php`), gardée
+  dans `localStorage['vigilo-custom-instances']`. `?beta` affiche aussi les
   instances de test, `?dev` utilise un backend local (`http://127.0.0.1`).
 - `config.json` facultatif à côté d'`index.html` : `{"conf_url": "…"}` remplace vigilo-conf (écosystème fermé, image
   Docker utilisée par [vigilo-demo](https://github.com/jesuisundesdeux/vigilo-demo)) ; voir `doc/GUIDE_CODE.md` §3.1.

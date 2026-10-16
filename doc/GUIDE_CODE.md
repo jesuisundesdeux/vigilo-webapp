@@ -118,7 +118,7 @@ tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()
    | Configuration | `await vigiloconfig.loadAppConfig()` | `config.json` facultatif (§3.1), avant les catégories |
    | Traductions | `await i18n.init()` | charge les catégories (pour leurs noms), initialise i18next, applique la langue mémorisée |
    | Modes | `?beta` → `localDataManager.setBeta()`, sinon `?dev` → `setDev()` | stockés en `sessionStorage` |
-   | Instances | `await vigiloconfig.getInstances()` | remplit la liste de `#modal-zone` ; un clic appelle `window.setInstance(nom)` |
+   | Instances | `await vigiloconfig.getInstances()` | remplit la liste de `#modal-zone` ; un clic appelle `window.setInstance(nom)`. Instances personnalisées (`custom`) avec leur adresse et un bouton de retrait (`removeCustomInstance()`, confirmation, rechargement si c'est l'instance courante) ; hors écosystème fermé, entrée « Instance personnalisée… » qui affiche le formulaire `#custom-instance-form` (`initCustomInstanceForm()` : `addCustomInstance()` puis `setInstance()`, erreur traduite dans `.custom-instance-error`) |
    | `?instance=` | `await window.setInstance(nom, true)` si différent de l'instance courante | enregistre sans recharger |
    | Écosystème fermé | si `isClosed()` : oubli d'une instance qui n'est plus listée, choix automatique de la seule instance, message `.zone-empty` s'il n'y en a aucune | voir §3.1 |
    | Pas d'instance | `hideSplash()` puis ouverture de `#modal-zone`, et `return` | l'application s'arrête là jusqu'au choix |
@@ -198,7 +198,8 @@ tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()
 |---|---|
 | `loadAppConfig()` | lit `config.json` à côté d'`index.html` (facultatif, voir §3.1) ; à appeler avant `getInstances()` et `getCategories()` |
 | `isClosed()` | `true` si `config.json` donne un `conf_url` (écosystème fermé : instances et catégories lues dans ce dossier, pas dans vigilo-conf) |
-| `getInstances(all)` | liste des instances depuis `citylist.json` de vigilo-conf (ou de `conf_url`), en tableau d'objets `{api_path, scope, prod, country, name}` (`name` = clé du JSON). Filtrée sur `prod` sauf mode beta, écosystème fermé ou `all` défini. En mode dev : une seule instance `Dev` (`api_path: http://127.0.0.1`, `scope: XX_dev`) |
+| `getInstances(all)` | liste des instances depuis `citylist.json` de vigilo-conf (ou de `conf_url`), en tableau d'objets `{api_path, scope, prod, country, name}` (`name` = clé du JSON). Filtrée sur `prod` sauf mode beta, écosystème fermé ou `all` défini. Les instances personnalisées (`getCustomInstances()`) sont ajoutées à la fin, sauf en écosystème fermé. En mode dev : une seule instance `Dev` (`api_path: http://127.0.0.1`, `scope: XX_dev`) |
+| `getCustomInstances()`, `addCustomInstance(adresse, scope, nom)`, `removeCustomInstance(nom)`, `normalizeApiPath(adresse)` | **Instances personnalisées** (absentes de vigilo-conf), gardées dans `localStorage['vigilo-custom-instances']` : `{name, api_path, scope, country: "", prod: true, custom: true}`. `normalizeApiPath()` : `https://` ajouté sans schéma, fichier `.php`, `/admin…`, requête et `/` final retirés. `addCustomInstance()` vérifie le scope (`[A-Za-z0-9_-]`, 64 car.), refuse une instance `http:` depuis une page `https:` (contenu mixte), appelle `get_scope.php?scope=` (404 : territoire inconnu ; pas de `coordinate_lat_min` : pas une instance Vigilo), prend comme nom celui saisi, sinon `display_name`, sinon le scope ; refuse le nom d'une instance de la liste, remplace une instance personnalisée du même nom. Erreurs : `Error` dont le message est une clé i18n `custom-instance-error-*`. `removeCustomInstance()` oublie aussi l'instance courante si c'est elle. Pas de lien vers la page vigilo.city du territoire pour une instance personnalisée (`navs.js`) |
 | `getCategories()` | promesse, mise en cache dans le module, d'un objet `{catid: {id, name, i18n, color, disable, resolvable, custom}}` (voir §3.1) |
 | `getInstance()` | objet de l'instance courante lu dans `localStorage['vigilo-instance']`, ou `null` |
 | `VERSION` | `"vigilo-webapp-<version>"`, envoyé dans le champ `version` de `create_issue.php` |
@@ -965,7 +966,8 @@ Le HTML généré en JS doit donc **à la fois** contenir le texte traduit (`i18
 
 | Clé | Stockage | Contenu | Écrit par |
 |---|---|---|---|
-| `vigilo-instance` | `localStorage` | JSON de l'instance choisie (`api_path`, `scope`, `prod`, `country`, `name`) | `setInstance` (`vigilo-config.js`) ; lu aussi par le script en ligne de `index.html` |
+| `vigilo-instance` | `localStorage` | JSON de l'instance choisie (`api_path`, `scope`, `prod`, `country`, `name`, `custom` pour une instance personnalisée) | `setInstance` (`vigilo-config.js`) ; lu aussi par le script en ligne de `index.html` |
+| `vigilo-custom-instances` | `localStorage` | tableau JSON des instances personnalisées (`{name, api_path, scope, country, prod, custom: true}`) | `addCustomInstance` / `removeCustomInstance` (`vigilo-config.js`) |
 | `vigilo-localdata` | `localStorage` | `{tokens: {<token>: <secretid>}, lang, moderatorKeys: {<instance>: <clé>}, moderationOff: {<instance>: true}}` | `localDataManager` |
 | `vigilo-version` | `localStorage` | version de l'application | `localDataManager.setVersion`, jamais appelée |
 | `vigilo-theme` | `localStorage` | `auto`, `light` ou `dark` | `theme.js` ; lu aussi par le script en ligne de `index.html` |
