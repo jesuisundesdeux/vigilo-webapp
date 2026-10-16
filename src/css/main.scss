@@ -515,3 +515,24 @@ html.moderator-mode {
 #modal-zone .collection:empty {
   display: none;
 }
+
+// Custom instances (added in this browser): address under the name, remove button
+#modal-zone .custom-instance-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#modal-zone .custom-instance-text { flex: 1; min-width: 0; }
+#modal-zone .custom-instance-url {
+  display: block;
+  font-size: .8rem;
+  opacity: .7;
+  overflow-wrap: anywhere;
+}
+#modal-zone .custom-instance-remove { cursor: pointer; display: flex; }
+#modal-zone .custom-instance-toggle i.left { margin-right: 8px; }
+#custom-instance-form {
+  margin-top: 8px;
+  h6 { font-weight: 600; }
+  .custom-instance-help { font-size: .9rem; opacity: .8; }
+}
