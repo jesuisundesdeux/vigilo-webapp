@@ -569,7 +569,8 @@ Les boutons sans texte ont une description (`title`, et `aria-label` pour les le
   demandés qu'une fois.
 - `vigilo-api.getIssues` a un second cache (`issue_cache`) qui garde le tableau **enrichi** : tous les modules
   partagent les mêmes objets. Une modification d'un objet (par exemple `issue.approved` dans `moderate`) est vue
-  partout.
+  partout. `vigilo.clearIssueCache()` le vide sans recharger la page : appelé après l'envoi d'une observation
+  (§4.6) pour que la liste et la carte réaffichées reflètent la nouvelle observation.
 
 ### 3.3 Observations (`getIssues`) et enrichissement
 
@@ -763,8 +764,12 @@ Au `submit` du formulaire (validation HTML5 des champs `required` d'abord) :
    le canvas est exporté en JPEG (qualité `JPEG_QUALITY = 0.9`) et envoyé par `addImage()` :
    `add_image.php?token=&secretid=&method=base64[&type=resolution][&key=]`, champ `imagebin64` (backend ≥ 0.0.16 ;
    la clé en mode modération : sans elle, le backend refuse de remplacer la photo d'une observation approuvée) ;
-8. après 1 s, la page se recharge sur `?token=<nouveau jeton>` (fiche de l'observation ouverte) ; pour une
-   résolution, sur la fiche de l'observation de départ.
+8. en cas de succès, **sans recharger la page** : le cache des observations est vidé
+   (`vigilo.clearIssueCache()`), les fenêtres du formulaire et de progression sont fermées, liste et carte sont
+   réaffichées (`list.cleanIssues()`/`map.cleanIssues()` puis `displayIssues()` — une nouvelle observation apparaît
+   ainsi là où l'instance sert les non approuvées, `vigilo_shownonapproved`), puis la fiche de l'observation créée
+   s'ouvre (`list.viewIssue()`, qui met aussi à jour le jeton de l'URL) ; pour une résolution, la fiche de
+   l'observation de départ.
 
 En cas d'erreur à l'une des étapes, la fenêtre de progression affiche `errorCard(e)` et un bouton « Retour au
 formulaire » qui la referme sans perdre la saisie.
