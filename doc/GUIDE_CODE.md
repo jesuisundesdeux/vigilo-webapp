@@ -180,7 +180,7 @@ lignes : un libellé long (« Ce territoire sur vigilo.city ») n'est plus coup�
 | `form.js` | formulaire d'envoi / de modification |
 | `image-drawable.js` | outil de dessin sur la photo (masquer un visage, une plaque) |
 | `moderator.js` | modérateurs : clé de l'instance, réglages, raccourci « À modérer », modération |
-| `banner.js` | bannière d'annonce (`get_banner.php`) : bandeau et/ou fenêtre, fermeture persistée |
+| `banner.js` | bannière d'annonce (`get_banner.php`) : bandeau et/ou fenêtre, fermeture persistée (sauf bannière `persistent`, réaffichée à chaque ouverture) |
 | `stats.js` | statistiques |
 | `i18n.js` | traductions |
 | `navs.js` | menu latéral |
@@ -417,6 +417,8 @@ affiche le bandeau `#app-banner` (sous la barre du haut ; `--app-banner-h` déca
 fenêtre `#modal-banner`, avec la couleur et l'icône du `type` (`info`/`success`/`warning`/`alert`, extensible). Le
 texte passe par `.text()` (sauts de ligne via `white-space: pre-line`). Chaque canal (bandeau, fenêtre) reste fermé
 tant que l'`id` (condensé du contenu) ne change pas : `localDataManager.get/setBannerDismissed(channel)` par instance.
+Une bannière `persistent` (backend ≥ 0.0.39) ignore cette fermeture mémorisée : elle réapparaît à chaque ouverture
+(fenêtre rouverte au lancement) et sa fermeture n'est pas enregistrée.
 
 #### `stats.js`
 
