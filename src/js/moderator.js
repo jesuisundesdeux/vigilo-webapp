@@ -150,6 +150,8 @@ async function refreshShortcut() {
     count = (await vigilo.getIssues()).filter((i) => i.approved == 0).length;
   } catch (e) {}
   item.find(".moderation-count").text(count).toggleClass("hide", queue || count == 0);
+  // Notification dot on the burger menu whenever observations are waiting to be moderated
+  $(".sidenav-trigger .menu-notification-dot").toggleClass("hide", count == 0);
 }
 
 async function moderate(token, status) {

@@ -21,6 +21,22 @@ nav {
   .sidenav-trigger i {
     color: $vigilo-ink;
   }
+  // Notification dot on the burger menu (e.g. observations to moderate, see js/moderator.js)
+  .sidenav-trigger {
+    position: relative;
+    .menu-notification-dot {
+      position: absolute;
+      top: 12px;
+      right: 8px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e53935;
+      border: 2px solid $vigilo-yellow;
+      box-sizing: content-box;
+      pointer-events: none;
+    }
+  }
 }
 
 // ---- List / Map tabs: segmented control

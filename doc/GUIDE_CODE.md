@@ -841,6 +841,10 @@ peut la masquer ; le menu prend la hauteur visible, `100dvh`), avec le nombre d'
 Le libellé et le nombre sont mis à jour à chaque `filterchange` et après chaque modération. Le raccourci ferme le
 menu et revient à l'onglet des observations.
 
+En même temps que ce nombre, `refreshShortcut()` affiche un **point de notification** sur le bouton du menu burger
+(`.sidenav-trigger .menu-notification-dot`, `navs.html` / `theme.scss`) dès qu'il reste des observations à modérer
+(`count > 0`), pour signaler ces notifications même menu fermé. Le point reste caché hors mode modérateur.
+
 ### 5.4 `moderate(token, status)`
 
 `status` : `'1'` approuver, `'0'` remettre à modérer, `'2'` refuser (ces deux derniers demandent confirmation). Après
