@@ -194,9 +194,11 @@ export function getScope(){
     return request(url);
 }
 
-// Banner (announcement) configured in the admin, or null (no banner, or older backend without the route)
+// Banner (announcement) configured in the admin, or null (no banner, or older backend without the route).
+// The instance scope is passed so a banner can target only some scopes (backend >= 0.0.38).
 export function getBanner(){
-    return request(baseUrl() + "/get_banner.php")
+    var scope = (vigiloconfig.getInstance() || {}).scope;
+    return request(baseUrl() + "/get_banner.php" + (scope ? "?scope=" + encodeURIComponent(scope) : ""))
         .then((r) => (r && r.banner) ? r.banner : null)
         .catch(() => null);
 }
