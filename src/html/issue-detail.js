@@ -106,9 +106,12 @@ export default async function (issue) {
 <div class="modal-content issue-detail">
   <header class="issue-head">
     <h2 class="issue-title"><span class="cat-dot" style="background-color: ${escapeHtml(issue.color)}"></span><span data-i18n="category-name-${escapeHtml(issue.categorie)}">${t("category-name-" + issue.categorie)}</span></h2>
+    <a href="#!" class="modal-close issue-head-close" data-i18n-attr='{"title": "close", "aria-label": "close"}' title="${t("close")}" aria-label="${t("close")}"><i class="material-icons">close</i></a>
+  </header>
+  <div class="issue-subhead">
     <div class="issue-chips">${chips}</div>
     ${stateNote}
-  </header>
+  </div>
   <div class="issue-layout">
     <div class="issue-media">
       <img class="issue-photo" src="${escapeHtml(issue.img)}" data-fallback="${escapeHtml(issue.img_panel)}" alt="" role="button" tabindex="0" data-i18n-attr='{"title": "photo-zoom"}' title="${t("photo-zoom")}">

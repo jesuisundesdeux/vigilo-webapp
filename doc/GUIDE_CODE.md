@@ -89,8 +89,11 @@ Fenêtres (`.modal`) : chacune reçoit une **croix de fermeture** en haut à dro
 `addModalCrosses()` appelé par `app.js` après `i18n.init()` ; lien `.modal-close.modal-x`, que Materialize ferme
 tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()` rappelle `addModalCross()`. Seule
 `#modal-form-loader` (envoi en cours) n'en a pas. Pour que la croix ne chevauche pas la barre de défilement d'une
-fenêtre qui défile, `initModalScrollbarInset()` (appelé par `app.js`) mesure la largeur de la barre à l'ouverture et
-l'expose en variable CSS `--modal-sbw`, dont la croix se décale (`main.scss`, `.modal` a `scrollbar-gutter: stable`).
+fenêtre qui défile, `initModalScrollbarInset()` (appelé par `app.js`) mesure à l'ouverture la largeur de la barre de
+l'élément qui défile (`.modal`, ou `.modal-content` pour une fenêtre à pied de page fixe) et l'expose en variable CSS
+`--modal-sbw`, dont la croix se décale (`main.scss`) ; elle reste collée au bord droit quand il n'y a pas de barre.
+La fiche d'observation (`#modal-issue`) n'utilise pas cette croix flottante : son en-tête `.issue-head` (titre =
+catégorie, et croix sur la même ligne) est **collant** (`position: sticky`, `theme.scss`), le reste défile en dessous.
 
 Les entrées du menu latéral (`.sidenav > li > a`, `theme.scss`) s'affichent en `flex` et peuvent passer sur deux
 lignes : un libellé long (« Ce territoire sur vigilo.city ») n'est plus coupé à une seule ligne de 48 px.
@@ -286,7 +289,7 @@ moderatorKeys, moderationOff}`) et drapeaux de session :
 |---|---|
 | `cleanIssues()` | vide `#issues .cards-container`, remet `offset` à 0 |
 | `displayIssues(count)` | ajoute les `count` observations filtrées suivantes (`offset` interne) avec `issueCard()` ; retire les cartes squelettes ; message `no-issue` si aucune ; en erreur, remplace **tout `#issues`** par `errorCard(e)` |
-| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, branche la photo sur `openPhotoViewer()` (clic, Entrée ; pas pour l'image « photo manquante »), réécrit l'URL avec `permLink` (`history.replaceState`), remet la croix (`addModalCross`), ouvre `#modal-issue`, lance la mini-carte et la recherche Panoramax, remplit `.similar-issues` avec `findSimilarIssues()` sur toutes les observations chargées |
+| `viewIssue(token)` (aussi `window.viewIssue`) | ouvre la fiche : cherche dans toutes les observations (non filtrées), sinon `getIssues({token})` ; injecte `issueDetail()`, branche la photo sur `openPhotoViewer()` (clic, Entrée ; pas pour l'image « photo manquante »), réécrit l'URL avec `permLink` (`history.replaceState`), ouvre `#modal-issue` (croix dans l'en-tête collant), lance la mini-carte et la recherche Panoramax, remplit `.similar-issues` avec `findSimilarIssues()` sur toutes les observations chargées |
 | `refreshIssueCard(issue)` | réaffiche une carte en place après une action de modération ; si elle ne correspond plus aux filtres, la retire et charge l'observation suivante |
 
 `refreshIssueCard` retrouve la carte par le sélecteur `.card[onclick="viewIssue('<token>')"]` : ne pas changer
