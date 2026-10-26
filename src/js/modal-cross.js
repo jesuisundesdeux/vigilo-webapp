@@ -22,3 +22,21 @@ export function addModalCross(modal) {
 export function addModalCrosses() {
   $('.modal').each(function () { addModalCross(this); });
 }
+
+/**
+ * Keep the close cross clear of the scrollbar: expose the modal's scrollbar width as the CSS
+ * variable --modal-sbw (used by .modal-x). With scrollbar-gutter: stable the gutter is reserved
+ * from the start, so measuring once when the modal opens stays correct even if its content grows.
+ */
+export function initModalScrollbarInset() {
+  $('.modal').each(function () {
+    var modal = this;
+    new MutationObserver(function () {
+      if (modal.classList.contains('open')) {
+        requestAnimationFrame(function () {
+          modal.style.setProperty('--modal-sbw', (modal.offsetWidth - modal.clientWidth) + 'px');
+        });
+      }
+    }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+  });
+}

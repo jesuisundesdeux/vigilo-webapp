@@ -449,6 +449,24 @@ nav {
   }
 }
 
+// Menu entries: let a long label wrap instead of being clipped to a single 48px line
+// (e.g. « Ce territoire sur vigilo.city » on narrow screens).
+.sidenav > li > a {
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: 48px;
+  line-height: 1.25;
+  white-space: normal;
+  i.material-icons {
+    height: auto;
+    line-height: inherit;
+    flex: none;
+  }
+}
+.sidenav > li#version > a,
+.sidenav > li#version-server > a { justify-content: center; }
+
 // ---- Collections (zone / language pickers)
 .collection {
   border-radius: $vigilo-radius-small;
