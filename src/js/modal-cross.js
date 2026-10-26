@@ -23,20 +23,34 @@ export function addModalCrosses() {
   $('.modal').each(function () { addModalCross(this); });
 }
 
+// Width of the scrollbar of whichever element scrolls: .modal, or its .modal-content for a
+// fixed-footer modal. 0 when there is no scrollbar (the cross then stays flush-right).
+function modalScrollbarWidth(modal) {
+  var content = modal.querySelector('.modal-content');
+  var m = modal.offsetWidth - modal.clientWidth;
+  var c = content ? (content.offsetWidth - content.clientWidth) : 0;
+  return Math.max(m, c);
+}
+
 /**
- * Keep the close cross clear of the scrollbar: expose the modal's scrollbar width as the CSS
- * variable --modal-sbw (used by .modal-x). With scrollbar-gutter: stable the gutter is reserved
- * from the start, so measuring once when the modal opens stays correct even if its content grows.
+ * Keep the close cross clear of the scrollbar: expose the scrollbar width as the CSS variable
+ * --modal-sbw (used by .modal-x). Measured when the modal opens; re-measured on resize since the
+ * content (e.g. a photo loaded afterwards) can change whether a scrollbar is shown.
  */
 export function initModalScrollbarInset() {
   $('.modal').each(function () {
     var modal = this;
-    new MutationObserver(function () {
+    var measure = function () {
       if (modal.classList.contains('open')) {
         requestAnimationFrame(function () {
-          modal.style.setProperty('--modal-sbw', (modal.offsetWidth - modal.clientWidth) + 'px');
+          modal.style.setProperty('--modal-sbw', modalScrollbarWidth(modal) + 'px');
         });
       }
-    }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+    };
+    new MutationObserver(measure).observe(modal, { attributes: true, attributeFilter: ['class'] });
+    if (window.ResizeObserver) {
+      var content = modal.querySelector('.modal-content');
+      if (content) { new ResizeObserver(measure).observe(content); }
+    }
   });
 }

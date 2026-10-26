@@ -50,6 +50,8 @@ html[data-theme="dark"] {
   .modal .modal-footer { border-top-color: $dark-border; }
   #modal-form, #modal-form .modal-content { background: $dark-bg; }
   #modal-issue {
+    .issue-head { background: $dark-surface; border-bottom-color: $dark-border; }
+    .issue-head-close { color: $dark-ink; &:hover, &:focus-visible { background: rgba(255, 255, 255, .08); } }
     img.issue-photo { background: $dark-surface-2; }
     .issue-chip { background: $dark-surface-2; color: $dark-ink; }
     .issue-chip-unapproved { background: rgba(#fdd835, .18); color: #f5d36b; }
