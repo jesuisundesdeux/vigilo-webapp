@@ -6,19 +6,13 @@
  * start even after being closed, and its window reopens at launch (its close is not remembered).
  * Message text is inserted with .text() (white-space: pre-line keeps the line breaks), never as HTML.
  */
-import i18next from 'i18next';
 import M from '@materializecss/materialize';
 import * as vigilo from './vigilo-api';
 import localDataManager from './localDataManager';
 
-// Icon per type; a type the app doesn't know yet (added later on the backend) falls back to info
+// Icon per type; a type the app doesn't know yet (added later on the backend) falls back to info.
+// The type only drives the icon and colour (data-type), not any text heading.
 const ICONS = { info: 'info', success: 'check_circle', warning: 'warning', alert: 'report_problem' };
-
-function typeHeading(type) {
-  var key = 'banner-' + type;
-  var label = i18next.t(key);
-  return label === key ? '' : label;
-}
 
 export async function init() {
   var banner = await vigilo.getBanner();
@@ -71,7 +65,6 @@ function showBar(banner, type, persistent) {
 function showModal(banner, type, persistent) {
   var modal = $('#modal-banner').attr('data-type', type);
   modal.find('.app-banner-modal-icon').text(ICONS[type]);
-  modal.find('.app-banner-modal-heading').text(typeHeading(type));
   modal.find('.app-banner-modal-message').text(banner.message);
   M.Modal.init(modal[0], { onCloseEnd: () => { if (!persistent) { localDataManager.setBannerDismissed('modal', banner.id); } } });
   M.Modal.getInstance(modal[0]).open();
