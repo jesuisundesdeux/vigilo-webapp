@@ -51,8 +51,9 @@ function startOfMonth(d) {
 export async function init() {
     try {
         // archived observations are no longer listed but still count in the statistics
-        // (backend >= 0.0.29; older ones ignore the parameter)
-        issues = await vigilo.getIssues({ archived: 1 });
+        // (backend >= 0.0.29); resolvedhidden keeps the old resolved ones that leave the public list
+        // after vigilo_resolved_hide_days (backend >= 0.0.38). Older backends ignore the parameters.
+        issues = await vigilo.getIssues({ archived: 1, resolvedhidden: 1 });
         cats = await vigiloconfig.getCategories();
     } catch (e) {
         return;
