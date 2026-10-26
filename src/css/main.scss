@@ -66,19 +66,20 @@ nav.nav-extended {
   }
 }
 
+// --app-banner-h is the height of the announcement bar (js/banner.js), 0 when there is none.
 #content {
   ul.tabs {
     position: fixed;
-    top: 64px;
+    top: calc(64px + var(--app-banner-h, 0px));
     z-index: 997;
   }
   @media #{$small-and-down} {
     ul.tabs {
-      top: 56px;
+      top: calc(56px + var(--app-banner-h, 0px));
     }
   }
   & > div {
-    margin-top: 48px;
+    margin-top: calc(48px + var(--app-banner-h, 0px));
   }
 }
 
@@ -106,6 +107,53 @@ $moderator-banner-h: 32px;
   a { color: #fff; text-decoration: underline; margin-left: .75rem; }
   &[hidden] { display: none; }
   @media #{$small-and-down} { top: 56px; }
+}
+
+// Announcement bar under the top bar (js/banner.js). Below the moderator banner when both show.
+.app-banner {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 998;
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: 8px 12px;
+  background: #1565c0;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 500;
+  &[hidden] { display: none; }
+  @media #{$small-and-down} { top: 56px; }
+  .app-banner-icon { font-size: 1.2rem; line-height: 1.35; flex: none; }
+  .app-banner-message { flex: 1; min-width: 0; white-space: pre-line; line-height: 1.35; }
+  .app-banner-close {
+    flex: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    opacity: .85;
+    i { font-size: 1.2rem; }
+    &:hover, &:focus-visible { opacity: 1; }
+  }
+  // Severity colours (add a type here and in js/banner.js / the backend to offer a new one)
+  &[data-type="success"] { background: #2e7d32; }
+  &[data-type="warning"] { background: #ef6c00; }
+  &[data-type="alert"] { background: #c62828; }
+}
+html.moderator-mode .app-banner {
+  top: 64px + $moderator-banner-h;
+  @media #{$small-and-down} { top: 56px + $moderator-banner-h; }
+}
+// Announcement window: tint the title/icon with the severity colour
+#modal-banner {
+  .app-banner-modal-title { display: flex; align-items: center; gap: .5rem; }
+  .app-banner-modal-icon { color: #1565c0; }
+  &[data-type="success"] .app-banner-modal-icon { color: #2e7d32; }
+  &[data-type="warning"] .app-banner-modal-icon { color: #ef6c00; }
+  &[data-type="alert"] .app-banner-modal-icon { color: #c62828; }
+  .app-banner-modal-message { white-space: pre-line; }
 }
 // Side menu shortcut of the moderators, with the number of observations to moderate
 #moderation-shortcut a {
@@ -164,13 +212,13 @@ $moderator-banner-h: 32px;
 }
 html.moderator-mode {
   #content {
-    ul.tabs { top: 64px + $moderator-banner-h; }
+    ul.tabs { top: calc(64px + #{$moderator-banner-h} + var(--app-banner-h, 0px)); }
     @media #{$small-and-down} {
-      ul.tabs { top: 56px + $moderator-banner-h; }
+      ul.tabs { top: calc(56px + #{$moderator-banner-h} + var(--app-banner-h, 0px)); }
     }
-    & > div { margin-top: 48px + $moderator-banner-h; }
+    & > div { margin-top: calc(48px + #{$moderator-banner-h} + var(--app-banner-h, 0px)); }
   }
-  #issues #issues-map { height: calc(100vh - 113px - #{$moderator-banner-h}); }
+  #issues #issues-map { height: calc(100vh - 113px - #{$moderator-banner-h} - var(--app-banner-h, 0px)); }
 }
 
 #issues {
@@ -182,7 +230,7 @@ html.moderator-mode {
   }
 
   #issues-map {
-    height: calc(100vh - 113px);
+    height: calc(100vh - 113px - var(--app-banner-h, 0px));
     .spinner {
       display: block;
     }

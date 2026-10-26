@@ -177,6 +177,7 @@ lignes : un libellé long (« Ce territoire sur vigilo.city ») n'est plus coup�
 | `form.js` | formulaire d'envoi / de modification |
 | `image-drawable.js` | outil de dessin sur la photo (masquer un visage, une plaque) |
 | `moderator.js` | modérateurs : clé de l'instance, réglages, raccourci « À modérer », modération |
+| `banner.js` | bannière d'annonce (`get_banner.php`) : bandeau et/ou fenêtre, fermeture persistée |
 | `stats.js` | statistiques |
 | `i18n.js` | traductions |
 | `navs.js` | menu latéral |
@@ -404,6 +405,15 @@ Aperçu dans le formulaire : `#picture-preview canvas` sur toute la largeur de l
 #### `moderator.js`
 
 Voir [§5](#5-mode-modération). Export : `init()`. Global (modérateur, mode actif) : `window.moderate(token, status)`.
+
+#### `banner.js`
+
+Export : `init()` (appelé par `app.js` après `moderator.init()`). Récupère la bannière via `vigilo.getBanner()`
+(`get_banner.php`, `null` si aucune, hors plage ou backend < 0.0.38). Selon `display` (`banner`, `modal`, `both`),
+affiche le bandeau `#app-banner` (sous la barre du haut ; `--app-banner-h` décale le contenu, `main.scss`) et/ou la
+fenêtre `#modal-banner`, avec la couleur et l'icône du `type` (`info`/`success`/`warning`/`alert`, extensible). Le
+texte passe par `.text()` (sauts de ligne via `white-space: pre-line`). Chaque canal (bandeau, fenêtre) reste fermé
+tant que l'`id` (condensé du contenu) ne change pas : `localDataManager.get/setBannerDismissed(channel)` par instance.
 
 #### `stats.js`
 

@@ -8,6 +8,7 @@ import { initPhotoDrafts } from './photo-drafts';
 import * as navs from './navs';
 import * as stats from './stats';
 import * as moderator from './moderator';
+import * as banner from './banner';
 import * as i18n from './i18n';
 import { initTheme } from './theme';
 import github_issue from '../html/github_issue';
@@ -144,6 +145,9 @@ export default class VigiloApp {
 
         // Moderator of this instance
         await moderator.init();
+
+        // Banner (announcement) configured in the admin
+        await banner.init();
 
         /**
          * SIDENAV

@@ -111,6 +111,21 @@ class LocalDataManager {
     return this._moderator === true;
   }
 
+  // Dismissed banner id, per instance and per channel ('banner' bar / 'modal'): a banner stays
+  // closed until its content changes (new id), see banner.js. Shared helper for both channels.
+  getBannerDismissed(channel){
+    var all = this._data.bannerDismissed || {};
+    var perInstance = all[this.instanceName()] || {};
+    return perInstance[channel];
+  }
+  setBannerDismissed(channel, id){
+    this._data.bannerDismissed = this._data.bannerDismissed || {};
+    var name = this.instanceName();
+    this._data.bannerDismissed[name] = this._data.bannerDismissed[name] || {};
+    this._data.bannerDismissed[name][channel] = id;
+    this.save();
+  }
+
   setBeta(){
     sessionStorage.setItem("vigilo-beta", true)
   }
