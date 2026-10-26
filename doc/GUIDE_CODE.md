@@ -88,7 +88,12 @@ exécutés dans le navigateur, donc toute donnée externe doit y passer par `esc
 Fenêtres (`.modal`) : chacune reçoit une **croix de fermeture** en haut à droite (`src/js/modal-cross.js`,
 `addModalCrosses()` appelé par `app.js` après `i18n.init()` ; lien `.modal-close.modal-x`, que Materialize ferme
 tout seul). `#modal-issue` étant reconstruite à chaque ouverture, `viewIssue()` rappelle `addModalCross()`. Seule
-`#modal-form-loader` (envoi en cours) n'en a pas.
+`#modal-form-loader` (envoi en cours) n'en a pas. Pour que la croix ne chevauche pas la barre de défilement d'une
+fenêtre qui défile, `initModalScrollbarInset()` (appelé par `app.js`) mesure la largeur de la barre à l'ouverture et
+l'expose en variable CSS `--modal-sbw`, dont la croix se décale (`main.scss`, `.modal` a `scrollbar-gutter: stable`).
+
+Les entrées du menu latéral (`.sidenav > li > a`, `theme.scss`) s'affichent en `flex` et peuvent passer sur deux
+lignes : un libellé long (« Ce territoire sur vigilo.city ») n'est plus coupé à une seule ligne de 48 px.
 
 ### 1.3 Séquence de démarrage
 

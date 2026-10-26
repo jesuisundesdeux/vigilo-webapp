@@ -491,10 +491,13 @@ html.moderator-mode {
 @import "dark.scss";
 
 // Close cross of the modals (see js/modal-cross.js), above the scrolling content
+// Reserve the scrollbar space so the close cross (positioned by --modal-sbw, set in modal-cross.js)
+// never sits on top of the scrollbar.
+.modal { scrollbar-gutter: stable; }
 .modal .modal-x {
   position: absolute;
   top: 8px;
-  right: 8px;
+  right: calc(8px + var(--modal-sbw, 0px));
   z-index: 5;
   display: flex;
   align-items: center;
