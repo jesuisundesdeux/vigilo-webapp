@@ -8,6 +8,8 @@ import piexif from 'piexifjs';
 
 import * as vigilo from './vigilo-api';
 import * as vigiloconfig from './vigilo-config';
+import * as list from './issue-list';
+import * as map from './issue-map';
 import { initRelatedIssues, setRelatedReference, resetRelatedIssues, selectedRelatedTokens } from './related-issues';
 import { distance } from './utils';
 import errorCard from '../html/error';
@@ -727,29 +729,28 @@ $("#modal-form form").submit((e) => {
       // the moderator key lets the photo of an approved observation be replaced
       return vigilo.addImage(createResponse.token, createResponse.secretid, jpegb64, isResolution, key)
     })
-    .then(() => {
+    .then(async () => {
       $("#modal-form-loader .determinate").css("width", "100%");
       // the draft became an observation
       if (sentDraftId !== null) {
         deleteDraft(sentDraftId).catch(() => {});
       }
-      // Open the observation just posted (the URL may still carry the token of the
-      // observation viewed before)
-      var url = new URL(window.location.href);
-      url.searchParams.delete('token');
-      if (isResolution) {
-        // back to the resolved observation
-        url.searchParams.set('token', resolvedToken);
-      } else if (createdToken) {
-        url.searchParams.set('token', createdToken);
+      // Refresh the list and map in place instead of reloading the whole app.
+      // The issue cache is cleared first, so a just-created observation shows up where
+      // the instance serves non-approved ones (backend vigilo_shownonapproved).
+      var tokenToShow = isResolution ? resolvedToken : createdToken;
+      clearForm();
+      M.Modal.getInstance($("#modal-form-loader")).close();
+      M.Modal.getInstance($("#modal-form")).close();
+      vigilo.clearIssueCache();
+      list.cleanIssues();
+      map.cleanIssues();
+      await list.displayIssues(30);
+      await map.displayIssues(true);
+      // Open the observation just posted (its detail also updates the URL token)
+      if (tokenToShow) {
+        await list.viewIssue(tokenToShow);
       }
-      setTimeout(function () {
-        if (url.href == window.location.href) {
-          window.location.reload()
-        } else {
-          window.location.href = url.href
-        }
-      }, 1000)
     })
     .catch((e) => {
       // Show the error and let the user go back to the form to fix it (issue #86)

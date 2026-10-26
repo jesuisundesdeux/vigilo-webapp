@@ -12,6 +12,15 @@ function baseUrl() {
 import {request, randomToken} from './utils';
 var issue_cache = {};
 
+/**
+ * Empty the observation cache, so the next getIssues() re-fetches from the backend.
+ * Called after creating/editing an observation to refresh the list and map in place
+ * (a just-created one shows up where the instance serves non-approved observations).
+ */
+export function clearIssueCache() {
+    issue_cache = {};
+}
+
 // Rank of a resolution status: 1 resolved > 4 reported resolved > 3 in progress > 2 taken into account > 0
 const STATUS_RANK = {1: 4, 4: 3, 3: 2, 2: 1, 0: 0};
 
