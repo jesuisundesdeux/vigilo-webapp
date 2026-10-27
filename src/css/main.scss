@@ -127,7 +127,10 @@ $moderator-banner-h: 32px;
   &[hidden] { display: none; }
   @media #{$small-and-down} { top: 56px; }
   .app-banner-icon { font-size: 1.2rem; line-height: 1.35; flex: none; }
-  .app-banner-message { flex: 1; min-width: 0; white-space: pre-line; line-height: 1.35; }
+  .app-banner-text { flex: 1; min-width: 0; }
+  .app-banner-title { display: block; font-weight: 700; line-height: 1.35; }
+  .app-banner-message { white-space: pre-line; line-height: 1.35; }
+  .app-banner-message a { color: #fff; text-decoration: underline; }
   .app-banner-close {
     flex: none;
     color: #fff;
@@ -149,11 +152,12 @@ html.moderator-mode .app-banner {
 // Announcement window: tint the title/icon with the severity colour
 #modal-banner {
   .app-banner-modal-title { display: flex; align-items: center; gap: .5rem; }
+  .app-banner-title { font-weight: 700; }
   .app-banner-modal-icon { color: #1565c0; }
   &[data-type="success"] .app-banner-modal-icon { color: #2e7d32; }
   &[data-type="warning"] .app-banner-modal-icon { color: #ef6c00; }
   &[data-type="alert"] .app-banner-modal-icon { color: #c62828; }
-  .app-banner-modal-message { white-space: pre-line; }
+  .app-banner-message { white-space: pre-line; }
 }
 // Side menu shortcut of the moderators, with the number of observations to moderate
 #moderation-shortcut a {

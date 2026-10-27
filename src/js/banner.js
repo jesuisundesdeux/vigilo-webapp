@@ -5,8 +5,9 @@
  * the window may come from two different banners. Once closed a channel stays closed — keyed by the
  * shown banner's "id" — until the admin changes its content (its "id" changes, see localDataManager).
  * A "persistent" banner (backend >= 0.0.39) is instead shown again on every start even after being
- * closed, and its window reopens at launch (its close is not remembered). Message text is inserted
- * with .text() (white-space: pre-line keeps the line breaks), never as HTML.
+ * closed, and its window reopens at launch (its close is not remembered). Each banner has an optional
+ * bold "title" (shown above the message) and a "message" with light formatting (**bold**, _italic_,
+ * [text](https://link)); the message is HTML-escaped first, so the formatting is safe.
  */
 import M from '@materializecss/materialize';
 import * as vigilo from './vigilo-api';
@@ -15,6 +16,38 @@ import localDataManager from './localDataManager';
 // Icon per type; a type the app doesn't know yet (added later on the backend) falls back to info.
 // The type only drives the icon and colour (data-type), not any text heading.
 const ICONS = { info: 'info', success: 'check_circle', warning: 'warning', alert: 'report_problem' };
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Light, safe formatting for the message: links [text](http(s)://url), **bold**, _italic_.
+// The text is escaped first; links are tokenised out so bold/italic never touch their URLs; only
+// http/https links are produced, so there is no way to inject markup or a javascript: URL.
+function formatMessage(text) {
+  var tokens = [];
+  var out = escapeHtml(text);
+  out = out.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g, (m, label, url) => {
+    tokens.push('<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>');
+    return '\u0000' + (tokens.length - 1) + '\u0000';
+  });
+  out = out.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+  out = out.replace(/\u0000(\d+)\u0000/g, (m, i) => tokens[+i]);
+  return out;
+}
+
+// Fill a banner's title (bold, plain text) and message (formatted); hide the title element when empty
+function fillContent(root, banner) {
+  var title = root.find('.app-banner-title');
+  if (banner.title) {
+    title.text(banner.title).prop('hidden', false);
+  } else {
+    title.text('').prop('hidden', true);
+  }
+  root.find('.app-banner-message').html(formatMessage(banner.message));
+}
 
 export async function init() {
   var banners = await vigilo.getBanner();
@@ -51,7 +84,7 @@ function setBarHeight() {
 function showBar(banner, type, persistent) {
   var bar = $('#app-banner').attr('data-type', type);
   bar.find('.app-banner-icon').text(ICONS[type]);
-  bar.find('.app-banner-message').text(banner.message);
+  fillContent(bar, banner);
   bar.prop('hidden', false);
   setBarHeight();
   // the message can wrap differently when the window is resized
@@ -74,7 +107,7 @@ function showBar(banner, type, persistent) {
 function showModal(banner, type, persistent) {
   var modal = $('#modal-banner').attr('data-type', type);
   modal.find('.app-banner-modal-icon').text(ICONS[type]);
-  modal.find('.app-banner-modal-message').text(banner.message);
+  fillContent(modal, banner);
   M.Modal.init(modal[0], { onCloseEnd: () => { if (!persistent) { localDataManager.setBannerDismissed('modal', banner.id); } } });
   M.Modal.getInstance(modal[0]).open();
 }

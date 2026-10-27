@@ -412,13 +412,17 @@ Voir [§5](#5-mode-modération). Export : `init()`. Global (modérateur, mode ac
 #### `banner.js`
 
 Export : `init()` (appelé par `app.js` après `moderator.init()`). Récupère la liste des bannières actives via
-`vigilo.getBanner()` (`get_banner.php` : champ `banners` depuis 0.0.39, repli sur `banner` seul pour un backend
-antérieur, `[]` si aucune, hors plage ou backend < 0.0.38). Plusieurs bannières peuvent être actives : l'application
+`vigilo.getBanner()` (`get_banner.php` : champ `banners`, `[]` si aucune, hors plage ou backend < 0.0.39 —
+la fonctionnalité bannière requiert la 0.0.39). Plusieurs bannières peuvent être actives : l'application
 affiche **au plus un bandeau et une fenêtre**, chacun pris sur la bannière active la plus récente dont le `display`
 (`banner`, `modal`, `both`) couvre ce canal — bandeau et fenêtre peuvent donc venir de deux bannières différentes.
 Le bandeau `#app-banner` (sous la barre du haut ; `--app-banner-h` décale le contenu, `main.scss`) et/ou la
 fenêtre `#modal-banner` prennent la couleur et l'icône du `type` (`info`/`success`/`warning`/`alert`, extensible). Le
-texte passe par `.text()` (sauts de ligne via `white-space: pre-line`). Chaque canal (bandeau, fenêtre) reste fermé
+`title` facultatif est affiché en gras (`.app-banner-title`, masqué si vide) via `.text()` ; le `message`
+(`.app-banner-message`, sauts de ligne via `white-space: pre-line`) passe par `formatMessage()` : le texte est d'abord
+échappé (`escapeHtml`), puis une mise en forme légère est appliquée — liens `[texte](https://…)` (uniquement
+`http`/`https`, extraits en jetons pour que le gras/italique ne touche pas l'URL), `**gras**`, `_italique_` — avant
+insertion en `.html()` (sûr car échappé). Chaque canal (bandeau, fenêtre) reste fermé
 tant que l'`id` (condensé du contenu) ne change pas : `localDataManager.get/setBannerDismissed(channel)` par instance.
 Une bannière `persistent` (backend ≥ 0.0.39) ignore cette fermeture mémorisée : elle réapparaît à chaque ouverture
 (fenêtre rouverte au lancement) et sa fermeture n'est pas enregistrée.
