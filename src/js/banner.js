@@ -1,10 +1,12 @@
 /**
- * Banner (announcement) configured in the admin (get_banner.php). Shown as a bar under the top
- * bar and/or as a window at launch, according to its "display" (banner / modal / both). Once
- * closed it stays closed — per channel — until the admin changes the message (its "id" changes,
- * see localDataManager). A "persistent" banner (backend >= 0.0.39) is instead shown again on every
- * start even after being closed, and its window reopens at launch (its close is not remembered).
- * Message text is inserted with .text() (white-space: pre-line keeps the line breaks), never as HTML.
+ * Banners (announcements) configured in the admin (get_banner.php). Several can be active at once:
+ * the app shows at most one bar under the top bar and one window at launch, each from the most
+ * recent active banner whose "display" covers that channel (banner / modal / both) — so the bar and
+ * the window may come from two different banners. Once closed a channel stays closed — keyed by the
+ * shown banner's "id" — until the admin changes its content (its "id" changes, see localDataManager).
+ * A "persistent" banner (backend >= 0.0.39) is instead shown again on every start even after being
+ * closed, and its window reopens at launch (its close is not remembered). Message text is inserted
+ * with .text() (white-space: pre-line keeps the line breaks), never as HTML.
  */
 import M from '@materializecss/materialize';
 import * as vigilo from './vigilo-api';
@@ -15,20 +17,27 @@ import localDataManager from './localDataManager';
 const ICONS = { info: 'info', success: 'check_circle', warning: 'warning', alert: 'report_problem' };
 
 export async function init() {
-  var banner = await vigilo.getBanner();
-  if (!banner) {
+  var banners = await vigilo.getBanner();
+  if (!banners || !banners.length) {
     return;
   }
-  var type = ICONS[banner.type] ? banner.type : 'info';
-  // persistent: ignore any remembered dismissal, so the banner shows again on every start
-  var persistent = banner.persistent === 1 || banner.persistent === true;
-  var channels = banner.display === 'modal' ? ['modal']
-    : banner.display === 'both' ? ['banner', 'modal'] : ['banner'];
-  if (channels.indexOf('banner') !== -1 && (persistent || localDataManager.getBannerDismissed('banner') !== banner.id)) {
-    showBar(banner, type, persistent);
+  // one banner per channel: the most recent active one whose display covers it (list is sorted recent first)
+  var bar = banners.filter((b) => b.display === 'banner' || b.display === 'both')[0];
+  var modal = banners.filter((b) => b.display === 'modal' || b.display === 'both')[0];
+  if (bar) {
+    showChannel('banner', bar, showBar);
   }
-  if (channels.indexOf('modal') !== -1 && (persistent || localDataManager.getBannerDismissed('modal') !== banner.id)) {
-    showModal(banner, type, persistent);
+  if (modal) {
+    showChannel('modal', modal, showModal);
+  }
+}
+
+// Show a banner on a channel unless it was dismissed (a persistent banner ignores the dismissal)
+function showChannel(channel, banner, show) {
+  var type = ICONS[banner.type] ? banner.type : 'info';
+  var persistent = banner.persistent === 1 || banner.persistent === true;
+  if (persistent || localDataManager.getBannerDismissed(channel) !== banner.id) {
+    show(banner, type, persistent);
   }
 }
 
