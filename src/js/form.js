@@ -226,7 +226,7 @@ $("#panoramax-picture").on("click", async function (e) {
   openPanoramaxCapture(location, scopeView(scope), (dataUrl, picture, searchLocation) => {
     $("#issue-picture").prop("required", false);
     setPictureSource(i18next.t("panoramax-capture-file"));
-    renderImage(dataUrl);
+    renderImage(dataUrl, false, vigiloconfig.PANORAMAX_CAPTURE_MAX_SIZE);
     if (!resolutionIssue && (formmap === undefined || !formmap.hasLayer(mapmarker))) {
       setFormMapPoint(searchLocation || [picture.lat, picture.lon]);
     }
@@ -366,7 +366,7 @@ function loadPicture(file, fromCamera, notFromMainInput) {
   reader.readAsDataURL(file);
 }
 
-function renderImage(src, existing) {
+function renderImage(src, existing, maxSize) {
   var image = new Image();
   image.crossOrigin = "Anonymous";
   if (existing) {
@@ -400,8 +400,10 @@ function renderImage(src, existing) {
 
     var canvas = document.createElement("canvas");
 
-    var sx = vigiloconfig.IMAGE_MAX_SIZE / image.width;
-    var sy = vigiloconfig.IMAGE_MAX_SIZE / image.height;
+    // pictures from Panoramax are kept at a higher definition than device photos
+    var limit = maxSize || vigiloconfig.IMAGE_MAX_SIZE;
+    var sx = limit / image.width;
+    var sy = limit / image.height;
     var scale = Math.min(sx, sy);
 
 

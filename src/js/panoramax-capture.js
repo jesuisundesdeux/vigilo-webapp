@@ -10,9 +10,9 @@ import M from '@materializecss/materialize';
 import i18next from 'i18next';
 import { addBaseLayers } from './map-layers';
 import { findPicturesAround, fetchPicture } from './panoramax';
-import { IMAGE_MAX_SIZE } from './vigilo-config';
+import { PANORAMAX_CAPTURE_MAX_SIZE } from './vigilo-config';
 
-// Captured picture: 4:3, IMAGE_MAX_SIZE wide at most
+// Captured picture: 4:3, PANORAMAX_CAPTURE_MAX_SIZE wide at most
 const ASPECT = 4 / 3;
 const PREVIEW_MAX_WIDTH = 960;
 // 360° pictures: horizontal field of view, in degrees
@@ -491,15 +491,15 @@ function capture() {
 		var out = document.createElement("canvas");
 		var octx = out.getContext("2d");
 		if (picture.is360) {
-			out.width = IMAGE_MAX_SIZE;
-			out.height = Math.round(IMAGE_MAX_SIZE / ASPECT);
+			out.width = PANORAMAX_CAPTURE_MAX_SIZE;
+			out.height = Math.round(PANORAMAX_CAPTURE_MAX_SIZE / ASPECT);
 			var pixels = image === state.image ? state.pixels : imagePixels(image);
 			var data = octx.createImageData(out.width, out.height);
 			renderEquirect(pixels, data, view, true, picture.correction);
 			octx.putImageData(data, 0, 0);
 		} else {
 			var r = flatRegion(image, view);
-			var scale = Math.min(1, IMAGE_MAX_SIZE / r.sw);
+			var scale = Math.min(1, PANORAMAX_CAPTURE_MAX_SIZE / r.sw);
 			out.width = Math.round(r.sw * scale);
 			out.height = Math.round(r.sh * scale);
 			drawFlat(octx, image, view, out.width, out.height, picture.correction);
