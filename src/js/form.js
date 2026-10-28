@@ -47,9 +47,17 @@ window.startForm = async function (token) {
   $("#form-clear").toggle(token === undefined);
 
   if (token !== undefined) {
-    // every observation, even one hidden by the filters (e.g. opened from a link)
+    // every observation, even one hidden by the filters (e.g. just posted and not approved yet,
+    // or opened from a link): fall back to fetching this single one from the backend, as viewIssue does
     var issues = await vigilo.getIssues();
     var issue = issues.filter(item => item.token == token)[0];
+    if (issue === undefined) {
+      issue = (await vigilo.getIssues({ token: token }).catch(() => [])).filter(item => item.token == token)[0];
+    }
+    if (issue === undefined) {
+      // observation not found (deleted, or backend unavailable): nothing to edit
+      return;
+    }
 
     $("#issue-token").val(token);
 
