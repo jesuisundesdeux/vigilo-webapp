@@ -214,6 +214,9 @@ export const VERSION = pkg.name+"-"+pkg.version;
 export const VERSION_NUMBER = pkg.version;
 
 export const IMAGE_MAX_SIZE=1500;
+// Pictures captured from a Panoramax view: kept at a higher definition than photos taken with the
+// device (the source is already a sharp street-level image, and the capture is a crop / reprojection).
+export const PANORAMAX_CAPTURE_MAX_SIZE=2560;
 
 export function getInstance(){
     var instance = localStorage.getItem('vigilo-instance');

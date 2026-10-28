@@ -213,7 +213,8 @@ lignes : un libellé long (« Ce territoire sur vigilo.city ») n'est plus coup�
 | `getInstance()` | objet de l'instance courante lu dans `localStorage['vigilo-instance']`, ou `null` |
 | `VERSION` | `"vigilo-webapp-<version>"`, envoyé dans le champ `version` de `create_issue.php` |
 | `VERSION_NUMBER` | version de `package.json` |
-| `IMAGE_MAX_SIZE` | 1500 : plus grand côté de la photo envoyée, en pixels |
+| `IMAGE_MAX_SIZE` | 1500 : plus grand côté d'une photo prise avec l'appareil, en pixels (réduction dans `form.js`) |
+| `PANORAMAX_CAPTURE_MAX_SIZE` | 2560 : plus grand côté d'une photo capturée depuis une vue Panoramax (meilleure définition) |
 | `window.setInstance(name, noreload)` | enregistre l'instance de ce nom (recherchée dans `getInstances(true)`) ; sans `noreload`, recharge la page en retirant `?instance=` de l'URL s'il y est |
 
 Constante interne `RESOLVABLE_CATEGORIES = [2,3,4,5,6,7,8,11,100]` : repli quand une catégorie n'a pas de
@@ -492,7 +493,7 @@ fenêtres (`modal-trigger`).
    son roll par `drawFlat`) dans un canvas 4:3 (glisser, molette, pincement, boutons de zoom) : une photo 360°
    (équirectangulaire) est reprojetée en perspective (`renderEquirect`, cap `yaw`, inclinaison `pitch`, champ `fov`) ;
    une photo plate est recadrée (`flatRegion`, centre et zoom) ;
-4. **capture** à partir de l'image `hd` (`IMAGE_MAX_SIZE` de large au plus, interpolation bilinéaire en 360°) avec une
+4. **capture** à partir de l'image `hd` (`PANORAMAX_CAPTURE_MAX_SIZE` de large au plus, interpolation bilinéaire en 360°) avec une
    bande de crédits en bas (`panoramax-capture-credit` : auteur, licence, date de la vue), puis
    `onCapture(dataUrl, picture, location)`.
 
