@@ -806,7 +806,9 @@ formulaire » qui la referme sans perdre la saisie.
 
 `startForm(token)` pré-remplit le formulaire depuis l'observation : jeton caché `#issue-token`, photo (rechargée dans
 le canvas depuis `issue.img`, avec `crossOrigin = "Anonymous"`), point et adresse, date et heure, catégorie, commentaire
-et explication ; la photo n'est plus obligatoire. L'envoi suit le même
+et explication ; la photo n'est plus obligatoire. L'observation est cherchée dans la liste chargée, puis, si elle n'y
+est pas (par exemple celle qu'on vient de poster, encore non approuvée et filtrée), demandée seule au backend
+(`getIssues({token})`, comme `viewIssue`) ; introuvable, le formulaire ne s'ouvre pas en création. L'envoi suit le même
 chemin : `create_issue.php?key=` avec le `token` existant (le backend modifie l'observation). La photo n'est renvoyée
 que si elle a changé (`photoChanged` : nouvelle photo chargée, ou dessin / rotation, signalés par l'événement
 `drawable-change` de l'éditeur) : sinon, l'original reste tel quel, sans nouvelle compression JPEG. Elle part alors par
