@@ -140,7 +140,8 @@ export default class VigiloApp {
          * TITLE
          */
         document.title = "Vigilo – " + vigiloconfig.getInstance().name
-        $("nav .brand-logo").append(" " + vigiloconfig.getInstance().name)
+        // "Vǐgǐlo" stays large; the instance name goes on a smaller line underneath
+        $("nav .brand-logo").append($("<span>", { "class": "brand-city" }).text(vigiloconfig.getInstance().name))
 
 
         // Moderator of this instance

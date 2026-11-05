@@ -17,6 +17,37 @@ nav {
     font-weight: 700;
     letter-spacing: -0.02em;
     font-size: 1.7rem;
+    // "Vǐgǐlo" stays large; the instance name (js/app.js adds .brand-city) sits on a
+    // smaller line underneath, whatever its length. The block is vertically centered
+    // here because it no longer fits the bar's line-height. Scoped to &.center to beat
+    // Materialize's .brand-logo.center positioning.
+    &.center {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: calc(100% - 8rem); // room for the burger, kept symmetric
+      line-height: 1.1;
+      text-align: center;
+    }
+    .brand-city {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2; // long names stay on at most two lines (ellipsis beyond)
+      line-clamp: 2;
+      overflow: hidden;
+      margin-top: 1px;
+      font-size: .8rem;
+      font-weight: 500;       // medium, not bold: the name is secondary to "Vǐgǐlo"
+      letter-spacing: .01em;
+      line-height: 1.12;
+      opacity: .85;
+      white-space: normal;
+    }
+    // Phones: slightly smaller so title + name fit the 56px bar at any name length.
+    @media #{$small-and-down} {
+      &.center { font-size: 1.45rem; }
+      .brand-city { font-size: .78rem; }
+    }
   }
   .sidenav-trigger i {
     color: $vigilo-ink;
