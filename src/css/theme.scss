@@ -17,6 +17,27 @@ nav {
     font-weight: 700;
     letter-spacing: -0.02em;
     font-size: 1.7rem;
+    // Mobile: the absolutely-centered logo only had ~half the bar width, so a long
+    // instance name wrapped and was clipped by the fixed-height bar. Center it in the
+    // bar and let the name use up to two lines (smaller font), ellipsis beyond.
+    // Scoped to &.center so it beats Materialize's .brand-logo.center transform.
+    @media #{$small-and-down} {
+      &.center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: calc(100% - 8rem); // symmetric room for the burger (~60px on the left)
+        font-size: 1.2rem;
+        line-height: 1.15;
+        white-space: normal;
+        text-align: center;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
+      }
+    }
   }
   .sidenav-trigger i {
     color: $vigilo-ink;

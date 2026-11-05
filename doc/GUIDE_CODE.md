@@ -130,7 +130,7 @@ lignes : un libellé long (« Ce territoire sur vigilo.city ») n'est plus coup�
    | `?instance=` | `await window.setInstance(nom, true)` si différent de l'instance courante | enregistre sans recharger |
    | Écosystème fermé | si `isClosed()` : oubli d'une instance qui n'est plus listée, choix automatique de la seule instance, message `.zone-empty` s'il n'y en a aucune | voir §3.1 |
    | Pas d'instance | `hideSplash()` puis ouverture de `#modal-zone`, et `return` | l'application s'arrête là jusqu'au choix |
-   | Titre | `document.title`, nom ajouté au logo de la barre | |
+   | Titre | `document.title`, nom ajouté au logo de la barre | sur mobile (`theme.scss`, `.brand-logo`), le nom tient sur 2 lignes max, centré, puis `…` (sinon il était coupé) |
    | Modération | `await moderator.init()` | clé de l'instance, `acl.php`, entrée du menu, bandeau, raccourci |
    | Menu latéral | `navs.init()` (non attendu) | onglets, installation, version du serveur |
    | Formulaire | `form.init()` (non attendu) | catégories du `<select>`, sélecteurs date/heure |
