@@ -17,26 +17,34 @@ nav {
     font-weight: 700;
     letter-spacing: -0.02em;
     font-size: 1.7rem;
-    // Mobile: the absolutely-centered logo only had ~half the bar width, so a long
-    // instance name wrapped and was clipped by the fixed-height bar. Center it in the
-    // bar and let the name use up to two lines (smaller font), ellipsis beyond.
-    // Scoped to &.center so it beats Materialize's .brand-logo.center transform.
+    // "Vǐgǐlo" stays large; the instance name (js/app.js adds .brand-city) sits on a
+    // smaller line underneath, whatever its length. The block is vertically centered
+    // here because it no longer fits the bar's line-height. Scoped to &.center to beat
+    // Materialize's .brand-logo.center positioning.
+    &.center {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: calc(100% - 8rem); // room for the burger, kept symmetric
+      line-height: 1.1;
+      text-align: center;
+    }
+    .brand-city {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2; // long names stay on at most two lines (ellipsis beyond)
+      line-clamp: 2;
+      overflow: hidden;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.15;
+      white-space: normal;
+    }
+    // Phones: slightly smaller so title + name fit the 56px bar at any name length.
     @media #{$small-and-down} {
-      &.center {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        max-width: calc(100% - 8rem); // symmetric room for the burger (~60px on the left)
-        font-size: 1.2rem;
-        line-height: 1.15;
-        white-space: normal;
-        text-align: center;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        overflow: hidden;
-      }
+      &.center { font-size: 1.45rem; }
+      .brand-city { font-size: .78rem; }
     }
   }
   .sidenav-trigger i {
