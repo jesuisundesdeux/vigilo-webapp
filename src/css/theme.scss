@@ -35,10 +35,12 @@ nav {
       -webkit-line-clamp: 2; // long names stay on at most two lines (ellipsis beyond)
       line-clamp: 2;
       overflow: hidden;
-      font-size: .82rem;
-      font-weight: 600;
-      letter-spacing: 0;
-      line-height: 1.15;
+      margin-top: 1px;
+      font-size: .8rem;
+      font-weight: 500;       // medium, not bold: the name is secondary to "Vǐgǐlo"
+      letter-spacing: .01em;
+      line-height: 1.12;
+      opacity: .85;
       white-space: normal;
     }
     // Phones: slightly smaller so title + name fit the 56px bar at any name length.
